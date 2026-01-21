@@ -54,6 +54,38 @@ app.MapPost("/notes", (CreateNoteRequest request) =>
 })
 .WithName("CreateNote");
 
+app.MapPut("/notes/{id:guid}", (Guid id, UpdateNoteRequest request) =>
+{
+    var index = notes.FindIndex(n => n.Id == id);
+
+    if (index == -1)
+        return Results.NotFound();
+
+    var updatedNote = notes[index] with
+    {
+        Title = request.Title,
+        Content = request.Content
+    };
+
+    notes[index] = updatedNote;
+
+    return Results.Ok(updatedNote);
+})
+.WithName("UpdateNote");
+
+app.MapDelete("/notes/{id}", (Guid id) =>
+{
+    var note = notes.FirstOrDefault(n => n.Id == id);
+    if (note is null)
+    {
+        return Results.NotFound();
+    }
+
+    notes.Remove(note);
+    return Results.NoContent();
+})
+.WithName("DeleteNote");
+
 app.Run();
 
 record Note
@@ -65,6 +97,12 @@ record Note
 }
 
 record CreateNoteRequest
+{
+    public string Title { get; init; } = string.Empty;
+    public string Content { get; init; } = string.Empty;
+}
+
+record UpdateNoteRequest
 {
     public string Title { get; init; } = string.Empty;
     public string Content { get; init; } = string.Empty;
