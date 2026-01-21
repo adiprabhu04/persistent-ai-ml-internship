@@ -27,6 +27,22 @@ app.MapGet("/notes", () =>
 })
 .WithName("GetNotes");
 
+app.MapPost("/notes", (CreateNoteRequest request) =>
+{
+    var note = new Note
+    {
+        Id = Guid.NewGuid(),
+        Title = request.Title,
+        Content = request.Content,
+        CreatedAt = DateTime.UtcNow
+    };
+
+    notes.Add(note);
+
+    return Results.Created($"/notes/{note.Id}", note);
+})
+.WithName("CreateNote");
+
 app.Run();
 
 record Note
@@ -35,4 +51,10 @@ record Note
     public string Title { get; init; } = string.Empty;
     public string Content { get; init; } = string.Empty;
     public DateTime CreatedAt { get; init; }
+}
+
+record CreateNoteRequest
+{
+    public string Title { get; init; } = string.Empty;
+    public string Content { get; init; } = string.Empty;
 }
