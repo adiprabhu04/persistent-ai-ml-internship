@@ -27,6 +27,17 @@ app.MapGet("/notes", () =>
 })
 .WithName("GetNotes");
 
+app.MapGet("/notes/{id:guid}", (Guid id) =>
+{
+    var note = notes.FirstOrDefault(n => n.Id == id);
+
+    if (note is null)
+        return Results.NotFound();
+
+    return Results.Ok(note);
+})
+.WithName("GetNoteById");
+
 app.MapPost("/notes", (CreateNoteRequest request) =>
 {
     var note = new Note
