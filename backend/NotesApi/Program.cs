@@ -10,28 +10,29 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+var notes = new List<Note>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    new Note
+    {
+        Id = Guid.NewGuid(),
+        Title = "Welcome Note",
+        Content = "This is your first note 🎉",
+        CreatedAt = DateTime.UtcNow
+    }
 };
 
-app.MapGet("/weatherforecast", () =>
+app.MapGet("/notes", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    return Results.Ok(notes);
 })
-.WithName("GetWeatherForecast");
+.WithName("GetNotes");
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+record Note
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    public Guid Id { get; init; }
+    public string Title { get; init; } = string.Empty;
+    public string Content { get; init; } = string.Empty;
+    public DateTime CreatedAt { get; init; }
 }
