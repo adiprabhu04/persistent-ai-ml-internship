@@ -40,6 +40,12 @@ app.MapGet("/notes/{id:guid}", (Guid id) =>
 
 app.MapPost("/notes", (CreateNoteRequest request) =>
 {
+    if (string.IsNullOrWhiteSpace(request.Title) ||
+        string.IsNullOrWhiteSpace(request.Content))
+    {
+        return Results.BadRequest("Title and content are required.");
+    }
+
     var note = new Note
     {
         Id = Guid.NewGuid(),
@@ -54,8 +60,15 @@ app.MapPost("/notes", (CreateNoteRequest request) =>
 })
 .WithName("CreateNote");
 
+
 app.MapPut("/notes/{id:guid}", (Guid id, UpdateNoteRequest request) =>
 {
+    if (string.IsNullOrWhiteSpace(request.Title) ||
+        string.IsNullOrWhiteSpace(request.Content))
+    {
+        return Results.BadRequest("Title and content are required.");
+    }
+
     var index = notes.FindIndex(n => n.Id == id);
 
     if (index == -1)
@@ -72,6 +85,7 @@ app.MapPut("/notes/{id:guid}", (Guid id, UpdateNoteRequest request) =>
     return Results.Ok(updatedNote);
 })
 .WithName("UpdateNote");
+
 
 app.MapDelete("/notes/{id}", (Guid id) =>
 {
