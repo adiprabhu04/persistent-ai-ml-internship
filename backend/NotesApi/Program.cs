@@ -43,7 +43,11 @@ app.MapPost("/notes", (CreateNoteRequest request) =>
     if (string.IsNullOrWhiteSpace(request.Title) ||
         string.IsNullOrWhiteSpace(request.Content))
     {
-        return Results.BadRequest("Title and content are required.");
+        return Results.BadRequest(new
+        {
+            error = "ValidationError",
+            message = "Title and content are required."
+        });
     }
 
     var note = new Note
@@ -66,7 +70,11 @@ app.MapPut("/notes/{id:guid}", (Guid id, UpdateNoteRequest request) =>
     if (string.IsNullOrWhiteSpace(request.Title) ||
         string.IsNullOrWhiteSpace(request.Content))
     {
-        return Results.BadRequest("Title and content are required.");
+        return Results.BadRequest(new
+        {
+            error = "ValidationError",
+            message = "Title and content are required."
+        });
     }
 
     var index = notes.FindIndex(n => n.Id == id);
@@ -96,9 +104,21 @@ app.MapDelete("/notes/{id}", (Guid id) =>
     }
 
     notes.Remove(note);
-    return Results.NoContent();
+    return Results.Ok(note);
+
 })
 .WithName("DeleteNote");
+
+app.MapGet("/health", () =>
+{
+    return Results.Ok(new
+    {
+        status = "Healthy",
+        timestamp = DateTime.UtcNow
+    });
+})
+.WithName("HealthCheck");
+
 
 app.Run();
 
