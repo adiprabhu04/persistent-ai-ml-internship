@@ -1,7 +1,12 @@
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<NotesDbContext>(options =>
+    options.UseSqlite("Data Source=notes.db"));
 
 var app = builder.Build();
 
@@ -10,45 +15,34 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-var notes = new List<Note>
+app.MapGet("/health", () =>
 {
-    new Note
+    return Results.Ok(new
     {
-        Id = Guid.NewGuid(),
-        Title = "Welcome Note",
-        Content = "This is your first note 🎉",
-        CreatedAt = DateTime.UtcNow
-    }
-};
+        status = "Healthy",
+        timestamp = DateTime.UtcNow
+    });
+});
 
-app.MapGet("/notes", () =>
+app.MapGet("/notes", async (NotesDbContext db) =>
 {
+    var notes = await db.Notes
+        .OrderByDescending(n => n.CreatedAt)
+        .ToListAsync();
+
     return Results.Ok(notes);
-})
-.WithName("GetNotes");
+});
 
-app.MapGet("/notes/{id:guid}", (Guid id) =>
+app.MapGet("/notes/{id:guid}", async (Guid id, NotesDbContext db) =>
 {
-    var note = notes.FirstOrDefault(n => n.Id == id);
+    var note = await db.Notes.FindAsync(id);
+    return note is null ? Results.NotFound() : Results.Ok(note);
+});
 
-    if (note is null)
-        return Results.NotFound();
-
-    return Results.Ok(note);
-})
-.WithName("GetNoteById");
-
-app.MapPost("/notes", (CreateNoteRequest request) =>
+app.MapPost("/notes", async (CreateNoteRequest request, NotesDbContext db) =>
 {
-    if (string.IsNullOrWhiteSpace(request.Title) ||
-        string.IsNullOrWhiteSpace(request.Content))
-    {
-        return Results.BadRequest(new
-        {
-            error = "ValidationError",
-            message = "Title and content are required."
-        });
-    }
+    if (string.IsNullOrWhiteSpace(request.Title))
+        return Results.BadRequest("Title is required");
 
     var note = new Note
     {
@@ -58,86 +52,35 @@ app.MapPost("/notes", (CreateNoteRequest request) =>
         CreatedAt = DateTime.UtcNow
     };
 
-    notes.Add(note);
+    db.Notes.Add(note);
+    await db.SaveChangesAsync();
 
     return Results.Created($"/notes/{note.Id}", note);
-})
-.WithName("CreateNote");
+});
 
-
-app.MapPut("/notes/{id:guid}", (Guid id, UpdateNoteRequest request) =>
+app.MapPut("/notes/{id:guid}", async (Guid id, UpdateNoteRequest request, NotesDbContext db) =>
 {
-    if (string.IsNullOrWhiteSpace(request.Title) ||
-        string.IsNullOrWhiteSpace(request.Content))
-    {
-        return Results.BadRequest(new
-        {
-            error = "ValidationError",
-            message = "Title and content are required."
-        });
-    }
-
-    var index = notes.FindIndex(n => n.Id == id);
-
-    if (index == -1)
-        return Results.NotFound();
-
-    var updatedNote = notes[index] with
-    {
-        Title = request.Title,
-        Content = request.Content
-    };
-
-    notes[index] = updatedNote;
-
-    return Results.Ok(updatedNote);
-})
-.WithName("UpdateNote");
-
-
-app.MapDelete("/notes/{id}", (Guid id) =>
-{
-    var note = notes.FirstOrDefault(n => n.Id == id);
+    var note = await db.Notes.FindAsync(id);
     if (note is null)
-    {
         return Results.NotFound();
-    }
 
-    notes.Remove(note);
+    note.Title = request.Title;
+    note.Content = request.Content;
+
+    await db.SaveChangesAsync();
     return Results.Ok(note);
+});
 
-})
-.WithName("DeleteNote");
-
-app.MapGet("/health", () =>
+app.MapDelete("/notes/{id:guid}", async (Guid id, NotesDbContext db) =>
 {
-    return Results.Ok(new
-    {
-        status = "Healthy",
-        timestamp = DateTime.UtcNow
-    });
-})
-.WithName("HealthCheck");
+    var note = await db.Notes.FindAsync(id);
+    if (note is null)
+        return Results.NotFound();
 
+    db.Notes.Remove(note);
+    await db.SaveChangesAsync();
+
+    return Results.NoContent();
+});
 
 app.Run();
-
-record Note
-{
-    public Guid Id { get; init; }
-    public string Title { get; init; } = string.Empty;
-    public string Content { get; init; } = string.Empty;
-    public DateTime CreatedAt { get; init; }
-}
-
-record CreateNoteRequest
-{
-    public string Title { get; init; } = string.Empty;
-    public string Content { get; init; } = string.Empty;
-}
-
-record UpdateNoteRequest
-{
-    public string Title { get; init; } = string.Empty;
-    public string Content { get; init; } = string.Empty;
-}
