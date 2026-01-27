@@ -42,13 +42,16 @@ app.MapGet("/notes/{id:guid}", async (Guid id, NotesDbContext db) =>
 app.MapPost("/notes", async (CreateNoteRequest request, NotesDbContext db) =>
 {
     if (string.IsNullOrWhiteSpace(request.Title))
-        return Results.BadRequest("Title is required");
+        return Results.BadRequest(new { error = "ValidationError", message = "Title is required" });
+
+    if (request.Title.Length > 200)
+        return Results.BadRequest(new { error = "ValidationError", message = "Title must be under 200 characters" });
 
     var note = new Note
     {
         Id = Guid.NewGuid(),
-        Title = request.Title,
-        Content = request.Content,
+        Title = request.Title.Trim(),
+        Content = request.Content?.Trim() ?? string.Empty,
         CreatedAt = DateTime.UtcNow
     };
 
@@ -58,29 +61,37 @@ app.MapPost("/notes", async (CreateNoteRequest request, NotesDbContext db) =>
     return Results.Created($"/notes/{note.Id}", note);
 });
 
-app.MapPut("/notes/{id:guid}", async (Guid id, UpdateNoteRequest request, NotesDbContext db) =>
-{
-    var note = await db.Notes.FindAsync(id);
-    if (note is null)
-        return Results.NotFound();
 
-    note.Title = request.Title;
-    note.Content = request.Content;
+app.MapPut("/notes/{id}", async (Guid id, UpdateNoteRequest request, NotesDbContext db) =>
+{
+    if (string.IsNullOrWhiteSpace(request.Title))
+        return Results.BadRequest(new { error = "ValidationError", message = "Title is required" });
+
+    if (request.Title.Length > 200)
+        return Results.BadRequest(new { error = "ValidationError", message = "Title must be under 200 characters" });
+
+    var note = await db.Notes.FindAsync(id);
+    if (note == null)
+        return Results.NotFound(new { error = "NotFound", message = "Note not found" });
+
+    note.Title = request.Title.Trim();
+    note.Content = request.Content?.Trim() ?? string.Empty;
 
     await db.SaveChangesAsync();
     return Results.Ok(note);
 });
 
-app.MapDelete("/notes/{id:guid}", async (Guid id, NotesDbContext db) =>
+app.MapDelete("/notes/{id}", async (Guid id, NotesDbContext db) =>
 {
     var note = await db.Notes.FindAsync(id);
-    if (note is null)
-        return Results.NotFound();
+    if (note == null)
+        return Results.NotFound(new { error = "NotFound", message = "Note not found" });
 
     db.Notes.Remove(note);
     await db.SaveChangesAsync();
 
     return Results.NoContent();
 });
+
 
 app.Run();
