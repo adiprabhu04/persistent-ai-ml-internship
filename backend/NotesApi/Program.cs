@@ -6,9 +6,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --------------------
-// Services
-// --------------------
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
@@ -45,11 +42,9 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// DB
 builder.Services.AddDbContext<NotesDbContext>(options =>
     options.UseSqlite("Data Source=notes.db"));
 
-// JWT
 var jwtKey = "THIS_IS_A_DEV_ONLY_SECRET_KEY_CHANGE_LATER";
 var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
 
@@ -74,9 +69,6 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// --------------------
-// Middleware
-// --------------------
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -85,11 +77,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// --------------------
-// Endpoints
-// --------------------
-
-// Health
 app.MapGet("/health", () =>
 {
     return Results.Ok(new
@@ -99,10 +86,10 @@ app.MapGet("/health", () =>
     });
 });
 
-// GET notes (paginated, protected)
 app.MapGet("/notes", async (
     int page,
     int pageSize,
+    string? search,
     HttpContext context,
     NotesDbContext db) =>
 {
@@ -114,10 +101,16 @@ app.MapGet("/notes", async (
 
     var query = db.Notes.Where(n => n.UserId == userId);
 
+    if (!string.IsNullOrWhiteSpace(search))
+    {
+        query = query.Where(n => n.Title.ToLower().Contains(search.ToLower()) 
+                              || n.Content.ToLower().Contains(search.ToLower()));
+    }
+
     var totalCount = await query.CountAsync();
 
     var notes = await query
-        .OrderByDescending(n => n.CreatedAt)
+        .OrderByDescending(n => n.UpdatedAt)
         .Skip((page - 1) * pageSize)
         .Take(pageSize)
         .ToListAsync();
@@ -132,7 +125,22 @@ app.MapGet("/notes", async (
 })
 .RequireAuthorization();
 
-// POST note
+app.MapGet("/notes/{id}", async (
+    Guid id,
+    HttpContext context,
+    NotesDbContext db) =>
+{
+    var userId = AuthHelpers.GetUserId(context);
+
+    var note = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
+
+    if (note == null)
+        return Results.NotFound();
+
+    return Results.Ok(note);
+})
+.RequireAuthorization();
+
 app.MapPost("/notes", async (
     CreateNoteRequest request,
     HttpContext context,
@@ -152,6 +160,7 @@ app.MapPost("/notes", async (
         Title = request.Title.Trim(),
         Content = request.Content?.Trim() ?? string.Empty,
         CreatedAt = DateTime.UtcNow,
+        UpdatedAt = DateTime.UtcNow,
         UserId = userId
     };
 
@@ -162,7 +171,6 @@ app.MapPost("/notes", async (
 })
 .RequireAuthorization();
 
-// PUT note
 app.MapPut("/notes/{id}", async (
     Guid id,
     UpdateNoteRequest request,
@@ -183,13 +191,13 @@ app.MapPut("/notes/{id}", async (
 
     note.Title = request.Title.Trim();
     note.Content = request.Content?.Trim() ?? string.Empty;
+    note.UpdatedAt = DateTime.UtcNow;
 
     await db.SaveChangesAsync();
     return Results.Ok(note);
 })
 .RequireAuthorization();
 
-// DELETE note
 app.MapDelete("/notes/{id}", async (
     Guid id,
     HttpContext context,
@@ -208,7 +216,6 @@ app.MapDelete("/notes/{id}", async (
 })
 .RequireAuthorization();
 
-// AUTH — register
 app.MapPost("/auth/register", async (RegisterRequest request, NotesDbContext db) =>
 {
     if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
@@ -236,7 +243,6 @@ app.MapPost("/auth/register", async (RegisterRequest request, NotesDbContext db)
     return Results.Created("/auth/register", new { user.Id, user.Email });
 });
 
-// AUTH — login
 app.MapPost("/auth/login", async (LoginRequest request, NotesDbContext db) =>
 {
     if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
