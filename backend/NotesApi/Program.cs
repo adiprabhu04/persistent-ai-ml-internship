@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHttpClient();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -181,6 +184,72 @@ app.MapPost("/notes", async (
     return Results.Created($"/notes/{note.Id}", note);
 })
 .RequireAuthorization();
+
+app.MapPost("/notes/upload", async (
+    IFormFile file,
+    IHttpClientFactory clientFactory,
+    HttpContext context,
+    NotesDbContext db) =>
+{
+    var userId = AuthHelpers.GetUserId(context);
+    if (userId == null) return Results.Unauthorized();
+
+    if (file == null || file.Length == 0)
+        return Results.BadRequest("No file uploaded.");
+
+    // 2. Prepare to send file to Python
+    var pythonUrl = "http://localhost:8000/ocr";
+
+    using var client = clientFactory.CreateClient();
+    using var content = new MultipartFormDataContent();
+
+    using var fileStream = file.OpenReadStream();
+    var streamContent = new StreamContent(fileStream);
+    streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+
+    content.Add(streamContent, "file", file.FileName);
+
+    try
+    {
+
+        var response = await client.PostAsync(pythonUrl, content);
+
+        if (!response.IsSuccessStatusCode)
+            return Results.Json(new { error = "Python AI Service failed." }, statusCode: (int)response.StatusCode);
+
+        var jsonString = await response.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(jsonString);
+        
+        // Extract the text safely
+        string extractedText = "";
+        if (doc.RootElement.TryGetProperty("text", out var textElement))
+        {
+            extractedText = textElement.GetString() ?? "";
+        }
+
+        // 5. Save as a New Note
+        var newNote = new Note
+        {
+            Id = Guid.NewGuid(),
+            Title = "Scanned Note - " + DateTime.Now.ToShortDateString(),
+            Content = extractedText,
+            UserId = userId,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        db.Notes.Add(newNote);
+        await db.SaveChangesAsync();
+
+        return Results.Ok(newNote);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem($"Connection Error: {ex.Message}");
+    }
+})
+.RequireAuthorization()
+.DisableAntiforgery();
 
 app.MapPut("/notes/{id}", async (
     Guid id,

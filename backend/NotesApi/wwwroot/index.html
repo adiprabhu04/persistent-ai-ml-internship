@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Notes App</title>
     <style>
+        /* --- 1. MODERN RESET & VARIABLES --- */
         :root {
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
+            --accent: #8b5cf6; /* New purple for AI features */
             --bg-color: #f1f5f9;
             --surface: #ffffff;
             --text-main: #1e293b;
@@ -29,12 +31,15 @@
             justify-content: center;
         }
 
+        /* --- 2. UTILITY CLASSES --- */
         .hidden { display: none !important; }
         .page { display: none; height: 100%; width: 100%; flex-direction: column; }
         .page.active { display: flex; }
         
         button { cursor: pointer; border: none; outline: none; transition: all 0.2s ease; }
         button:active { transform: scale(0.96); }
+
+        /* --- 3. LOGIN SCREEN --- */
         #login-page { 
             align-items: center; 
             justify-content: center; 
@@ -48,7 +53,7 @@
             border-radius: 24px;
             box-shadow: var(--shadow);
             width: 100%;
-            max-width: 400px; 
+            max-width: 400px;
             text-align: center;
         }
 
@@ -99,6 +104,23 @@
             margin-top: 1rem;
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
+
+        /* New AI Button Style */
+        .btn-ai {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--accent), #7c3aed);
+            color: white;
+            font-weight: 700;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
         
         .error-msg { 
             background: #fef2f2; 
@@ -110,6 +132,7 @@
             border: 1px solid #fee2e2;
         }
 
+        /* --- 4. DASHBOARD --- */
         #dashboard-page { background: var(--surface); max-width: 600px; margin: 0 auto; box-shadow: 0 0 50px rgba(0,0,0,0.05); }
         
         header { 
@@ -146,6 +169,7 @@
         .note-card p { color: var(--text-sub); font-size: 0.95rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         .note-date { font-size: 0.75rem; color: #94a3b8; margin-top: 0.85rem; display: block; font-weight: 500; }
 
+        /* --- 5. FAB & MODAL --- */
         .fab { 
             position: absolute; 
             bottom: 2rem; 
@@ -184,12 +208,11 @@
         #note-title { font-weight: 800; font-size: 1.5rem; border: none; background: transparent; padding: 0.5rem 0; border-radius: 0; }
         #note-title:focus { border: none; box-shadow: none; }
         
-        #note-content { height: 200px; resize: none; border: none; background: transparent; padding: 0.5rem 0; font-size: 1.1rem; line-height: 1.6; }
+        #note-content { height: 150px; resize: none; border: none; background: transparent; padding: 0.5rem 0; font-size: 1.1rem; line-height: 1.6; }
         #note-content:focus { border: none; box-shadow: none; }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        ::-webkit-scrollbar-track { background: transparent; }
+        
+        /* Loading Overlay */
+        #loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
     </style>
 </head>
 <body>
@@ -197,6 +220,12 @@
     <script>
         const API_URL = ""; 
     </script>
+
+    <div id="loading-overlay" class="hidden">
+        <div style="font-size: 3rem; animation: bounce 1s infinite;">🤖</div>
+        <h3 style="margin-top: 1rem; color: var(--primary);">Reading Handwriting...</h3>
+        <p style="color: var(--text-sub);">Please wait a moment</p>
+    </div>
 
     <div id="login-page" class="page active">
         <div class="login-card">
@@ -245,7 +274,14 @@
                 <h2 style="font-weight:800; font-size:1.25rem;">New Note</h2>
                 <button onclick="hideAddModal()" class="close-btn">&times;</button>
             </div>
+
+            <button onclick="triggerCamera()" class="btn-ai">
+                📷 Scan Handwriting
+            </button>
+            <input type="file" id="camera-input" accept="image/*" class="hidden" onchange="uploadImage(this)">
             
+            <div style="text-align: center; margin-bottom: 1rem; color: #cbd5e1; font-size: 0.8rem;">— OR TYPE —</div>
+
             <input type="text" id="note-title" placeholder="Title goes here...">
             <textarea id="note-content" placeholder="Start typing your note..."></textarea>
             
@@ -367,6 +403,41 @@
             fetchNotes();
         }
 
+        function triggerCamera() {
+            document.getElementById('camera-input').click();
+        }
+
+        async function uploadImage(input) {
+            if (input.files.length === 0) return;
+            const file = input.files[0];
+
+            hideAddModal();
+            document.getElementById('loading-overlay').classList.remove('hidden');
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch(`${API_URL}/notes/upload`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }, 
+                    body: formData
+                });
+
+                if (res.ok) {
+                    await fetchNotes(); 
+                } else {
+                    alert("Scanning failed. Check the server connection.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Error uploading image.");
+            } finally {
+                document.getElementById('loading-overlay').classList.add('hidden');
+                input.value = '';
+            }
+        }
+
         function handleSearch(e) {
             clearTimeout(searchTimer);
             searchTimer = setTimeout(() => {
@@ -388,5 +459,12 @@
             }, 300);
         }
     </script>
+    
+    <style>
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
 </body>
 </html>
