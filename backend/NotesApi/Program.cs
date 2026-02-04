@@ -45,8 +45,11 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
+                        ?? "psql 'postgresql://neondb_owner:npg_2wBGcdUf8blI@ep-odd-sunset-a1rzja3t-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'";
+
 builder.Services.AddDbContext<NotesDbContext>(options =>
-    options.UseSqlite("Data Source=notes.db"));
+    options.UseNpgsql(connectionString));
 
 var jwtKey = "THIS_IS_A_DEV_ONLY_SECRET_KEY_CHANGE_LATER";
 var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
