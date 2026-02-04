@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Notes App</title>
     <style>
-        /* --- 1. MODERN RESET & VARIABLES --- */
         :root {
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
-            --accent: #8b5cf6; /* New purple for AI features */
+            --accent: #8b5cf6;
             --bg-color: #f1f5f9;
             --surface: #ffffff;
             --text-main: #1e293b;
@@ -31,23 +30,23 @@
             justify-content: center;
         }
 
-        /* --- 2. UTILITY CLASSES --- */
         .hidden { display: none !important; }
         .page { display: none; height: 100%; width: 100%; flex-direction: column; }
         .page.active { display: flex; }
         
         button { cursor: pointer; border: none; outline: none; transition: all 0.2s ease; }
         button:active { transform: scale(0.96); }
+        
+        a { color: var(--primary); text-decoration: none; font-weight: 600; cursor: pointer; }
 
-        /* --- 3. LOGIN SCREEN --- */
-        #login-page { 
+        #login-page, #register-page { 
             align-items: center; 
             justify-content: center; 
             padding: 1.5rem; 
             background: var(--bg-color);
         }
 
-        .login-card {
+        .auth-card {
             background: var(--surface);
             padding: 2.5rem;
             border-radius: 24px;
@@ -87,11 +86,7 @@
             transition: border-color 0.2s;
         }
         
-        input:focus, textarea:focus { 
-            border-color: var(--primary); 
-            background: #fff; 
-            outline: none; 
-        }
+        input:focus, textarea:focus { border-color: var(--primary); background: #fff; outline: none; }
 
         .btn-primary { 
             width: 100%; 
@@ -105,7 +100,6 @@
             box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
 
-        /* New AI Button Style */
         .btn-ai {
             width: 100%;
             padding: 1rem;
@@ -132,7 +126,6 @@
             border: 1px solid #fee2e2;
         }
 
-        /* --- 4. DASHBOARD --- */
         #dashboard-page { background: var(--surface); max-width: 600px; margin: 0 auto; box-shadow: 0 0 50px rgba(0,0,0,0.05); }
         
         header { 
@@ -169,7 +162,6 @@
         .note-card p { color: var(--text-sub); font-size: 0.95rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         .note-date { font-size: 0.75rem; color: #94a3b8; margin-top: 0.85rem; display: block; font-weight: 500; }
 
-        /* --- 5. FAB & MODAL --- */
         .fab { 
             position: absolute; 
             bottom: 2rem; 
@@ -211,7 +203,6 @@
         #note-content { height: 150px; resize: none; border: none; background: transparent; padding: 0.5rem 0; font-size: 1.1rem; line-height: 1.6; }
         #note-content:focus { border: none; box-shadow: none; }
         
-        /* Loading Overlay */
         #loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
     </style>
 </head>
@@ -223,12 +214,11 @@
 
     <div id="loading-overlay" class="hidden">
         <div style="font-size: 3rem; animation: bounce 1s infinite;">🤖</div>
-        <h3 style="margin-top: 1rem; color: var(--primary);">Reading Handwriting...</h3>
-        <p style="color: var(--text-sub);">Please wait a moment</p>
+        <h3 style="margin-top: 1rem; color: var(--primary);">Processing...</h3>
     </div>
 
     <div id="login-page" class="page active">
-        <div class="login-card">
+        <div class="auth-card">
             <div class="brand-icon">📝</div>
             <h1>Welcome Back</h1>
             <p class="subtitle">Enter your details to access your notes.</p>
@@ -245,6 +235,35 @@
             
             <button onclick="login()" class="btn-primary">Sign In</button>
             <p id="login-error" class="error-msg hidden">⚠️ Invalid email or password</p>
+
+            <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-sub);">
+                Don't have an account? <a onclick="showPage('register-page')">Sign Up</a>
+            </p>
+        </div>
+    </div>
+
+    <div id="register-page" class="page">
+        <div class="auth-card">
+            <div class="brand-icon">✨</div>
+            <h1>Create Account</h1>
+            <p class="subtitle">Join us to start taking smarter notes.</p>
+            
+            <div class="input-group">
+                <label class="input-label">Email Address</label>
+                <input type="email" id="reg-email" placeholder="name@example.com">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">Password</label>
+                <input type="password" id="reg-password" placeholder="••••••••">
+            </div>
+            
+            <button onclick="register()" class="btn-primary">Create Account</button>
+            <p id="reg-error" class="error-msg hidden">⚠️ Registration failed</p>
+
+            <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-sub);">
+                Already have an account? <a onclick="showPage('login-page')">Sign In</a>
+            </p>
         </div>
     </div>
 
@@ -259,10 +278,6 @@
         </div>
 
         <div id="notes-list">
-            <div style="text-align:center; padding-top: 3rem;">
-                <div style="font-size: 2rem; margin-bottom: 0.5rem;">⏳</div>
-                <p style="color:#94a3b8;">Loading your notes...</p>
-            </div>
         </div>
 
         <button onclick="showAddModal()" class="fab">＋</button>
@@ -296,6 +311,8 @@
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
+            
+            document.querySelectorAll('.error-msg').forEach(el => el.classList.add('hidden'));
         }
 
         if (token) { showPage('dashboard-page'); fetchNotes(); }
@@ -304,7 +321,7 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const errorMsg = document.getElementById('login-error');
-            const btn = document.querySelector('.btn-primary');
+            const btn = document.querySelector('#login-page .btn-primary');
 
             btn.innerText = "Signing in...";
             btn.style.opacity = "0.7";
@@ -324,12 +341,53 @@
                     showPage('dashboard-page');
                     fetchNotes();
                 } else {
+                    errorMsg.innerText = "⚠️ Invalid email or password";
                     errorMsg.classList.remove('hidden');
                 }
             } catch (err) {
-                alert("Connection failed.");
+                errorMsg.innerText = "⚠️ Connection failed";
+                errorMsg.classList.remove('hidden');
             } finally {
                 btn.innerText = "Sign In";
+                btn.style.opacity = "1";
+            }
+        }
+
+        async function register() {
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const errorMsg = document.getElementById('reg-error');
+            const btn = document.querySelector('#register-page .btn-primary');
+
+            if(password.length < 6) {
+                errorMsg.innerText = "⚠️ Password must be at least 6 characters";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            btn.innerText = "Creating Account...";
+            btn.style.opacity = "0.7";
+
+            try {
+                const res = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (res.ok) {
+                    alert("Account created! Please log in.");
+                    showPage('login-page');
+                } else {
+                    const data = await res.json();
+                    errorMsg.innerText = "⚠️ " + (data.error || "Registration failed");
+                    errorMsg.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorMsg.innerText = "⚠️ Connection failed";
+                errorMsg.classList.remove('hidden');
+            } finally {
+                btn.innerText = "Create Account";
                 btn.style.opacity = "1";
             }
         }
@@ -360,7 +418,7 @@
             const list = document.getElementById('notes-list');
             list.innerHTML = '';
 
-            if (notes.length === 0) {
+            if (!notes || notes.length === 0) {
                 list.innerHTML = `
                     <div style="text-align:center; margin-top:3rem; opacity:0.6;">
                         <div style="font-size:3rem; margin-bottom:1rem;">🍃</div>
@@ -420,14 +478,14 @@
             try {
                 const res = await fetch(`${API_URL}/notes/upload`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` }, 
+                    headers: { 'Authorization': `Bearer ${token}` },
                     body: formData
                 });
 
                 if (res.ok) {
                     await fetchNotes(); 
                 } else {
-                    alert("Scanning failed. Check the server connection.");
+                    alert("Scanning failed. AI Service might be sleeping (it takes 50s to wake up on Free Tier). Try again!");
                 }
             } catch (err) {
                 console.error(err);
