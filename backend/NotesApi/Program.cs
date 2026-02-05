@@ -46,7 +46,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
-                        ?? "psql 'postgresql://neondb_owner:npg_2wBGcdUf8blI@ep-odd-sunset-a1rzja3t-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'";
+                       ?? "psql 'postgresql://neondb_owner:npg_2wBGcdUf8blI@ep-odd-sunset-a1rzja3t-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'";
 
 builder.Services.AddDbContext<NotesDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -121,7 +121,7 @@ app.MapGet("/notes", async (
     if (!string.IsNullOrWhiteSpace(search))
     {
         query = query.Where(n => n.Title.ToLower().Contains(search.ToLower()) 
-                              || n.Content.ToLower().Contains(search.ToLower()));
+                             || n.Content.ToLower().Contains(search.ToLower()));
     }
 
     var totalCount = await query.CountAsync();
@@ -200,8 +200,8 @@ app.MapPost("/notes/upload", async (
     if (file == null || file.Length == 0)
         return Results.BadRequest("No file uploaded.");
 
-    // 2. Prepare to send file to Python
-    var pythonUrl = "http://localhost:8000/ocr";
+    var aiServiceUrl = Environment.GetEnvironmentVariable("AI_SERVICE_URL") 
+    ?? "http://localhost:8000/extract-text";
 
     using var client = clientFactory.CreateClient();
     using var content = new MultipartFormDataContent();
@@ -214,8 +214,7 @@ app.MapPost("/notes/upload", async (
 
     try
     {
-
-        var response = await client.PostAsync(pythonUrl, content);
+        var response = await client.PostAsync(aiServiceUrl, content);
 
         if (!response.IsSuccessStatusCode)
             return Results.Json(new { error = "Python AI Service failed." }, statusCode: (int)response.StatusCode);
@@ -223,14 +222,12 @@ app.MapPost("/notes/upload", async (
         var jsonString = await response.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(jsonString);
         
-        // Extract the text safely
         string extractedText = "";
         if (doc.RootElement.TryGetProperty("text", out var textElement))
         {
             extractedText = textElement.GetString() ?? "";
         }
 
-        // 5. Save as a New Note
         var newNote = new Note
         {
             Id = Guid.NewGuid(),
