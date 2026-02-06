@@ -1,5 +1,5 @@
 # FORCE UPDATE: Fixing the libgl1 error
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
