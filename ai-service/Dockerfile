@@ -1,16 +1,14 @@
-FROM python:3.10-slim
+FROM python:3.10-slim-bullseye
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     tesseract-ocr \
-    libtesseract-dev \
     libglib2.0-0 \
-    libsm6 \
-    libxext6 \
-    libxrender-dev \
-    libgl1-mesa-glx \
+    libgl1 \
+    libgomp1 \
     wget \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -m -u 1000 appuser
 
