@@ -3,526 +3,2809 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Notes App</title>
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="A modern notes application with AI-powered handwriting recognition">
+    <title>Notely - Smart Notes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #eef2ff;
+            --primary-glow: rgba(99, 102, 241, 0.15);
+
             --accent: #8b5cf6;
-            --bg-color: #f1f5f9;
-            --surface: #ffffff;
-            --text-main: #1e293b;
-            --text-sub: #64748b;
-            --border: #e2e8f0;
-            --radius: 16px;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --accent-hover: #7c3aed;
+            --accent-light: #f5f3ff;
+
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+
+            --bg-primary: #fafafa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f4f4f5;
+            --bg-elevated: #ffffff;
+
+            --text-primary: #18181b;
+            --text-secondary: #52525b;
+            --text-tertiary: #a1a1aa;
+            --text-inverse: #ffffff;
+
+            --border-light: #e4e4e7;
+            --border-medium: #d4d4d8;
+
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+
+            --transition-fast: 150ms ease;
+            --transition-base: 200ms ease;
+            --transition-slow: 300ms ease;
+
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+            --header-height: 64px;
+            --sidebar-width: 280px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            height: 100vh; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center;
+        [data-theme="dark"] {
+            --primary: #818cf8;
+            --primary-hover: #6366f1;
+            --primary-light: #1e1b4b;
+            --primary-glow: rgba(129, 140, 248, 0.15);
+
+            --accent: #a78bfa;
+            --accent-hover: #8b5cf6;
+            --accent-light: #2e1065;
+
+            --success: #34d399;
+            --success-light: #064e3b;
+            --warning: #fbbf24;
+            --warning-light: #78350f;
+            --danger: #f87171;
+            --danger-light: #7f1d1d;
+
+            --bg-primary: #09090b;
+            --bg-secondary: #18181b;
+            --bg-tertiary: #27272a;
+            --bg-elevated: #27272a;
+
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --text-tertiary: #71717a;
+            --text-inverse: #18181b;
+
+            --border-light: #27272a;
+            --border-medium: #3f3f46;
+
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .hidden { display: none !important; }
-        .page { display: none; height: 100%; width: 100%; flex-direction: column; }
-        .page.active { display: flex; }
-        
-        button { cursor: pointer; border: none; outline: none; transition: all 0.2s ease; }
-        button:active { transform: scale(0.96); }
-        
-        a { color: var(--primary); text-decoration: none; font-weight: 600; cursor: pointer; }
 
-        #login-page, #register-page { 
-            align-items: center; 
-            justify-content: center; 
-            padding: 1.5rem; 
-            background: var(--bg-color);
+        .page {
+            display: none;
+            min-height: 100vh;
+            opacity: 0;
+            transition: opacity var(--transition-base);
+        }
+
+        .page.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: inherit;
+            transition: all var(--transition-fast);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        input, textarea {
+            font-family: inherit;
+            font-size: 1rem;
+            border: none;
+            background: none;
+            color: inherit;
+            outline: none;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+            transition: color var(--transition-fast);
+        }
+
+        a:hover {
+            color: var(--primary-hover);
+        }
+
+        .auth-page {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-tertiary) 100%);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .auth-card {
-            background: var(--surface);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xl);
             padding: 2.5rem;
-            border-radius: 24px;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 400px;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .auth-header {
             text-align: center;
+            margin-bottom: 2rem;
         }
 
-        .brand-icon {
-            width: 60px;
-            height: 60px;
-            background: #dbeafe;
-            color: var(--primary);
-            border-radius: 14px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-        }
-
-        h1 { font-size: 1.75rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem; letter-spacing: -0.5px; }
-        .subtitle { color: var(--text-sub); margin-bottom: 2rem; font-size: 0.95rem; }
-
-        .input-group { margin-bottom: 1rem; text-align: left; }
-        .input-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem; margin-left: 0.25rem; }
-        
-        input, textarea { 
-            width: 100%; 
-            padding: 1rem; 
-            border: 2px solid var(--border); 
-            border-radius: 12px; 
-            font-size: 1rem; 
-            background: #f8fafc; 
-            color: var(--text-main);
-            transition: border-color 0.2s;
-        }
-        
-        input:focus, textarea:focus { border-color: var(--primary); background: #fff; outline: none; }
-
-        .btn-primary { 
-            width: 100%; 
-            padding: 1rem; 
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
-            color: white; 
-            font-weight: 700; 
-            border-radius: 12px; 
-            font-size: 1rem; 
-            margin-top: 1rem;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        .btn-ai {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, var(--accent), #7c3aed);
-            color: white;
-            font-weight: 700;
-            border-radius: 12px;
-            font-size: 1rem;
-            margin-bottom: 1rem;
+        .auth-logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: var(--radius-lg);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-        }
-        
-        .error-msg { 
-            background: #fef2f2; 
-            color: #ef4444; 
-            padding: 0.75rem; 
-            border-radius: 8px; 
-            margin-top: 1.5rem; 
-            font-size: 0.9rem; 
-            border: 1px solid #fee2e2;
+            margin: 0 auto 1.25rem;
+            font-size: 1.75rem;
+            box-shadow: var(--shadow-lg);
         }
 
-        #dashboard-page { background: var(--surface); max-width: 600px; margin: 0 auto; box-shadow: 0 0 50px rgba(0,0,0,0.05); }
-        
-        header { 
-            padding: 1.25rem; 
-            background: rgba(255,255,255,0.9); 
-            backdrop-filter: blur(10px); 
-            position: sticky; 
-            top: 0; 
-            z-index: 10; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-bottom: 1px solid var(--border);
+        .auth-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.025em;
         }
 
-        .logout-btn { color: #ef4444; background: #fef2f2; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; }
-
-        .search-container { padding: 1rem 1.25rem; background: var(--surface); }
-        #search-box { background: #f1f5f9; border: none; padding: 0.85rem 1rem; border-radius: 12px; font-size: 0.95rem; }
-
-        #notes-list { flex: 1; overflow-y: auto; padding: 0 1.25rem 6rem 1.25rem; }
-        
-        .note-card { 
-            background: white; 
-            padding: 1.25rem; 
-            border-radius: 16px; 
-            margin-bottom: 1rem; 
-            border: 1px solid var(--border); 
-            transition: transform 0.1s;
+        .auth-subtitle {
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
         }
-        .note-card:active { background-color: #f8fafc; transform: scale(0.98); }
-        
-        .note-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.35rem; color: var(--text-main); }
-        .note-card p { color: var(--text-sub); font-size: 0.95rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-        .note-date { font-size: 0.75rem; color: #94a3b8; margin-top: 0.85rem; display: block; font-weight: 500; }
 
-        .fab { 
-            position: absolute; 
-            bottom: 2rem; 
-            right: 1.5rem; 
-            width: 3.5rem; 
-            height: 3.5rem; 
-            background: var(--primary); 
-            color: white; 
-            border-radius: 50%; 
-            font-size: 2rem; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4); 
-            z-index: 20; 
+        .form-group {
+            margin-bottom: 1.25rem;
         }
-        
-        #add-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; display: flex; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
-        
-        .modal-content { 
-            background: var(--surface); 
-            width: 100%; 
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: var(--bg-tertiary);
+            border: 2px solid transparent;
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            transition: all var(--transition-fast);
+        }
+
+        .form-input:hover {
+            border-color: var(--border-medium);
+        }
+
+        .form-input:focus {
+            background: var(--bg-secondary);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-fast);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: white;
+            box-shadow: var(--shadow-md), 0 0 0 0 var(--primary-glow);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: var(--shadow-lg), 0 0 0 4px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--border-light);
+        }
+
+        .btn-accent {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-accent:hover:not(:disabled) {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
+        .btn-ghost {
+            color: var(--text-secondary);
+            padding: 0.5rem;
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: var(--radius-md);
+        }
+
+        .error-message {
+            background: var(--danger-light);
+            color: var(--danger);
+            padding: 0.875rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .success-message {
+            background: var(--success-light);
+            color: var(--success);
+            padding: 0.875rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .auth-footer a {
+            font-weight: 600;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            color: var(--text-tertiary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-light);
+        }
+
+        .dashboard-page {
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+
+        .dashboard-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            background: rgba(var(--bg-secondary), 0.8);
+        }
+
+        [data-theme="dark"] .dashboard-header {
+            background: rgba(24, 24, 27, 0.9);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 220px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            padding: 0.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all var(--transition-fast);
+            z-index: 200;
+        }
+
+        .user-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .dropdown-email {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .dropdown-item.danger {
+            color: var(--danger);
+        }
+
+        .dropdown-item.danger:hover {
+            background: var(--danger-light);
+        }
+
+        .dashboard-main {
+            margin-top: var(--header-height);
+            display: flex;
+            flex: 1;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-light);
+            height: calc(100vh - var(--header-height));
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform var(--transition-base);
+        }
+
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .new-note-btn {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: white;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .new-note-btn:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-1px);
+        }
+
+        .search-container {
+            padding: 1rem;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.875rem;
+            color: var(--text-tertiary);
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            border: 2px solid transparent;
+            transition: all var(--transition-fast);
+        }
+
+        .search-input:focus {
+            background: var(--bg-secondary);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 0.5rem;
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        .search-clear:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .nav-section {
+            margin-bottom: 1rem;
+        }
+
+        .nav-section-title {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-tertiary);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-align: left;
+            transition: all var(--transition-fast);
+        }
+
+        .nav-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .nav-item-icon {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .nav-item-count {
+            margin-left: auto;
+            background: var(--bg-tertiary);
+            padding: 0.125rem 0.5rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-tertiary);
+        }
+
+        .nav-item.active .nav-item-count {
+            background: var(--primary);
+            color: white;
+        }
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-align: left;
+        }
+
+        .category-item:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .category-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .category-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: var(--radius-full);
+        }
+
+        .content-area {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        .content-header {
+            padding: 1.5rem 2rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-light);
+            background: var(--bg-primary);
+            position: sticky;
+            top: var(--header-height);
+            z-index: 50;
+        }
+
+        .content-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .content-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            padding: 0.25rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-sm);
+            color: var(--text-tertiary);
+            font-size: 1rem;
+        }
+
+        .view-btn.active {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sort-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .sort-btn:hover {
+            background: var(--border-light);
+        }
+
+        .notes-container {
+            flex: 1;
+            padding: 1.5rem 2rem 6rem;
+            overflow-y: auto;
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .notes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .note-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .note-card:hover {
+            border-color: var(--border-medium);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .note-card.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .note-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .note-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .note-card-actions {
+            display: flex;
+            gap: 0.25rem;
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+        }
+
+        .note-card:hover .note-card-actions {
+            opacity: 1;
+        }
+
+        .note-action-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
+        }
+
+        .note-action-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .note-action-btn.danger:hover {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+
+        .note-content {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-word;
+        }
+
+        .note-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .note-date {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .note-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.625rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-full);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .category-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: var(--radius-full);
+        }
+
+        .note-list-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .note-list-item:hover {
+            border-color: var(--border-medium);
+            background: var(--bg-tertiary);
+        }
+
+        .note-list-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .note-list-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .note-list-preview {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .note-list-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.25rem;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            max-width: 400px;
+        }
+
+        .loading-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-base);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            width: 100%;
             max-width: 600px;
-            border-top-left-radius: 24px; 
-            border-top-right-radius: 24px; 
-            padding: 1.5rem; 
-            transform: translateY(100%); 
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.95) translateY(20px);
+            transition: transform var(--transition-base);
         }
-        .modal-content.open { transform: translateY(0); }
-        
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
-        .close-btn { font-size: 1.75rem; color: #94a3b8; background: none; padding: 0 0.5rem; }
-        
-        #note-title { font-weight: 800; font-size: 1.5rem; border: none; background: transparent; padding: 0.5rem 0; border-radius: 0; }
-        #note-title:focus { border: none; box-shadow: none; }
-        
-        #note-content { height: 150px; resize: none; border: none; background: transparent; padding: 0.5rem 0; font-size: 1.1rem; line-height: 1.6; }
-        #note-content:focus { border: none; box-shadow: none; }
-        
-        #loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            font-size: 1.25rem;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .note-editor {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .editor-title-input {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: border-color var(--transition-fast);
+        }
+
+        .editor-title-input:focus {
+            border-bottom-color: var(--primary);
+        }
+
+        .editor-content-input {
+            min-height: 200px;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+            resize: vertical;
+        }
+
+        .editor-category {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .category-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .category-chip:hover {
+            border-color: var(--border-medium);
+        }
+
+        .category-chip.active {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .scan-section {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .scan-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .scan-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .scan-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+            color: white;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+        }
+
+        .scan-btn:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-1px);
+        }
+
+        .note-view-modal .modal {
+            max-width: 700px;
+        }
+
+        .note-view-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .note-view-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .note-view-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .note-view-date {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .note-view-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .note-view-content {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .note-view-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .confirm-modal .modal {
+            max-width: 400px;
+        }
+
+        .confirm-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--danger-light);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem;
+        }
+
+        .confirm-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .confirm-message {
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            animation: slideInRight 0.3s ease;
+            min-width: 300px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .toast-icon {
+            font-size: 1.25rem;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.125rem;
+        }
+
+        .toast-message {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .toast-close {
+            color: var(--text-tertiary);
+            padding: 0.25rem;
+        }
+
+        .toast-close:hover {
+            color: var(--text-primary);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        [data-theme="dark"] .loading-overlay {
+            background: rgba(9, 9, 11, 0.9);
+        }
+
+        .loading-spinner {
+            width: 56px;
+            height: 56px;
+            border: 4px solid var(--border-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loading-text {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .loading-subtext {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: white;
+            border-radius: var(--radius-full);
+            font-size: 1.5rem;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-lg);
+            z-index: 90;
+        }
+
+        .fab:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .search-highlight {
+            background: var(--warning-light);
+            color: var(--text-primary);
+            padding: 0.125rem 0;
+            border-radius: 2px;
+        }
+
+        .keyboard-shortcut {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-left: auto;
+        }
+
+        .kbd {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 0.375rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-medium);
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-tertiary);
+        }
+
+        .auto-save-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .auto-save-indicator.saving {
+            color: var(--warning);
+        }
+
+        .auto-save-indicator.saved {
+            color: var(--success);
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .content-area {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .fab {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --header-height: 56px;
+            }
+
+            .dashboard-header {
+                padding: 0 1rem;
+            }
+
+            .logo-text {
+                display: none;
+            }
+
+            .content-header {
+                padding: 1rem;
+            }
+
+            .content-title {
+                font-size: 1.25rem;
+            }
+
+            .notes-container {
+                padding: 1rem;
+            }
+
+            .notes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                max-width: 100%;
+                max-height: 100%;
+                border-radius: 0;
+            }
+
+            .modal-overlay {
+                padding: 0;
+            }
+
+            .note-view-title {
+                font-size: 1.5rem;
+            }
+
+            .toast-container {
+                left: 1rem;
+                right: 1rem;
+                bottom: 1rem;
+            }
+
+            .toast {
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 1.5rem;
+            }
+
+            .auth-title {
+                font-size: 1.5rem;
+            }
+
+            .content-actions {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
-
-    <script>
-        const API_URL = ""; 
-    </script>
-
-    <div id="loading-overlay" class="hidden">
-        <div style="font-size: 3rem; animation: bounce 1s infinite;">🤖</div>
-        <h3 style="margin-top: 1rem; color: var(--primary);">Processing...</h3>
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Processing your image...</div>
+        <div class="loading-subtext">This may take a moment if the AI service is waking up</div>
     </div>
 
-    <div id="login-page" class="page active">
-        <div class="auth-card">
-            <div class="brand-icon">📝</div>
-            <h1>Welcome Back</h1>
-            <p class="subtitle">Enter your details to access your notes.</p>
-            
-            <div class="input-group">
-                <label class="input-label">Email Address</label>
-                <input type="email" id="email" placeholder="name@example.com">
-            </div>
+    <div id="toast-container" class="toast-container"></div>
 
-            <div class="input-group">
-                <label class="input-label">Password</label>
-                <input type="password" id="password" placeholder="••••••••">
-            </div>
-            
-            <button onclick="login()" class="btn-primary">Sign In</button>
-            <p id="login-error" class="error-msg hidden">⚠️ Invalid email or password</p>
+    <div id="login-page" class="page auth-page active">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="auth-logo">📝</div>
+                    <h1 class="auth-title">Welcome back</h1>
+                    <p class="auth-subtitle">Sign in to access your notes</p>
+                </div>
 
-            <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-sub);">
-                Don't have an account? <a onclick="showPage('register-page')">Sign Up</a>
-            </p>
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label class="form-label" for="login-email">Email address</label>
+                        <input
+                            type="email"
+                            id="login-email"
+                            class="form-input"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="login-password">Password</label>
+                        <input
+                            type="password"
+                            id="login-password"
+                            class="form-input"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" id="login-btn" class="btn btn-primary">
+                        <span class="btn-text">Sign in</span>
+                    </button>
+
+                    <div id="login-error" class="error-message hidden">
+                        <span>⚠️</span>
+                        <span class="error-text">Invalid email or password</span>
+                    </div>
+                </form>
+
+                <div class="auth-footer">
+                    Don't have an account? <a onclick="showPage('register-page')">Create one</a>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="register-page" class="page">
-        <div class="auth-card">
-            <div class="brand-icon">✨</div>
-            <h1>Create Account</h1>
-            <p class="subtitle">Join us to start taking smarter notes.</p>
-            
-            <div class="input-group">
-                <label class="input-label">Email Address</label>
-                <input type="email" id="reg-email" placeholder="name@example.com">
-            </div>
+    <div id="register-page" class="page auth-page">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="auth-logo">✨</div>
+                    <h1 class="auth-title">Create account</h1>
+                    <p class="auth-subtitle">Start taking smarter notes today</p>
+                </div>
 
-            <div class="input-group">
-                <label class="input-label">Password</label>
-                <input type="password" id="reg-password" placeholder="••••••••">
-            </div>
-            
-            <button onclick="register()" class="btn-primary">Create Account</button>
-            <p id="reg-error" class="error-msg hidden">⚠️ Registration failed</p>
+                <form id="register-form" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label class="form-label" for="register-email">Email address</label>
+                        <input
+                            type="email"
+                            id="register-email"
+                            class="form-input"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required
+                        >
+                    </div>
 
-            <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-sub);">
-                Already have an account? <a onclick="showPage('login-page')">Sign In</a>
-            </p>
+                    <div class="form-group">
+                        <label class="form-label" for="register-password">Password</label>
+                        <input
+                            type="password"
+                            id="register-password"
+                            class="form-input"
+                            placeholder="At least 6 characters"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" id="register-btn" class="btn btn-primary">
+                        <span class="btn-text">Create account</span>
+                    </button>
+
+                    <div id="register-error" class="error-message hidden">
+                        <span>⚠️</span>
+                        <span class="error-text">Registration failed</span>
+                    </div>
+
+                    <div id="register-success" class="success-message hidden">
+                        <span>✓</span>
+                        <span>Account created! Redirecting to login...</span>
+                    </div>
+                </form>
+
+                <div class="auth-footer">
+                    Already have an account? <a onclick="showPage('login-page')">Sign in</a>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="dashboard-page" class="page">
-        <header>
-            <h1>My Notes</h1>
-            <button onclick="logout()" class="logout-btn">Log Out</button>
+    <div id="dashboard-page" class="page dashboard-page">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <button class="btn btn-ghost btn-icon menu-toggle hidden" onclick="toggleSidebar()" aria-label="Toggle menu">
+                    ☰
+                </button>
+                <div class="logo">
+                    <div class="logo-icon">📝</div>
+                    <span class="logo-text">Notely</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Toggle theme (Ctrl+Shift+D)">
+                    <span class="theme-icon">🌙</span>
+                </button>
+
+                <div class="user-menu">
+                    <button class="user-avatar" onclick="toggleUserMenu()" aria-label="User menu">
+                        <span id="user-initials">U</span>
+                    </button>
+                    <div id="user-dropdown" class="user-dropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-email" id="user-email">user@example.com</div>
+                        </div>
+                        <button class="dropdown-item" onclick="showProfileModal()">
+                            <span>👤</span>
+                            <span>Profile</span>
+                        </button>
+                        <button class="dropdown-item" onclick="showKeyboardShortcuts()">
+                            <span>⌨️</span>
+                            <span>Keyboard shortcuts</span>
+                        </button>
+                        <button class="dropdown-item danger" onclick="handleLogout()">
+                            <span>🚪</span>
+                            <span>Sign out</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </header>
 
-        <div class="search-container">
-            <input type="text" id="search-box" onkeyup="handleSearch(event)" placeholder="🔍  Search notes...">
-        </div>
+        <main class="dashboard-main">
+            <aside id="sidebar" class="sidebar">
+                <div class="sidebar-header">
+                    <button class="new-note-btn" onclick="showNoteModal()" title="Create note (Ctrl+N)">
+                        <span>+</span>
+                        <span>New Note</span>
+                    </button>
+                </div>
 
-        <div id="notes-list">
-        </div>
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input
+                            type="text"
+                            id="search-input"
+                            class="search-input"
+                            placeholder="Search notes..."
+                            oninput="handleSearch(event)"
+                            title="Search (Ctrl+K)"
+                        >
+                        <button id="search-clear" class="search-clear hidden" onclick="clearSearch()">✕</button>
+                    </div>
+                </div>
 
-        <button onclick="showAddModal()" class="fab">＋</button>
+                <nav class="sidebar-nav">
+                    <div class="nav-section">
+                        <div class="nav-section-title">Views</div>
+                        <button class="nav-item active" data-filter="all" onclick="setFilter('all')">
+                            <span class="nav-item-icon">📋</span>
+                            <span>All Notes</span>
+                            <span class="nav-item-count" id="count-all">0</span>
+                        </button>
+                        <button class="nav-item" data-filter="recent" onclick="setFilter('recent')">
+                            <span class="nav-item-icon">🕐</span>
+                            <span>Recent</span>
+                        </button>
+                        <button class="nav-item" data-filter="scanned" onclick="setFilter('scanned')">
+                            <span class="nav-item-icon">📷</span>
+                            <span>Scanned</span>
+                            <span class="nav-item-count" id="count-scanned">0</span>
+                        </button>
+                    </div>
+
+                    <div class="nav-section">
+                        <div class="nav-section-title">Categories</div>
+                        <div id="categories-list">
+                            <button class="category-item" data-category="personal" onclick="setCategory('personal')">
+                                <span class="category-dot" style="background: #10b981;"></span>
+                                <span>Personal</span>
+                            </button>
+                            <button class="category-item" data-category="work" onclick="setCategory('work')">
+                                <span class="category-dot" style="background: #6366f1;"></span>
+                                <span>Work</span>
+                            </button>
+                            <button class="category-item" data-category="ideas" onclick="setCategory('ideas')">
+                                <span class="category-dot" style="background: #f59e0b;"></span>
+                                <span>Ideas</span>
+                            </button>
+                            <button class="category-item" data-category="archive" onclick="setCategory('archive')">
+                                <span class="category-dot" style="background: #71717a;"></span>
+                                <span>Archive</span>
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </aside>
+
+            <div class="content-area">
+                <div class="content-header">
+                    <h2 class="content-title" id="content-title">All Notes</h2>
+                    <div class="content-actions">
+                        <div class="view-toggle">
+                            <button class="view-btn active" data-view="grid" onclick="setView('grid')" title="Grid view">
+                                ▦
+                            </button>
+                            <button class="view-btn" data-view="list" onclick="setView('list')" title="List view">
+                                ☰
+                            </button>
+                        </div>
+                        <button class="sort-btn" onclick="toggleSort()">
+                            <span>↓</span>
+                            <span id="sort-label">Newest</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="notes-container">
+                    <div id="notes-loading" class="loading-state hidden">
+                        <div class="spinner"></div>
+                    </div>
+
+                    <div id="notes-empty" class="empty-state hidden">
+                        <div class="empty-icon">📝</div>
+                        <h3 class="empty-title">No notes yet</h3>
+                        <p class="empty-description">Create your first note to get started. You can type or scan handwritten notes.</p>
+                        <button class="btn btn-primary" onclick="showNoteModal()">
+                            <span>+</span>
+                            <span>Create Note</span>
+                        </button>
+                    </div>
+
+                    <div id="notes-search-empty" class="empty-state hidden">
+                        <div class="empty-icon">🔍</div>
+                        <h3 class="empty-title">No results found</h3>
+                        <p class="empty-description">Try a different search term or clear the search.</p>
+                        <button class="btn btn-secondary" onclick="clearSearch()">Clear search</button>
+                    </div>
+
+                    <div id="notes-grid" class="notes-grid"></div>
+                    <div id="notes-list" class="notes-list hidden"></div>
+                </div>
+            </div>
+        </main>
+
+        <button class="fab" onclick="showNoteModal()" aria-label="Create new note">+</button>
     </div>
 
-    <div id="add-modal" class="hidden">
-        <div class="modal-content" id="modal-panel">
+    <div id="note-modal" class="modal-overlay" onclick="handleModalOverlayClick(event, 'note-modal')">
+        <div class="modal">
             <div class="modal-header">
-                <h2 style="font-weight:800; font-size:1.25rem;">New Note</h2>
-                <button onclick="hideAddModal()" class="close-btn">&times;</button>
+                <h3 class="modal-title" id="note-modal-title">New Note</h3>
+                <button class="modal-close" onclick="hideModal('note-modal')" aria-label="Close">✕</button>
             </div>
+            <div class="modal-body">
+                <div class="scan-section">
+                    <div class="scan-title">Scan Handwriting</div>
+                    <div class="scan-description">Use AI to extract text from handwritten notes</div>
+                    <button class="scan-btn" onclick="triggerImageUpload()">
+                        <span>📷</span>
+                        <span>Upload Image</span>
+                    </button>
+                    <input type="file" id="image-upload" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                </div>
 
-            <button onclick="triggerCamera()" class="btn-ai">
-                📷 Scan Handwriting
-            </button>
-            <input type="file" id="camera-input" accept="image/*" class="hidden" onchange="uploadImage(this)">
-            
-            <div style="text-align: center; margin-bottom: 1rem; color: #cbd5e1; font-size: 0.8rem;">— OR TYPE —</div>
+                <div class="divider">or type manually</div>
 
-            <input type="text" id="note-title" placeholder="Title goes here...">
-            <textarea id="note-content" placeholder="Start typing your note..."></textarea>
-            
-            <button onclick="createNote()" class="btn-primary">Save Note</button>
+                <div class="note-editor">
+                    <input
+                        type="text"
+                        id="note-title-input"
+                        class="editor-title-input"
+                        placeholder="Note title"
+                        maxlength="200"
+                    >
+                    <textarea
+                        id="note-content-input"
+                        class="editor-content-input"
+                        placeholder="Start writing..."
+                    ></textarea>
+
+                    <div class="editor-category">
+                        <span style="font-size: 0.875rem; color: var(--text-secondary); margin-right: 0.5rem;">Category:</span>
+                        <button class="category-chip active" data-category="" onclick="selectCategory(this)">None</button>
+                        <button class="category-chip" data-category="personal" onclick="selectCategory(this)">
+                            <span class="category-indicator" style="background: #10b981;"></span>
+                            Personal
+                        </button>
+                        <button class="category-chip" data-category="work" onclick="selectCategory(this)">
+                            <span class="category-indicator" style="background: #6366f1;"></span>
+                            Work
+                        </button>
+                        <button class="category-chip" data-category="ideas" onclick="selectCategory(this)">
+                            <span class="category-indicator" style="background: #f59e0b;"></span>
+                            Ideas
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideModal('note-modal')">Cancel</button>
+                <button id="save-note-btn" class="btn btn-primary" onclick="saveNote()">
+                    <span class="btn-text">Save Note</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-modal" class="modal-overlay note-view-modal" onclick="handleModalOverlayClick(event, 'view-modal')">
+        <div class="modal">
+            <div class="note-view-header">
+                <h2 class="note-view-title" id="view-note-title">Note Title</h2>
+                <div class="note-view-meta">
+                    <span class="note-view-date" id="view-note-date">
+                        <span>🕐</span>
+                        <span>Jan 1, 2024</span>
+                    </span>
+                    <span class="note-category" id="view-note-category">
+                        <span class="category-indicator" style="background: #10b981;"></span>
+                        Personal
+                    </span>
+                </div>
+            </div>
+            <div class="note-view-body">
+                <div class="note-view-content" id="view-note-content">
+                    Note content goes here...
+                </div>
+            </div>
+            <div class="note-view-actions">
+                <button class="btn btn-secondary" onclick="editCurrentNote()">
+                    <span>✏️</span>
+                    <span>Edit</span>
+                </button>
+                <button class="btn btn-danger" onclick="confirmDeleteCurrentNote()">
+                    <span>🗑️</span>
+                    <span>Delete</span>
+                </button>
+                <div style="flex: 1;"></div>
+                <button class="btn btn-ghost" onclick="hideModal('view-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal-overlay confirm-modal" onclick="handleModalOverlayClick(event, 'confirm-modal')">
+        <div class="modal">
+            <div class="modal-body" style="padding: 2rem;">
+                <div class="confirm-icon">🗑️</div>
+                <h3 class="confirm-title">Delete this note?</h3>
+                <p class="confirm-message">This action cannot be undone. The note will be permanently deleted.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideModal('confirm-modal')">Cancel</button>
+                <button id="confirm-delete-btn" class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="shortcuts-modal" class="modal-overlay" onclick="handleModalOverlayClick(event, 'shortcuts-modal')">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Keyboard Shortcuts</h3>
+                <button class="modal-close" onclick="hideModal('shortcuts-modal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">
+                        <span>Create new note</span>
+                        <div class="keyboard-shortcut">
+                            <span class="kbd">Ctrl</span>
+                            <span class="kbd">N</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">
+                        <span>Search notes</span>
+                        <div class="keyboard-shortcut">
+                            <span class="kbd">Ctrl</span>
+                            <span class="kbd">K</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">
+                        <span>Toggle dark mode</span>
+                        <div class="keyboard-shortcut">
+                            <span class="kbd">Ctrl</span>
+                            <span class="kbd">Shift</span>
+                            <span class="kbd">D</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);">
+                        <span>Close modal</span>
+                        <div class="keyboard-shortcut">
+                            <span class="kbd">Esc</span>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                        <span>Save note (in editor)</span>
+                        <div class="keyboard-shortcut">
+                            <span class="kbd">Ctrl</span>
+                            <span class="kbd">S</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        let token = localStorage.getItem('token');
-        let searchTimer;
+        const API_URL = "";
+
+        const AppState = {
+            token: localStorage.getItem('token'),
+            user: JSON.parse(localStorage.getItem('user') || 'null'),
+            notes: [],
+            currentFilter: 'all',
+            currentCategory: null,
+            currentView: localStorage.getItem('view') || 'grid',
+            currentSort: 'newest',
+            searchQuery: '',
+            editingNoteId: null,
+            viewingNoteId: null,
+            selectedCategory: '',
+            theme: localStorage.getItem('theme') || 'light'
+        };
+
+        const CATEGORIES = {
+            personal: { name: 'Personal', color: '#10b981' },
+            work: { name: 'Work', color: '#6366f1' },
+            ideas: { name: 'Ideas', color: '#f59e0b' },
+            archive: { name: 'Archive', color: '#71717a' }
+        };
+
+        function initApp() {
+            applyTheme();
+
+            if (AppState.token) {
+                showPage('dashboard-page');
+                updateUserInfo();
+                fetchNotes();
+            } else {
+                showPage('login-page');
+            }
+
+            setView(AppState.currentView);
+            setupKeyboardShortcuts();
+            setupClickOutsideHandlers();
+        }
+
+        function applyTheme() {
+            document.documentElement.setAttribute('data-theme', AppState.theme);
+            const icon = document.querySelector('.theme-icon');
+            if (icon) {
+                icon.textContent = AppState.theme === 'dark' ? '☀️' : '🌙';
+            }
+        }
+
+        function toggleTheme() {
+            AppState.theme = AppState.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', AppState.theme);
+            applyTheme();
+        }
 
         function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
             document.getElementById(pageId).classList.add('active');
-            
-            document.querySelectorAll('.error-msg').forEach(el => el.classList.add('hidden'));
+
+            document.querySelectorAll('.error-message, .success-message').forEach(el => {
+                el.classList.add('hidden');
+            });
         }
 
-        if (token) { showPage('dashboard-page'); fetchNotes(); }
+        function showToast(type, title, message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
 
-        async function login() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('login-error');
-            const btn = document.querySelector('#login-page .btn-primary');
+            const icons = { success: '✓', error: '✕', warning: '⚠️' };
 
-            btn.innerText = "Signing in...";
-            btn.style.opacity = "0.7";
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type] || ''}</span>
+                <div class="toast-content">
+                    <div class="toast-title">${escapeHtml(title)}</div>
+                    <div class="toast-message">${escapeHtml(message)}</div>
+                </div>
+                <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function highlightText(text, query) {
+            if (!query) return escapeHtml(text);
+            const escaped = escapeHtml(text);
+            const regex = new RegExp(`(${escapeHtml(query)})`, 'gi');
+            return escaped.replace(regex, '<span class="search-highlight">$1</span>');
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-btn');
+            const errorEl = document.getElementById('login-error');
+
+            btn.disabled = true;
+            btn.querySelector('.btn-text').textContent = 'Signing in...';
+            errorEl.classList.add('hidden');
 
             try {
-                const res = await fetch(`${API_URL}/auth/login`, {
+                const response = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
 
-                if (res.ok) {
-                    const data = await res.json();
-                    token = data.token;
-                    localStorage.setItem('token', token);
-                    errorMsg.classList.add('hidden');
+                if (response.ok) {
+                    const data = await response.json();
+                    AppState.token = data.token;
+                    AppState.user = data.user;
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
                     showPage('dashboard-page');
+                    updateUserInfo();
                     fetchNotes();
+                    showToast('success', 'Welcome back!', 'You have successfully signed in.');
                 } else {
-                    errorMsg.innerText = "⚠️ Invalid email or password";
-                    errorMsg.classList.remove('hidden');
+                    const data = await response.json().catch(() => ({}));
+                    errorEl.querySelector('.error-text').textContent = data.error || 'Invalid email or password';
+                    errorEl.classList.remove('hidden');
                 }
             } catch (err) {
-                errorMsg.innerText = "⚠️ Connection failed";
-                errorMsg.classList.remove('hidden');
+                errorEl.querySelector('.error-text').textContent = 'Unable to connect. Please try again.';
+                errorEl.classList.remove('hidden');
             } finally {
-                btn.innerText = "Sign In";
-                btn.style.opacity = "1";
+                btn.disabled = false;
+                btn.querySelector('.btn-text').textContent = 'Sign in';
             }
         }
 
-        async function register() {
-            const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-password').value;
-            const errorMsg = document.getElementById('reg-error');
-            const btn = document.querySelector('#register-page .btn-primary');
+        async function handleRegister(event) {
+            event.preventDefault();
 
-            if(password.length < 6) {
-                errorMsg.innerText = "⚠️ Password must be at least 6 characters";
-                errorMsg.classList.remove('hidden');
+            const email = document.getElementById('register-email').value.trim();
+            const password = document.getElementById('register-password').value;
+            const btn = document.getElementById('register-btn');
+            const errorEl = document.getElementById('register-error');
+            const successEl = document.getElementById('register-success');
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                errorEl.querySelector('.error-text').textContent = 'Please enter a valid email address';
+                errorEl.classList.remove('hidden');
                 return;
             }
 
-            btn.innerText = "Creating Account...";
-            btn.style.opacity = "0.7";
+            if (password.length < 6) {
+                errorEl.querySelector('.error-text').textContent = 'Password must be at least 6 characters';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.querySelector('.btn-text').textContent = 'Creating account...';
+            errorEl.classList.add('hidden');
+            successEl.classList.add('hidden');
 
             try {
-                const res = await fetch(`${API_URL}/auth/register`, {
+                const response = await fetch(`${API_URL}/auth/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
 
-                if (res.ok) {
-                    alert("Account created! Please log in.");
-                    showPage('login-page');
+                if (response.ok) {
+                    successEl.classList.remove('hidden');
+                    setTimeout(() => {
+                        showPage('login-page');
+                        document.getElementById('login-email').value = email;
+                    }, 1500);
                 } else {
-                    const data = await res.json();
-                    errorMsg.innerText = "⚠️ " + (data.error || "Registration failed");
-                    errorMsg.classList.remove('hidden');
+                    const data = await response.json().catch(() => ({}));
+                    errorEl.querySelector('.error-text').textContent = data.error || 'Registration failed';
+                    errorEl.classList.remove('hidden');
                 }
             } catch (err) {
-                errorMsg.innerText = "⚠️ Connection failed";
-                errorMsg.classList.remove('hidden');
+                errorEl.querySelector('.error-text').textContent = 'Unable to connect. Please try again.';
+                errorEl.classList.remove('hidden');
             } finally {
-                btn.innerText = "Create Account";
-                btn.style.opacity = "1";
+                btn.disabled = false;
+                btn.querySelector('.btn-text').textContent = 'Create account';
             }
         }
 
-        function logout() {
+        function handleLogout() {
+            AppState.token = null;
+            AppState.user = null;
+            AppState.notes = [];
             localStorage.removeItem('token');
-            location.reload();
+            localStorage.removeItem('user');
+            showPage('login-page');
+            closeUserDropdown();
+            showToast('success', 'Signed out', 'You have been signed out successfully.');
         }
 
-        async function fetchNotes(search = '') {
-            const list = document.getElementById('notes-list');
-            
+        function updateUserInfo() {
+            if (AppState.user) {
+                const initials = AppState.user.email.charAt(0).toUpperCase();
+                document.getElementById('user-initials').textContent = initials;
+                document.getElementById('user-email').textContent = AppState.user.email;
+            }
+        }
+
+        async function fetchNotes() {
+            const loadingEl = document.getElementById('notes-loading');
+            const emptyEl = document.getElementById('notes-empty');
+            const searchEmptyEl = document.getElementById('notes-search-empty');
+            const gridEl = document.getElementById('notes-grid');
+            const listEl = document.getElementById('notes-list');
+
+            loadingEl.classList.remove('hidden');
+            emptyEl.classList.add('hidden');
+            searchEmptyEl.classList.add('hidden');
+            gridEl.innerHTML = '';
+            listEl.innerHTML = '';
+
             try {
-                const res = await fetch(`${API_URL}/notes?page=1&pageSize=50&search=${search}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                const params = new URLSearchParams({
+                    page: 1,
+                    pageSize: 100,
+                    search: AppState.searchQuery
                 });
 
-                if (res.status === 401) logout();
+                const response = await fetch(`${API_URL}/notes?${params}`, {
+                    headers: { 'Authorization': `Bearer ${AppState.token}` }
+                });
 
-                const data = await res.json();
-                renderNotes(data.data);
+                if (response.status === 401) {
+                    handleLogout();
+                    return;
+                }
+
+                const data = await response.json();
+                AppState.notes = data.data || [];
+
+                updateCounts();
+                renderNotes();
             } catch (err) {
-                console.error(err);
+                showToast('error', 'Error', 'Failed to load notes. Please try again.');
+            } finally {
+                loadingEl.classList.add('hidden');
             }
         }
 
-        function renderNotes(notes) {
-            const list = document.getElementById('notes-list');
-            list.innerHTML = '';
+        function getFilteredNotes() {
+            let notes = [...AppState.notes];
 
-            if (!notes || notes.length === 0) {
-                list.innerHTML = `
-                    <div style="text-align:center; margin-top:3rem; opacity:0.6;">
-                        <div style="font-size:3rem; margin-bottom:1rem;">🍃</div>
-                        <p>No notes found here.</p>
-                    </div>`;
+            if (AppState.currentFilter === 'scanned') {
+                notes = notes.filter(n => n.title.startsWith('Scanned Note'));
+            } else if (AppState.currentFilter === 'recent') {
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                notes = notes.filter(n => new Date(n.updatedAt) > weekAgo);
+            }
+
+            if (AppState.currentCategory) {
+                notes = notes.filter(n => {
+                    const category = getNoteCategory(n);
+                    return category === AppState.currentCategory;
+                });
+            }
+
+            if (AppState.currentSort === 'oldest') {
+                notes.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt));
+            } else if (AppState.currentSort === 'title') {
+                notes.sort((a, b) => a.title.localeCompare(b.title));
+            } else {
+                notes.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+            }
+
+            return notes;
+        }
+
+        function getNoteCategory(note) {
+            const content = (note.content || '').toLowerCase();
+            const title = (note.title || '').toLowerCase();
+
+            if (content.includes('#work') || title.includes('work') || title.includes('meeting')) {
+                return 'work';
+            }
+            if (content.includes('#personal') || title.includes('personal')) {
+                return 'personal';
+            }
+            if (content.includes('#idea') || title.includes('idea')) {
+                return 'ideas';
+            }
+            if (content.includes('#archive')) {
+                return 'archive';
+            }
+
+            return null;
+        }
+
+        function renderNotes() {
+            const notes = getFilteredNotes();
+            const gridEl = document.getElementById('notes-grid');
+            const listEl = document.getElementById('notes-list');
+            const emptyEl = document.getElementById('notes-empty');
+            const searchEmptyEl = document.getElementById('notes-search-empty');
+
+            gridEl.innerHTML = '';
+            listEl.innerHTML = '';
+
+            if (notes.length === 0) {
+                if (AppState.searchQuery) {
+                    searchEmptyEl.classList.remove('hidden');
+                } else {
+                    emptyEl.classList.remove('hidden');
+                }
                 return;
             }
+
+            emptyEl.classList.add('hidden');
+            searchEmptyEl.classList.add('hidden');
 
             notes.forEach(note => {
-                const date = new Date(note.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' });
-                const html = `
-                    <div class="note-card">
-                        <h3>${note.title}</h3>
-                        <p>${note.content}</p>
-                        <span class="note-date">🕒 ${date}</span>
-                    </div>
-                `;
-                list.innerHTML += html;
+                const category = getNoteCategory(note);
+                const categoryInfo = category ? CATEGORIES[category] : null;
+                const date = formatDate(note.updatedAt);
+                const title = highlightText(note.title, AppState.searchQuery);
+                const content = highlightText(note.content || '', AppState.searchQuery);
+
+                if (AppState.currentView === 'grid') {
+                    const card = document.createElement('div');
+                    card.className = 'note-card';
+                    card.onclick = () => viewNote(note.id);
+
+                    card.innerHTML = `
+                        <div class="note-card-header">
+                            <h3 class="note-title">${title}</h3>
+                            <div class="note-card-actions">
+                                <button class="note-action-btn" onclick="event.stopPropagation(); editNote('${note.id}')" title="Edit">✏️</button>
+                                <button class="note-action-btn danger" onclick="event.stopPropagation(); confirmDeleteNote('${note.id}')" title="Delete">🗑️</button>
+                            </div>
+                        </div>
+                        <p class="note-content">${content || '<span style="color: var(--text-tertiary); font-style: italic;">No content</span>'}</p>
+                        <div class="note-footer">
+                            <span class="note-date">
+                                <span>🕐</span>
+                                ${date}
+                            </span>
+                            ${categoryInfo ? `
+                                <span class="note-category">
+                                    <span class="category-indicator" style="background: ${categoryInfo.color};"></span>
+                                    ${categoryInfo.name}
+                                </span>
+                            ` : ''}
+                        </div>
+                    `;
+
+                    gridEl.appendChild(card);
+                } else {
+                    const item = document.createElement('div');
+                    item.className = 'note-list-item';
+                    item.onclick = () => viewNote(note.id);
+
+                    item.innerHTML = `
+                        <div class="note-list-content">
+                            <div class="note-list-title">${title}</div>
+                            <div class="note-list-preview">${escapeHtml(note.content || 'No content')}</div>
+                        </div>
+                        <div class="note-list-meta">
+                            <span class="note-date">${date}</span>
+                            ${categoryInfo ? `
+                                <span class="note-category">
+                                    <span class="category-indicator" style="background: ${categoryInfo.color};"></span>
+                                    ${categoryInfo.name}
+                                </span>
+                            ` : ''}
+                        </div>
+                        <div class="note-card-actions" style="opacity: 1;">
+                            <button class="note-action-btn" onclick="event.stopPropagation(); editNote('${note.id}')" title="Edit">✏️</button>
+                            <button class="note-action-btn danger" onclick="event.stopPropagation(); confirmDeleteNote('${note.id}')" title="Delete">🗑️</button>
+                        </div>
+                    `;
+
+                    listEl.appendChild(item);
+                }
             });
         }
 
-        async function createNote() {
-            const title = document.getElementById('note-title').value;
-            const content = document.getElementById('note-content').value;
+        function updateCounts() {
+            document.getElementById('count-all').textContent = AppState.notes.length;
+            document.getElementById('count-scanned').textContent = AppState.notes.filter(n => n.title.startsWith('Scanned Note')).length;
+        }
 
-            if (!title) return alert("Please add a title!");
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
 
-            await fetch(`${API_URL}/notes`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ title, content })
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+            if (diff < 604800000) return `${Math.floor(diff / 86400000)}d ago`;
+
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+            });
+        }
+
+        function setFilter(filter) {
+            AppState.currentFilter = filter;
+            AppState.currentCategory = null;
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.filter === filter);
+            });
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('active');
             });
 
-            hideAddModal();
-            document.getElementById('note-title').value = '';
-            document.getElementById('note-content').value = '';
+            const titles = { all: 'All Notes', recent: 'Recent Notes', scanned: 'Scanned Notes' };
+            document.getElementById('content-title').textContent = titles[filter] || 'All Notes';
+
+            renderNotes();
+        }
+
+        function setCategory(category) {
+            AppState.currentCategory = category;
+            AppState.currentFilter = 'all';
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.category === category);
+            });
+
+            const categoryInfo = CATEGORIES[category];
+            document.getElementById('content-title').textContent = categoryInfo ? categoryInfo.name : 'Notes';
+
+            renderNotes();
+        }
+
+        function setView(view) {
+            AppState.currentView = view;
+            localStorage.setItem('view', view);
+
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === view);
+            });
+
+            document.getElementById('notes-grid').classList.toggle('hidden', view !== 'grid');
+            document.getElementById('notes-list').classList.toggle('hidden', view !== 'list');
+
+            renderNotes();
+        }
+
+        function toggleSort() {
+            const sorts = ['newest', 'oldest', 'title'];
+            const labels = { newest: 'Newest', oldest: 'Oldest', title: 'A-Z' };
+            const currentIndex = sorts.indexOf(AppState.currentSort);
+            AppState.currentSort = sorts[(currentIndex + 1) % sorts.length];
+            document.getElementById('sort-label').textContent = labels[AppState.currentSort];
+            renderNotes();
+        }
+
+        let searchTimeout;
+        function handleSearch(event) {
+            const query = event.target.value.trim();
+            document.getElementById('search-clear').classList.toggle('hidden', !query);
+
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                AppState.searchQuery = query;
+                fetchNotes();
+            }, 300);
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('search-clear').classList.add('hidden');
+            AppState.searchQuery = '';
             fetchNotes();
         }
 
-        function triggerCamera() {
-            document.getElementById('camera-input').click();
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
-        async function uploadImage(input) {
-            if (input.files.length === 0) return;
-            const file = input.files[0];
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = '';
+        }
 
-            hideAddModal();
+        function handleModalOverlayClick(event, modalId) {
+            if (event.target.classList.contains('modal-overlay')) {
+                hideModal(modalId);
+            }
+        }
+
+        function showNoteModal(noteId = null) {
+            AppState.editingNoteId = noteId;
+
+            const titleEl = document.getElementById('note-title-input');
+            const contentEl = document.getElementById('note-content-input');
+            const modalTitle = document.getElementById('note-modal-title');
+            const saveBtn = document.getElementById('save-note-btn');
+
+            if (noteId) {
+                const note = AppState.notes.find(n => n.id === noteId);
+                if (note) {
+                    titleEl.value = note.title;
+                    contentEl.value = note.content || '';
+                    modalTitle.textContent = 'Edit Note';
+                    saveBtn.querySelector('.btn-text').textContent = 'Save Changes';
+
+                    const category = getNoteCategory(note);
+                    selectCategoryByValue(category || '');
+                }
+            } else {
+                titleEl.value = '';
+                contentEl.value = '';
+                modalTitle.textContent = 'New Note';
+                saveBtn.querySelector('.btn-text').textContent = 'Save Note';
+                selectCategoryByValue('');
+            }
+
+            showModal('note-modal');
+            setTimeout(() => titleEl.focus(), 100);
+        }
+
+        function selectCategory(button) {
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            button.classList.add('active');
+            AppState.selectedCategory = button.dataset.category;
+        }
+
+        function selectCategoryByValue(category) {
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                chip.classList.toggle('active', chip.dataset.category === category);
+            });
+            AppState.selectedCategory = category;
+        }
+
+        async function saveNote() {
+            const title = document.getElementById('note-title-input').value.trim();
+            const content = document.getElementById('note-content-input').value.trim();
+            const btn = document.getElementById('save-note-btn');
+
+            if (!title) {
+                showToast('error', 'Error', 'Please enter a title for your note.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.querySelector('.btn-text').textContent = 'Saving...';
+
+            let finalContent = content;
+            if (AppState.selectedCategory) {
+                const tag = `#${AppState.selectedCategory}`;
+                if (!finalContent.includes(tag)) {
+                    finalContent = finalContent ? `${finalContent}\n\n${tag}` : tag;
+                }
+            }
+
+            try {
+                const url = AppState.editingNoteId
+                    ? `${API_URL}/notes/${AppState.editingNoteId}`
+                    : `${API_URL}/notes`;
+
+                const response = await fetch(url, {
+                    method: AppState.editingNoteId ? 'PUT' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${AppState.token}`
+                    },
+                    body: JSON.stringify({ title, content: finalContent })
+                });
+
+                if (response.ok) {
+                    hideModal('note-modal');
+                    fetchNotes();
+                    showToast('success', 'Success', AppState.editingNoteId ? 'Note updated successfully.' : 'Note created successfully.');
+                } else {
+                    const data = await response.json().catch(() => ({}));
+                    showToast('error', 'Error', data.error || 'Failed to save note.');
+                }
+            } catch (err) {
+                showToast('error', 'Error', 'Failed to save note. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.querySelector('.btn-text').textContent = AppState.editingNoteId ? 'Save Changes' : 'Save Note';
+            }
+        }
+
+        function viewNote(noteId) {
+            const note = AppState.notes.find(n => n.id === noteId);
+            if (!note) return;
+
+            AppState.viewingNoteId = noteId;
+
+            document.getElementById('view-note-title').textContent = note.title;
+            document.getElementById('view-note-content').textContent = note.content || 'No content';
+            document.getElementById('view-note-date').innerHTML = `
+                <span>🕐</span>
+                <span>${formatDate(note.updatedAt)}</span>
+            `;
+
+            const category = getNoteCategory(note);
+            const categoryEl = document.getElementById('view-note-category');
+            if (category && CATEGORIES[category]) {
+                categoryEl.innerHTML = `
+                    <span class="category-indicator" style="background: ${CATEGORIES[category].color};"></span>
+                    ${CATEGORIES[category].name}
+                `;
+                categoryEl.classList.remove('hidden');
+            } else {
+                categoryEl.classList.add('hidden');
+            }
+
+            showModal('view-modal');
+        }
+
+        function editNote(noteId) {
+            hideModal('view-modal');
+            showNoteModal(noteId);
+        }
+
+        function editCurrentNote() {
+            if (AppState.viewingNoteId) {
+                editNote(AppState.viewingNoteId);
+            }
+        }
+
+        function confirmDeleteNote(noteId) {
+            AppState.viewingNoteId = noteId;
+            showModal('confirm-modal');
+        }
+
+        function confirmDeleteCurrentNote() {
+            if (AppState.viewingNoteId) {
+                hideModal('view-modal');
+                showModal('confirm-modal');
+            }
+        }
+
+        async function confirmDelete() {
+            if (!AppState.viewingNoteId) return;
+
+            const btn = document.getElementById('confirm-delete-btn');
+            btn.disabled = true;
+            btn.textContent = 'Deleting...';
+
+            try {
+                const response = await fetch(`${API_URL}/notes/${AppState.viewingNoteId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${AppState.token}` }
+                });
+
+                if (response.ok) {
+                    hideModal('confirm-modal');
+                    fetchNotes();
+                    showToast('success', 'Deleted', 'Note has been deleted.');
+                } else {
+                    showToast('error', 'Error', 'Failed to delete note.');
+                }
+            } catch (err) {
+                showToast('error', 'Error', 'Failed to delete note. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Delete';
+                AppState.viewingNoteId = null;
+            }
+        }
+
+        function triggerImageUpload() {
+            document.getElementById('image-upload').click();
+        }
+
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            hideModal('note-modal');
             document.getElementById('loading-overlay').classList.remove('hidden');
 
             const formData = new FormData();
             formData.append('file', file);
 
             try {
-                const res = await fetch(`${API_URL}/notes/upload`, {
+                const response = await fetch(`${API_URL}/notes/upload`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` },
+                    headers: { 'Authorization': `Bearer ${AppState.token}` },
                     body: formData
                 });
 
-                if (res.ok) {
-                    await fetchNotes(); 
+                if (response.ok) {
+                    fetchNotes();
+                    showToast('success', 'Success', 'Your handwritten note has been scanned and saved.');
                 } else {
-                    alert("Scanning failed. AI Service might be sleeping (it takes 50s to wake up on Free Tier). Try again!");
+                    showToast('error', 'Scan Failed', 'The AI service may be starting up. Please try again in about 50 seconds.');
                 }
             } catch (err) {
-                console.error(err);
-                alert("Error uploading image.");
+                showToast('error', 'Error', 'Failed to upload image. Please try again.');
             } finally {
                 document.getElementById('loading-overlay').classList.add('hidden');
-                input.value = '';
+                event.target.value = '';
             }
         }
 
-        function handleSearch(e) {
-            clearTimeout(searchTimer);
-            searchTimer = setTimeout(() => {
-                fetchNotes(e.target.value);
-            }, 300);
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('user-dropdown');
+            dropdown.classList.toggle('active');
         }
 
-        function showAddModal() {
-            document.getElementById('add-modal').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('modal-panel').classList.add('open');
-            }, 10);
+        function closeUserDropdown() {
+            document.getElementById('user-dropdown').classList.remove('active');
         }
 
-        function hideAddModal() {
-            document.getElementById('modal-panel').classList.remove('open');
-            setTimeout(() => {
-                document.getElementById('add-modal').classList.add('hidden');
-            }, 300);
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
         }
+
+        function showKeyboardShortcuts() {
+            closeUserDropdown();
+            showModal('shortcuts-modal');
+        }
+
+        function showProfileModal() {
+            closeUserDropdown();
+            showToast('warning', 'Coming Soon', 'Profile settings will be available in a future update.');
+        }
+
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    if (e.key === 'Escape') {
+                        e.target.blur();
+                    }
+                    if (e.ctrlKey && e.key === 's') {
+                        e.preventDefault();
+                        if (document.getElementById('note-modal').classList.contains('active')) {
+                            saveNote();
+                        }
+                    }
+                    return;
+                }
+
+                if (e.ctrlKey && e.key === 'n') {
+                    e.preventDefault();
+                    showNoteModal();
+                }
+
+                if (e.ctrlKey && e.key === 'k') {
+                    e.preventDefault();
+                    document.getElementById('search-input').focus();
+                }
+
+                if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                    e.preventDefault();
+                    toggleTheme();
+                }
+
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                        hideModal(modal.id);
+                    });
+                    closeUserDropdown();
+                }
+            });
+        }
+
+        function setupClickOutsideHandlers() {
+            document.addEventListener('click', (e) => {
+                const userMenu = document.querySelector('.user-menu');
+                if (userMenu && !userMenu.contains(e.target)) {
+                    closeUserDropdown();
+                }
+
+                const sidebar = document.getElementById('sidebar');
+                const menuToggle = document.querySelector('.menu-toggle');
+                if (sidebar && sidebar.classList.contains('open') &&
+                    !sidebar.contains(e.target) &&
+                    !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
-    
-    <style>
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-    </style>
 </body>
 </html>
