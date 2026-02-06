@@ -45,13 +45,27 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
-                       ?? "psql 'postgresql://neondb_owner:npg_2wBGcdUf8blI@ep-odd-sunset-a1rzja3t-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'";
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("DATABASE_URL environment variable is required");
+}
 
 builder.Services.AddDbContext<NotesDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-var jwtKey = "THIS_IS_A_DEV_ONLY_SECRET_KEY_CHANGE_LATER";
+var jwtKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+if (string.IsNullOrEmpty(jwtKey) || jwtKey.Length < 32)
+{
+    if (builder.Environment.IsDevelopment())
+    {
+        jwtKey = "DEVELOPMENT_ONLY_SECRET_KEY_MINIMUM_32_CHARACTERS_LONG";
+    }
+    else
+    {
+        throw new InvalidOperationException("JWT_SECRET_KEY environment variable must be at least 32 characters");
+    }
+}
 var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
 
 builder.Services.AddAuthentication(options =>
@@ -73,12 +87,26 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+var allowedOrigins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS")?.Split(',') ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy => policy.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
+    options.AddPolicy("AllowConfigured", policy =>
+    {
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+        }
+        else
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        }
+    });
 });
 
 var app = builder.Build();
@@ -87,6 +115,8 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowConfigured");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
@@ -198,7 +228,15 @@ app.MapPost("/notes/upload", async (
     if (userId == null) return Results.Unauthorized();
 
     if (file == null || file.Length == 0)
-        return Results.BadRequest("No file uploaded.");
+        return Results.BadRequest(new { error = "No file uploaded" });
+
+    const long maxFileSize = 10 * 1024 * 1024;
+    if (file.Length > maxFileSize)
+        return Results.BadRequest(new { error = "File size must be under 10MB" });
+
+    var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/webp", "image/bmp" };
+    if (!allowedTypes.Contains(file.ContentType.ToLower()))
+        return Results.BadRequest(new { error = "Only image files (JPEG, PNG, GIF, WebP, BMP) are allowed" });
 
     var aiServiceUrl = Environment.GetEnvironmentVariable("AI_SERVICE_URL") 
     ?? "http://localhost:8000/extract-text";
@@ -243,9 +281,9 @@ app.MapPost("/notes/upload", async (
 
         return Results.Ok(newNote);
     }
-    catch (Exception ex)
+    catch (Exception)
     {
-        return Results.Problem($"Connection Error: {ex.Message}");
+        return Results.Problem("AI service is currently unavailable. Please try again later.");
     }
 })
 .RequireAuthorization()
@@ -301,10 +339,13 @@ app.MapPost("/auth/register", async (RegisterRequest request, NotesDbContext db)
     if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
         return Results.BadRequest(new { error = "Email and password are required" });
 
+    var email = request.Email.Trim().ToLower();
+
+    if (!System.Text.RegularExpressions.Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+        return Results.BadRequest(new { error = "Please enter a valid email address" });
+
     if (request.Password.Length < 6)
         return Results.BadRequest(new { error = "Password must be at least 6 characters" });
-
-    var email = request.Email.Trim().ToLower();
 
     if (await db.Users.AnyAsync(u => u.Email == email))
         return Results.Conflict(new { error = "User already exists" });
