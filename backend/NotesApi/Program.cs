@@ -289,6 +289,63 @@ app.MapPost("/notes/upload", async (
 .RequireAuthorization()
 .DisableAntiforgery();
 
+app.MapPost("/notes/scan", async (
+    IFormFile file,
+    IHttpClientFactory clientFactory,
+    HttpContext context) =>
+{
+    var userId = AuthHelpers.GetUserId(context);
+    if (userId == null) return Results.Unauthorized();
+
+    if (file == null || file.Length == 0)
+        return Results.BadRequest(new { error = "No file uploaded" });
+
+    const long maxFileSize = 10 * 1024 * 1024;
+    if (file.Length > maxFileSize)
+        return Results.BadRequest(new { error = "File size must be under 10MB" });
+
+    var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/webp", "image/bmp" };
+    if (!allowedTypes.Contains(file.ContentType.ToLower()))
+        return Results.BadRequest(new { error = "Only image files (JPEG, PNG, GIF, WebP, BMP) are allowed" });
+
+    var aiServiceUrl = Environment.GetEnvironmentVariable("AI_SERVICE_URL")
+        ?? "http://localhost:8000/extract-text";
+
+    using var client = clientFactory.CreateClient();
+    using var content = new MultipartFormDataContent();
+
+    using var fileStream = file.OpenReadStream();
+    var streamContent = new StreamContent(fileStream);
+    streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+
+    content.Add(streamContent, "file", file.FileName);
+
+    try
+    {
+        var response = await client.PostAsync(aiServiceUrl, content);
+
+        if (!response.IsSuccessStatusCode)
+            return Results.Json(new { error = "AI service failed to process the image." }, statusCode: (int)response.StatusCode);
+
+        var jsonString = await response.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(jsonString);
+
+        string extractedText = "";
+        if (doc.RootElement.TryGetProperty("text", out var textElement))
+        {
+            extractedText = textElement.GetString() ?? "";
+        }
+
+        return Results.Ok(new { text = extractedText });
+    }
+    catch (Exception)
+    {
+        return Results.Problem("AI service is currently unavailable. Please try again later.");
+    }
+})
+.RequireAuthorization()
+.DisableAntiforgery();
+
 app.MapPut("/notes/{id}", async (
     Guid id,
     UpdateNoteRequest request,
