@@ -1218,6 +1218,105 @@
             transform: translateY(-1px);
         }
 
+        .scan-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .canvas-modal .modal {
+            max-width: 660px;
+        }
+
+        .canvas-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            flex-wrap: wrap;
+        }
+
+        .canvas-toolbar button {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        .canvas-toolbar button:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-medium);
+            color: var(--text-primary);
+        }
+
+        .canvas-toolbar .pen-sizes {
+            display: flex;
+            gap: 0.25rem;
+            margin-left: auto;
+        }
+
+        .canvas-toolbar .pen-size-btn {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-full);
+        }
+
+        .canvas-toolbar .pen-size-btn.active {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .canvas-wrapper {
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        #draw-canvas {
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            cursor: crosshair;
+            touch-action: none;
+            background: #ffffff;
+            max-width: 100%;
+        }
+
+        .canvas-preview {
+            padding: 0 1.5rem 1rem;
+        }
+
+        .canvas-preview-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .canvas-preview-text {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            min-height: 60px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
         .note-view-modal .modal {
             max-width: 700px;
         }
@@ -1854,10 +1953,16 @@
                 <div class="scan-section">
                     <div class="scan-title">Scan Handwriting</div>
                     <div class="scan-description">Use AI to extract text from handwritten notes</div>
-                    <button class="scan-btn" onclick="triggerImageUpload()">
-                        <span>📷</span>
-                        <span>Upload Image</span>
-                    </button>
+                    <div class="scan-buttons">
+                        <button class="scan-btn" onclick="triggerImageUpload()">
+                            <span>📷</span>
+                            <span>Upload Image</span>
+                        </button>
+                        <button class="scan-btn" onclick="openCanvasModal()">
+                            <span>✏️</span>
+                            <span>Draw</span>
+                        </button>
+                    </div>
                     <input type="file" id="image-upload" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
                 </div>
 
@@ -1997,6 +2102,40 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="canvas-modal" class="modal-overlay canvas-modal" onclick="handleModalOverlayClick(event, 'canvas-modal')">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Draw Handwriting</h3>
+                <button class="modal-close" onclick="hideCanvasModal()" aria-label="Close">✕</button>
+            </div>
+            <div class="canvas-toolbar">
+                <button onclick="canvasUndo()">Undo</button>
+                <button onclick="canvasClear()">Clear</button>
+                <div class="pen-sizes">
+                    <button class="pen-size-btn" onclick="setPenSize(2, this)" title="Fine">.</button>
+                    <button class="pen-size-btn active" onclick="setPenSize(4, this)" title="Medium">-</button>
+                    <button class="pen-size-btn" onclick="setPenSize(8, this)" title="Thick">=</button>
+                </div>
+            </div>
+            <div class="canvas-wrapper">
+                <canvas id="draw-canvas" width="600" height="300"></canvas>
+            </div>
+            <div id="canvas-preview" class="canvas-preview hidden">
+                <div class="canvas-preview-label">Recognized Text</div>
+                <div class="canvas-preview-text" id="canvas-preview-text"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideCanvasModal()">Cancel</button>
+                <button id="canvas-submit-btn" class="btn btn-primary" onclick="submitCanvas()">
+                    <span class="btn-text">Submit for OCR</span>
+                </button>
+                <button id="canvas-use-btn" class="btn btn-primary hidden" onclick="useCanvasText()">
+                    <span class="btn-text">Use Text</span>
+                </button>
             </div>
         </div>
     </div>
@@ -2689,6 +2828,173 @@
                 btn.textContent = 'Delete';
                 AppState.viewingNoteId = null;
             }
+        }
+
+        // --- Drawing Canvas ---
+        const DrawCanvas = {
+            ctx: null,
+            drawing: false,
+            history: [],
+            penSize: 4,
+
+            init() {
+                const canvas = document.getElementById('draw-canvas');
+                this.ctx = canvas.getContext('2d');
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+                this.ctx.strokeStyle = '#000000';
+                this.ctx.lineWidth = this.penSize;
+
+                canvas.addEventListener('pointerdown', (e) => this.startStroke(e));
+                canvas.addEventListener('pointermove', (e) => this.moveStroke(e));
+                canvas.addEventListener('pointerup', () => this.endStroke());
+                canvas.addEventListener('pointerleave', () => this.endStroke());
+            },
+
+            getPos(e) {
+                const rect = e.target.getBoundingClientRect();
+                const scaleX = e.target.width / rect.width;
+                const scaleY = e.target.height / rect.height;
+                return {
+                    x: (e.clientX - rect.left) * scaleX,
+                    y: (e.clientY - rect.top) * scaleY
+                };
+            },
+
+            startStroke(e) {
+                this.drawing = true;
+                const pos = this.getPos(e);
+                this.ctx.beginPath();
+                this.ctx.moveTo(pos.x, pos.y);
+                e.target.setPointerCapture(e.pointerId);
+            },
+
+            moveStroke(e) {
+                if (!this.drawing) return;
+                const pos = this.getPos(e);
+                this.ctx.lineTo(pos.x, pos.y);
+                this.ctx.stroke();
+            },
+
+            endStroke() {
+                if (!this.drawing) return;
+                this.drawing = false;
+                this.saveSnapshot();
+            },
+
+            saveSnapshot() {
+                const canvas = document.getElementById('draw-canvas');
+                this.history.push(canvas.toDataURL());
+                if (this.history.length > 30) this.history.shift();
+            },
+
+            undo() {
+                this.history.pop();
+                const canvas = document.getElementById('draw-canvas');
+                if (this.history.length === 0) {
+                    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    return;
+                }
+                const img = new Image();
+                img.onload = () => {
+                    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    this.ctx.drawImage(img, 0, 0);
+                };
+                img.src = this.history[this.history.length - 1];
+            },
+
+            clear() {
+                const canvas = document.getElementById('draw-canvas');
+                this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+                this.history = [];
+            },
+
+            setPenSize(size) {
+                this.penSize = size;
+                this.ctx.lineWidth = size;
+            },
+
+            toBlob() {
+                return new Promise(resolve => {
+                    document.getElementById('draw-canvas').toBlob(resolve, 'image/png');
+                });
+            }
+        };
+
+        function openCanvasModal() {
+            hideModal('note-modal');
+            if (!DrawCanvas.ctx) DrawCanvas.init();
+            DrawCanvas.clear();
+            document.getElementById('canvas-preview').classList.add('hidden');
+            document.getElementById('canvas-submit-btn').classList.remove('hidden');
+            document.getElementById('canvas-use-btn').classList.add('hidden');
+            showModal('canvas-modal');
+        }
+
+        function hideCanvasModal() {
+            hideModal('canvas-modal');
+        }
+
+        function canvasUndo() { DrawCanvas.undo(); }
+        function canvasClear() { DrawCanvas.clear(); }
+
+        function setPenSize(size, btn) {
+            DrawCanvas.setPenSize(size);
+            document.querySelectorAll('.pen-size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        async function submitCanvas() {
+            if (DrawCanvas.history.length === 0) {
+                showToast('error', 'Empty Canvas', 'Please draw something first.');
+                return;
+            }
+
+            const btn = document.getElementById('canvas-submit-btn');
+            btn.disabled = true;
+            btn.querySelector('.btn-text').textContent = 'Processing...';
+
+            try {
+                const blob = await DrawCanvas.toBlob();
+                const formData = new FormData();
+                formData.append('file', blob, 'drawing.png');
+
+                const response = await fetch(`${API_URL}/notes/scan`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${AppState.token}` },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    showToast('error', 'Scan Failed', 'The AI service could not process the drawing. Try again.');
+                    return;
+                }
+
+                const data = await response.json();
+                const text = (data.text || '').trim();
+
+                if (!text) {
+                    showToast('warning', 'No Text Found', 'Could not recognize any text. Try writing more clearly.');
+                    return;
+                }
+
+                document.getElementById('canvas-preview-text').textContent = text;
+                document.getElementById('canvas-preview').classList.remove('hidden');
+                btn.classList.add('hidden');
+                document.getElementById('canvas-use-btn').classList.remove('hidden');
+            } catch (err) {
+                showToast('error', 'Error', 'Failed to reach the AI service. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.querySelector('.btn-text').textContent = 'Submit for OCR';
+            }
+        }
+
+        function useCanvasText() {
+            const text = document.getElementById('canvas-preview-text').textContent;
+            hideCanvasModal();
+            showNoteModal();
+            document.getElementById('note-content-input').value = text;
         }
 
         function triggerImageUpload() {
