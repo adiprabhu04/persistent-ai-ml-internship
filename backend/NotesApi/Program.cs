@@ -45,10 +45,32 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
-if (string.IsNullOrEmpty(connectionString))
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+if (string.IsNullOrEmpty(databaseUrl))
 {
     throw new InvalidOperationException("DATABASE_URL environment variable is required");
+}
+
+string connectionString;
+if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres://"))
+{
+    var uri = new Uri(databaseUrl);
+    var userInfo = uri.UserInfo.Split(':');
+    var builder2 = new Npgsql.NpgsqlConnectionStringBuilder
+    {
+        Host = uri.Host,
+        Port = uri.Port > 0 ? uri.Port : 5432,
+        Username = Uri.UnescapeDataString(userInfo[0]),
+        Password = Uri.UnescapeDataString(userInfo[1]),
+        Database = uri.AbsolutePath.TrimStart('/'),
+        SslMode = Npgsql.SslMode.Require,
+        TrustServerCertificate = true
+    };
+    connectionString = builder2.ConnectionString;
+}
+else
+{
+    connectionString = databaseUrl;
 }
 
 builder.Services.AddDbContext<NotesDbContext>(options =>
