@@ -5,6 +5,8 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,13 +48,14 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+string connectionString;
+
 if (string.IsNullOrEmpty(databaseUrl))
 {
-    throw new InvalidOperationException("DATABASE_URL environment variable is required");
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+        ?? throw new InvalidOperationException("Connection string not found.");
 }
-
-string connectionString;
-if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres://"))
+else if (databaseUrl.StartsWith("postgresql://") || databaseUrl.StartsWith("postgres://"))
 {
     var uri = new Uri(databaseUrl);
     var userInfo = uri.UserInfo.Split(':');
@@ -110,7 +113,6 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 var allowedOrigins = Environment.GetEnvironmentVariable("ALLOWED_ORIGINS")?.Split(',') ?? Array.Empty<string>();
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowConfigured", policy =>
@@ -137,7 +139,6 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
-
 app.UseCors("AllowConfigured");
 
 app.UseDefaultFiles();
@@ -173,7 +174,7 @@ app.MapGet("/notes", async (
     if (!string.IsNullOrWhiteSpace(search))
     {
         query = query.Where(n => n.Title.ToLower().Contains(search.ToLower()) 
-                             || n.Content.ToLower().Contains(search.ToLower()));
+                              || n.Content.ToLower().Contains(search.ToLower()));
     }
 
     var totalCount = await query.CountAsync();
@@ -200,11 +201,9 @@ app.MapGet("/notes/{id}", async (
     NotesDbContext db) =>
 {
     var userId = AuthHelpers.GetUserId(context);
-
     var note = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
 
-    if (note == null)
-        return Results.NotFound();
+    if (note == null) return Results.NotFound();
 
     return Results.Ok(note);
 })
@@ -240,6 +239,49 @@ app.MapPost("/notes", async (
 })
 .RequireAuthorization();
 
+app.MapPut("/notes/{id}", async (
+    Guid id,
+    UpdateNoteRequest request,
+    HttpContext context,
+    NotesDbContext db) =>
+{
+    var userId = AuthHelpers.GetUserId(context);
+    var note = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
+    
+    if (note == null) return Results.NotFound();
+
+    if (string.IsNullOrWhiteSpace(request.Title))
+        return Results.BadRequest(new { error = "Title is required" });
+
+    if (request.Title.Length > 200)
+        return Results.BadRequest(new { error = "Title must be under 200 characters" });
+
+    note.Title = request.Title.Trim();
+    note.Content = request.Content?.Trim() ?? string.Empty;
+    note.UpdatedAt = DateTime.UtcNow;
+
+    await db.SaveChangesAsync();
+    return Results.Ok(note);
+})
+.RequireAuthorization();
+
+app.MapDelete("/notes/{id}", async (
+    Guid id,
+    HttpContext context,
+    NotesDbContext db) =>
+{
+    var userId = AuthHelpers.GetUserId(context);
+    var note = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
+    
+    if (note == null) return Results.NotFound();
+
+    db.Notes.Remove(note);
+    await db.SaveChangesAsync();
+
+    return Results.NoContent();
+})
+.RequireAuthorization();
+
 app.MapPost("/notes/upload", async (
     IFormFile file,
     IHttpClientFactory clientFactory,
@@ -261,7 +303,7 @@ app.MapPost("/notes/upload", async (
         return Results.BadRequest(new { error = "Only image files (JPEG, PNG, GIF, WebP, BMP) are allowed" });
 
     var aiServiceUrl = Environment.GetEnvironmentVariable("AI_SERVICE_URL") 
-    ?? "http://localhost:8000/extract-text";
+        ?? "http://localhost:8000/extract-text";
 
     using var client = clientFactory.CreateClient();
     using var content = new MultipartFormDataContent();
@@ -311,112 +353,13 @@ app.MapPost("/notes/upload", async (
 .RequireAuthorization()
 .DisableAntiforgery();
 
-app.MapPost("/notes/scan", async (
-    IFormFile file,
-    IHttpClientFactory clientFactory,
-    HttpContext context) =>
-{
-    var userId = AuthHelpers.GetUserId(context);
-    if (userId == null) return Results.Unauthorized();
-
-    if (file == null || file.Length == 0)
-        return Results.BadRequest(new { error = "No file uploaded" });
-
-    const long maxFileSize = 10 * 1024 * 1024;
-    if (file.Length > maxFileSize)
-        return Results.BadRequest(new { error = "File size must be under 10MB" });
-
-    var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/webp", "image/bmp" };
-    if (!allowedTypes.Contains(file.ContentType.ToLower()))
-        return Results.BadRequest(new { error = "Only image files (JPEG, PNG, GIF, WebP, BMP) are allowed" });
-
-    var aiServiceUrl = Environment.GetEnvironmentVariable("AI_SERVICE_URL")
-        ?? "http://localhost:8000/extract-text";
-
-    using var client = clientFactory.CreateClient();
-    using var content = new MultipartFormDataContent();
-
-    using var fileStream = file.OpenReadStream();
-    var streamContent = new StreamContent(fileStream);
-    streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-
-    content.Add(streamContent, "file", file.FileName);
-
-    try
-    {
-        var response = await client.PostAsync(aiServiceUrl, content);
-
-        if (!response.IsSuccessStatusCode)
-            return Results.Json(new { error = "AI service failed to process the image." }, statusCode: (int)response.StatusCode);
-
-        var jsonString = await response.Content.ReadAsStringAsync();
-        using var doc = JsonDocument.Parse(jsonString);
-
-        string extractedText = "";
-        if (doc.RootElement.TryGetProperty("text", out var textElement))
-        {
-            extractedText = textElement.GetString() ?? "";
-        }
-
-        return Results.Ok(new { text = extractedText });
-    }
-    catch (Exception)
-    {
-        return Results.Problem("AI service is currently unavailable. Please try again later.");
-    }
-})
-.RequireAuthorization()
-.DisableAntiforgery();
-
-app.MapPut("/notes/{id}", async (
-    Guid id,
-    UpdateNoteRequest request,
-    HttpContext context,
-    NotesDbContext db) =>
-{
-    var userId = AuthHelpers.GetUserId(context);
-
-    var note = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
-    if (note == null)
-        return Results.NotFound();
-
-    if (string.IsNullOrWhiteSpace(request.Title))
-        return Results.BadRequest(new { error = "Title is required" });
-
-    if (request.Title.Length > 200)
-        return Results.BadRequest(new { error = "Title must be under 200 characters" });
-
-    note.Title = request.Title.Trim();
-    note.Content = request.Content?.Trim() ?? string.Empty;
-    note.UpdatedAt = DateTime.UtcNow;
-
-    await db.SaveChangesAsync();
-    return Results.Ok(note);
-})
-.RequireAuthorization();
-
-app.MapDelete("/notes/{id}", async (
-    Guid id,
-    HttpContext context,
-    NotesDbContext db) =>
-{
-    var userId = AuthHelpers.GetUserId(context);
-
-    var note = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
-    if (note == null)
-        return Results.NotFound();
-
-    db.Notes.Remove(note);
-    await db.SaveChangesAsync();
-
-    return Results.NoContent();
-})
-.RequireAuthorization();
-
 app.MapPost("/auth/register", async (RegisterRequest request, NotesDbContext db) =>
 {
     if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
         return Results.BadRequest(new { error = "Email and password are required" });
+
+    if (string.IsNullOrWhiteSpace(request.Name))
+        return Results.BadRequest(new { error = "Name is required" });
 
     var email = request.Email.Trim().ToLower();
 
@@ -432,6 +375,7 @@ app.MapPost("/auth/register", async (RegisterRequest request, NotesDbContext db)
     var user = new User
     {
         Id = Guid.NewGuid(),
+        Name = request.Name.Trim(),
         Email = email,
         PasswordHash = PasswordHasher.Hash(request.Password),
         CreatedAt = DateTime.UtcNow
@@ -440,10 +384,10 @@ app.MapPost("/auth/register", async (RegisterRequest request, NotesDbContext db)
     db.Users.Add(user);
     await db.SaveChangesAsync();
 
-    return Results.Created("/auth/register", new { user.Id, user.Email });
+    return Results.Created("/auth/register", new { user.Id, user.Email, user.Name });
 });
 
-app.MapPost("/auth/login", async (LoginRequest request, NotesDbContext db) =>
+app.MapPost("/auth/login", async (LoginRequest request, NotesDbContext db, IConfiguration config) =>
 {
     if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
         return Results.BadRequest(new { error = "Email and password are required" });
@@ -454,11 +398,21 @@ app.MapPost("/auth/login", async (LoginRequest request, NotesDbContext db) =>
     if (user == null || !PasswordHasher.Verify(request.Password, user.PasswordHash))
         return Results.Unauthorized();
 
-    var token = JwtTokenGenerator.Generate(user, jwtKey);
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var key = Encoding.UTF8.GetBytes(config["Jwt:Key"]);
+    var tokenDescriptor = new SecurityTokenDescriptor
+    {
+        Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) }),
+        Expires = DateTime.UtcNow.AddDays(7),
+        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+    };
+    var token = tokenHandler.CreateToken(tokenDescriptor);
+    var tokenString = tokenHandler.WriteToken(token);
 
     return Results.Ok(new
     {
-        token,
+        token = tokenString,
+        name = user.Name,
         user = new { user.Id, user.Email }
     });
 });
