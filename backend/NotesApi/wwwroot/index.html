@@ -307,6 +307,7 @@
                 <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--text-main);">Join Notely</h1>
                 <p style="color: var(--text-muted); margin-bottom: 2rem;">Start capturing your best ideas.</p>
                 <form onsubmit="handleRegister(event)">
+                    <input type="text" id="reg-name" class="input-field" placeholder="Your Name" aria-label="Your Name" required>
                     <input type="email" id="reg-email" class="input-field" placeholder="Email address" aria-label="Email address" required>
                     <input type="password" id="reg-pass" class="input-field" placeholder="Password" aria-label="Password" required>
                     <button type="submit" class="btn-main">Create Account</button>
@@ -328,6 +329,9 @@
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"/><path d="M7 7h10"/><path d="M7 12h10"/><path d="M7 17h6"/></svg>
                     </div>
                     <span class="brand-text">Notely</span>
+                </div>
+                <div style="margin-bottom: 1.5rem; font-weight: 600; color: var(--text-main); font-size: 1.1rem; padding-left: 0.5rem;">
+                    Welcome back, <span id="user-name-display" style="color: var(--primary);">User</span>!
                 </div>
                 <button class="create-btn" onclick="openModal()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -412,7 +416,7 @@
 
     <script>
         const API_URL = "";
-        let state = { token: localStorage.getItem('token'), notes: [], editingId: null, category: 'all' };
+        let state = { token: localStorage.getItem('token'), name: localStorage.getItem('name'), notes: [], editingId: null, category: 'all' };
 
         function escapeHtml(str) {
             const div = document.createElement('div');
@@ -423,7 +427,11 @@
         document.addEventListener('DOMContentLoaded', () => {
             const theme = localStorage.getItem('theme');
             if(theme) document.documentElement.setAttribute('data-theme', theme);
-            if(state.token) { showPage('dashboard-page'); fetchNotes(); }
+            if(state.token) {
+                showPage('dashboard-page');
+                updateWelcomeMessage();
+                fetchNotes();
+            }
             else showPage('login-page');
         });
 
@@ -454,6 +462,15 @@
             setTimeout(() => t.style.transform = 'translateX(-50%) translateY(-100px)', 3000);
         }
 
+        function updateWelcomeMessage() {
+            const nameDisplay = document.getElementById('user-name-display');
+            if (state.name) {
+                nameDisplay.textContent = state.name;
+            } else {
+                nameDisplay.textContent = 'User';
+            }
+        }
+
         async function api(endpoint, method = 'GET', body = null) {
             const opts = { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${state.token}` } };
             if(body) opts.body = JSON.stringify(body);
@@ -473,21 +490,37 @@
             const password = document.getElementById('login-password').value;
             const res = await api('/auth/login', 'POST', { email, password });
             if(res && res.token) {
-                state.token = res.token; localStorage.setItem('token', res.token);
-                showPage('dashboard-page'); fetchNotes();
+                state.token = res.token;
+                state.name = res.name || 'User'; // Assuming the backend returns the name
+                localStorage.setItem('token', res.token);
+                localStorage.setItem('name', state.name);
+                showPage('dashboard-page');
+                updateWelcomeMessage();
+                fetchNotes();
             } else toast('Invalid credentials');
         }
 
         async function handleRegister(e) {
             e.preventDefault();
+            const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-pass').value;
-            const res = await api('/auth/register', 'POST', { email, password });
-            if(res && res.success !== false) { toast('Account created! Please log in.'); switchAuth('login'); }
+            // Pass name to backend
+            const res = await api('/auth/register', 'POST', { name, email, password });
+            if(res && res.success !== false) {
+                // If registration auto-logs in, store name here. Otherwise wait for login.
+                // Assuming standard flow: register -> login manually
+                toast('Account created! Please log in.');
+                switchAuth('login');
+            }
             else toast('Registration failed');
         }
 
-        function logout() { localStorage.removeItem('token'); location.reload(); }
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('name');
+            location.reload();
+        }
 
         async function fetchNotes() {
             const grid = document.getElementById('notes-grid');
