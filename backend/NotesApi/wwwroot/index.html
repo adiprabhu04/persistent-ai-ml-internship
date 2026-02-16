@@ -3,260 +3,341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Notely | Workspace</title>
+    <title>Notely | AI Workspace</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
-                    colors: {
-                        glass: "rgba(255, 255, 255, 0.05)",
-                        glassBorder: "rgba(255, 255, 255, 0.1)",
-                        accent: "#6366f1", 
-                        accentHover: "#4f46e5",
-                    }
-                }
-            }
-        }
-    </script>
 
     <style>
+        :root {
+            --bg-dark: #0f172a;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body {
-            background-color: #0f172a;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-dark);
             background-image: 
                 radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
                 radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
                 radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-            color: #e2e8f0;
-            min-height: 100vh;
-            overflow-x: hidden;
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
         }
+
         .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
+            background: var(--glass-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
         }
+        .btn {
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:active { transform: scale(0.98); }
+
+        .page { display: none; width: 100%; height: 100%; }
+        .page.active { display: flex; }
+        .hidden { display: none !important; }
+        
+        .auth-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            padding: 20px;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            border-radius: 24px;
+            position: relative;
+            z-index: 10;
+        }
+        .input-group { margin-bottom: 16px; }
+        .input-group label { display: block; color: var(--text-muted); font-size: 12px; font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
         .glass-input {
+            width: 100%;
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
             color: white;
-            transition: all 0.3s ease;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: 0.2s;
         }
-        .glass-input:focus {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: #6366f1;
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        .glass-input:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.08); }
+        .btn-primary {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
+        .btn-primary:hover { background: var(--accent-hover); }
+        
+        .dashboard { display: flex; width: 100%; height: 100%; }
+        
+        .sidebar {
+            width: 280px;
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            z-index: 20;
+            background: rgba(15, 23, 42, 0.8);
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            background: rgba(15, 23, 42, 0.4);
+        }
+
+        .brand { font-size: 20px; font-weight: 700; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+        .brand-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #6366f1, #a855f7); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        
+        .nav-btn {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            text-align: left;
+            color: var(--text-muted);
+            background: transparent;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-btn.active { background: rgba(99, 102, 241, 0.15); color: var(--accent); border: 1px solid rgba(99, 102, 241, 0.2); }
+        
+        .user-profile { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(to right, #3b82f6, #14b8a6); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+
+        .top-bar { padding: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .search-box { position: relative; width: 300px; }
+        .search-box input { padding-left: 40px; }
+        .search-icon { position: absolute; left: 14px; top: 14px; color: var(--text-muted); font-size: 14px; }
+
+        .notes-grid {
+            padding: 0 30px 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            overflow-y: auto;
+            align-content: start;
+        }
+
         .note-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            height: 240px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
         }
-        .note-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-            border-color: rgba(99, 102, 241, 0.4);
+        .note-card:hover { transform: translateY(-4px); border-color: rgba(99, 102, 241, 0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .note-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .note-body { font-size: 14px; color: var(--text-muted); line-height: 1.6; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; }
+        .note-tag { position: absolute; top: 24px; right: 24px; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
+
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+            z-index: 100; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: 0.2s;
         }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-card {
+            width: 90%; max-width: 600px; background: #1e293b; border-radius: 20px; padding: 30px;
+            border: 1px solid var(--glass-border); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            transform: scale(0.95); transition: 0.2s;
+        }
+        .modal-overlay.open .modal-card { transform: scale(1); }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .close-btn { background: rgba(255,255,255,0.1); width: 32px; height: 32px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        
+        @media (max-width: 768px) {
+            .dashboard { flex-direction: column; }
+            .sidebar { position: fixed; height: 100%; left: -280px; transition: 0.3s; }
+            .sidebar.active { left: 0; }
+            .top-bar { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .search-box { width: 100%; }
+            .mobile-header { display: flex; padding: 16px; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); }
+        }
+        @media (min-width: 769px) { .mobile-header { display: none; } }
+
+        .toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: white; color: #0f172a; padding: 12px 24px; border-radius: 50px;
+            font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: 0.4s; z-index: 200;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
         .spinner {
-            border: 3px solid rgba(255,255,255,0.1);
-            border-left-color: #6366f1;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
+            width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: var(--accent);
+            border-radius: 50%; animation: spin 1s linear infinite; display: inline-block;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .page { display: none; opacity: 0; transition: opacity 0.3s ease; }
-        .page.active { display: flex; opacity: 1; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="antialiased selection:bg-indigo-500 selection:text-white">
+<body>
 
-    <div id="toast" class="fixed top-6 left-1/2 transform -translate-x-1/2 glass-panel px-6 py-3 rounded-full flex items-center gap-3 z-50 transition-all duration-300 -translate-y-32">
-        <i class="fa-solid fa-circle-info text-accent"></i>
-        <span id="toast-msg" class="font-medium text-sm">Notification</span>
-    </div>
+    <div id="toast" class="toast">Action Successful</div>
 
-    <div id="auth-page" class="page active min-h-screen w-full items-center justify-center p-4 relative">
-        <div class="absolute top-20 left-20 w-72 h-72 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div class="absolute bottom-20 right-20 w-72 h-72 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-
-        <div class="w-full max-w-md glass-panel p-8 rounded-2xl relative z-10 animate__animated animate__fadeInUp">
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent mb-4 shadow-lg shadow-indigo-500/30">
-                    <i class="fa-solid fa-bolt text-white text-xl"></i>
+    <div id="auth-page" class="page active">
+        <div class="auth-container">
+            <div class="auth-card glass-panel">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div class="brand-icon" style="width: 48px; height: 48px; margin: 0 auto 16px; font-size: 20px;"><i class="fa-solid fa-bolt"></i></div>
+                    <h1 style="font-size: 28px; font-weight: 700;">Notely</h1>
+                    <p style="color: var(--text-muted); margin-top: 8px;">Your second brain.</p>
                 </div>
-                <h1 class="text-3xl font-bold tracking-tight text-white mb-2">Notely</h1>
-                <p class="text-slate-400">Your second brain, powered by AI.</p>
+
+                <div style="display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 12px; margin-bottom: 24px;">
+                    <button onclick="toggleAuth('login')" id="tab-login" class="btn" style="flex: 1; padding: 8px; border-radius: 8px; background: var(--bg-dark); color: white;">Login</button>
+                    <button onclick="toggleAuth('register')" id="tab-register" class="btn" style="flex: 1; padding: 8px; border-radius: 8px; color: var(--text-muted);">Register</button>
+                </div>
+
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="login-email" class="glass-input" placeholder="you@example.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" class="glass-input" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                </form>
+
+                <form id="register-form" onsubmit="handleRegister(event)" class="hidden">
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input type="text" id="reg-name" class="glass-input" placeholder="John Doe" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="reg-email" class="glass-input" placeholder="you@example.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="reg-pass" class="glass-input" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="background: #10b981;">Create Account</button>
+                    <p id="reg-error" style="color: #ef4444; font-size: 13px; text-align: center; margin-top: 10px;" class="hidden"></p>
+                </form>
             </div>
-
-            <div class="flex p-1 bg-slate-800/50 rounded-xl mb-6 border border-white/5">
-                <button onclick="toggleAuthMode('login')" id="btn-login-mode" class="flex-1 py-2 rounded-lg text-sm font-medium transition-all bg-slate-700 text-white shadow">Sign In</button>
-                <button onclick="toggleAuthMode('register')" id="btn-register-mode" class="flex-1 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-white">Register</button>
-            </div>
-
-            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-1">Email</label>
-                    <input type="email" id="login-email" class="w-full glass-input rounded-xl px-4 py-3 mt-1" placeholder="you@example.com" required>
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-1">Password</label>
-                    <input type="password" id="login-password" class="w-full glass-input rounded-xl px-4 py-3 mt-1" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="w-full bg-accent hover:bg-accentHover text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/25 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
-                    Sign In
-                </button>
-            </form>
-
-            <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 hidden">
-                <div>
-                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-1">Full Name</label>
-                    <input type="text" id="reg-name" class="w-full glass-input rounded-xl px-4 py-3 mt-1" placeholder="John Doe" required>
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-1">Email</label>
-                    <input type="email" id="reg-email" class="w-full glass-input rounded-xl px-4 py-3 mt-1" placeholder="you@example.com" required>
-                </div>
-                <div>
-                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-1">Password</label>
-                    <input type="password" id="reg-pass" class="w-full glass-input rounded-xl px-4 py-3 mt-1" placeholder="••••••••" required>
-                </div>
-                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-500/25 transition-all transform hover:scale-[1.02] active:scale-[0.98]">
-                    Create Account
-                </button>
-                <div id="registerError" class="text-red-400 text-center text-sm hidden"></div>
-            </form>
         </div>
     </div>
 
-    <div id="dashboard-page" class="page w-full h-screen overflow-hidden flex-col md:flex-row">
-        
-        <aside id="sidebar" class="w-full md:w-72 glass-panel border-r-0 md:border-r border-b md:border-b-0 flex flex-col z-40 transition-all duration-300 absolute md:relative -translate-x-full md:translate-x-0 h-full">
-            <div class="p-6 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg">
-                        <i class="fa-solid fa-layer-group text-white text-xs"></i>
-                    </div>
-                    <span class="font-bold text-xl tracking-tight text-white">Notely</span>
+    <div id="dashboard-page" class="page">
+        <div class="dashboard">
+            <aside id="sidebar" class="sidebar glass-panel">
+                <div class="brand">
+                    <div class="brand-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <span>Notely</span>
                 </div>
-                <button onclick="toggleSidebar()" class="md:hidden text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
+                
+                <button onclick="openModal()" class="btn" style="background: rgba(255,255,255,0.1); color: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--glass-border);">
+                    <i class="fa-solid fa-plus"></i> New Note
+                </button>
 
-            <div class="px-4 mb-6">
-                <button onclick="openModal()" class="w-full bg-white/5 hover:bg-white/10 border border-white/5 text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all group">
-                    <div class="w-6 h-6 rounded-full bg-accent flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-plus text-[10px]"></i>
+                <nav style="flex: 1;">
+                    <button onclick="filterCat('all', this)" class="nav-btn active"><i class="fa-solid fa-note-sticky"></i> All Notes</button>
+                    <button onclick="filterCat('personal', this)" class="nav-btn"><i class="fa-solid fa-user"></i> Personal</button>
+                    <button onclick="filterCat('work', this)" class="nav-btn"><i class="fa-solid fa-briefcase"></i> Work</button>
+                    <button onclick="filterCat('ideas', this)" class="nav-btn"><i class="fa-solid fa-lightbulb"></i> Ideas</button>
+                </nav>
+
+                <div class="user-profile">
+                    <div class="avatar" id="avatar-txt">U</div>
+                    <div style="flex: 1; overflow: hidden;">
+                        <div style="font-weight: 700; font-size: 14px; white-space: nowrap;" id="user-display">User</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Pro Plan</div>
                     </div>
-                    <span class="font-medium">New Note</span>
-                </button>
-            </div>
+                    <button onclick="logout()" class="btn" style="color: var(--text-muted);"><i class="fa-solid fa-right-from-bracket"></i></button>
+                </div>
+            </aside>
 
-            <nav class="flex-1 px-4 space-y-1 overflow-y-auto">
-                <button onclick="filterCategory('all', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-accent/10 text-accent border border-accent/20 transition-all">
-                    <i class="fa-solid fa-note-sticky w-5"></i> <span class="font-medium">All Notes</span>
-                </button>
-                <button onclick="filterCategory('personal', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
-                    <i class="fa-solid fa-user w-5"></i> <span class="font-medium">Personal</span>
-                </button>
-                <button onclick="filterCategory('work', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
-                    <i class="fa-solid fa-briefcase w-5"></i> <span class="font-medium">Work</span>
-                </button>
-                <button onclick="filterCategory('ideas', this)" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
-                    <i class="fa-solid fa-lightbulb w-5"></i> <span class="font-medium">Ideas</span>
-                </button>
-            </nav>
+            <main class="main-content">
+                <div class="mobile-header glass-panel">
+                    <div style="font-weight: 700;">Notely</div>
+                    <button onclick="toggleSidebar()" class="btn" style="color: white;"><i class="fa-solid fa-bars"></i></button>
+                </div>
 
-            <div class="p-4 border-t border-white/5">
-                <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-teal-400 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                        <span id="avatar-text">U</span>
+                <div class="top-bar">
+                    <div>
+                        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">My Notes</h2>
+                        <p style="color: var(--text-muted); font-size: 14px;">Welcome back to your workspace.</p>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-white truncate" id="user-name-display">User</p>
-                        <p class="text-xs text-slate-400 truncate">Pro Account</p>
+                    <div class="search-box">
+                        <i class="fa-solid fa-search search-icon"></i>
+                        <input type="text" onkeyup="filterNotes(this.value)" class="glass-input" placeholder="Search notes...">
                     </div>
-                    <button onclick="logout()" class="text-slate-400 hover:text-red-400 transition-colors" title="Logout">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
                 </div>
-            </div>
-        </aside>
 
-        <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-slate-900/50">
-            <header class="md:hidden glass-panel h-16 flex items-center justify-between px-4 shrink-0 z-30">
-                <span class="font-bold text-lg">Notely</span>
-                <button onclick="toggleSidebar()" class="text-white bg-white/10 p-2 rounded-lg"><i class="fa-solid fa-bars"></i></button>
-            </header>
-
-            <div class="p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate__animated animate__fadeInDown">
-                <div>
-                    <h2 class="text-3xl font-bold text-white mb-1">My Notes</h2>
-                    <p class="text-slate-400 text-sm">Welcome back to your workspace.</p>
+                <div id="notes-grid" class="notes-grid">
                 </div>
-                <div class="relative w-full md:w-64">
-                    <i class="fa-solid fa-search absolute left-3 top-3.5 text-slate-500 text-sm"></i>
-                    <input type="text" oninput="filterNotes(this.value)" placeholder="Search anything..." class="w-full glass-input rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-accent">
-                </div>
-            </div>
-
-            <div id="notes-grid" class="flex-1 overflow-y-auto p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 content-start pb-24">
-            </div>
-
-            <button onclick="openModal()" class="md:hidden absolute bottom-6 right-6 w-14 h-14 bg-accent text-white rounded-full shadow-lg shadow-indigo-500/40 flex items-center justify-center z-40 active:scale-90 transition-transform">
-                <i class="fa-solid fa-plus text-xl"></i>
-            </button>
-        </main>
+            </main>
+        </div>
     </div>
 
-    <div id="note-modal" class="fixed inset-0 z-[60] hidden">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
-        <div class="absolute inset-0 flex items-center justify-center p-4">
-            <div class="w-full max-w-2xl glass-panel rounded-2xl p-6 md:p-8 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[90vh]" id="modal-content">
-                
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-white">Edit Note</h3>
-                    <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
-                        <i class="fa-solid fa-xmark text-slate-300"></i>
+    <div id="note-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 style="font-size: 20px; font-weight: 700;">Edit Note</h3>
+                <button onclick="closeModal()" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <input type="text" id="note-title" placeholder="Untitled Note" style="width: 100%; background: transparent; border: none; font-size: 24px; font-weight: 700; color: white; margin-bottom: 16px;">
+            
+            <textarea id="note-content" placeholder="Start typing or scan an image..." style="width: 100%; height: 200px; background: rgba(0,0,0,0.2); border: none; border-radius: 12px; padding: 16px; color: var(--text-muted); resize: none; font-size: 16px; margin-bottom: 20px;"></textarea>
+
+            <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between;">
+                <div style="display: flex; gap: 10px;">
+                    <select id="note-category" style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 8px 12px; border-radius: 8px;">
+                        <option value="general">No Category</option>
+                        <option value="personal">Personal</option>
+                        <option value="work">Work</option>
+                        <option value="ideas">Ideas</option>
+                    </select>
+                    <button onclick="triggerScan()" class="btn" style="background: rgba(255,255,255,0.05); color: white; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--glass-border);">
+                        <i class="fa-solid fa-camera"></i> Scan
                     </button>
                 </div>
-
-                <input type="text" id="note-title" placeholder="Untitled Note" class="w-full bg-transparent text-3xl font-bold text-white placeholder-slate-600 outline-none mb-4 border-none p-0 focus:ring-0">
-                
-                <textarea id="note-content" placeholder="Start typing or scan an image..." class="w-full flex-1 bg-slate-800/30 rounded-xl p-4 text-slate-300 placeholder-slate-600 outline-none resize-none border border-transparent focus:border-slate-700 focus:bg-slate-800/50 transition-all mb-4"></textarea>
-
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mt-auto">
-                    <div class="flex gap-2 w-full md:w-auto">
-                        <select id="note-category" class="bg-slate-800/50 border border-slate-700 text-slate-300 text-sm rounded-lg focus:ring-accent focus:border-accent block p-2.5 outline-none">
-                            <option value="general">No Category</option>
-                            <option value="personal">Personal</option>
-                            <option value="work">Work</option>
-                            <option value="ideas">Ideas</option>
-                        </select>
-                        
-                        <button onclick="triggerScan()" class="flex items-center gap-2 px-4 py-2 bg-slate-800/50 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-300 transition-all text-sm font-medium">
-                            <i class="fa-solid fa-camera"></i> Scan Text
-                        </button>
-                    </div>
-
-                    <div class="flex gap-3 w-full md:w-auto">
-                        <div id="scan-loading" class="hidden items-center gap-2 text-indigo-400 text-sm font-medium">
-                            <div class="spinner w-4 h-4"></div> Scanning...
-                        </div>
-                        <button onclick="saveNote()" class="flex-1 md:flex-none px-6 py-2.5 bg-accent hover:bg-accentHover text-white rounded-lg font-bold shadow-lg shadow-indigo-500/20 transition-all">
-                            Save Note
-                        </button>
-                    </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <span id="scan-loading" class="hidden" style="font-size: 12px; color: var(--accent);"><div class="spinner"></div> Scanning...</span>
+                    <button onclick="saveNote()" class="btn btn-primary" style="margin: 0; padding: 10px 24px;">Save Note</button>
                 </div>
-                
-                <input type="file" id="scan-input" hidden accept="image/*" onchange="handleScan(event)">
             </div>
+            <input type="file" id="scan-input" hidden accept="image/*" onchange="handleScan(event)">
         </div>
     </div>
 
@@ -264,29 +345,10 @@
         const API_URL = "";
         let state = { token: localStorage.getItem('token'), name: localStorage.getItem('name'), notes: [], editingId: null, category: 'all' };
 
-        function toggleAuthMode(mode) {
-            const loginForm = document.getElementById('login-form');
-            const regForm = document.getElementById('register-form');
-            const btnLogin = document.getElementById('btn-login-mode');
-            const btnReg = document.getElementById('btn-register-mode');
-
-            if (mode === 'login') {
-                loginForm.classList.remove('hidden');
-                regForm.classList.add('hidden');
-                btnLogin.className = "flex-1 py-2 rounded-lg text-sm font-medium transition-all bg-slate-700 text-white shadow";
-                btnReg.className = "flex-1 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-white";
-            } else {
-                loginForm.classList.add('hidden');
-                regForm.classList.remove('hidden');
-                btnReg.className = "flex-1 py-2 rounded-lg text-sm font-medium transition-all bg-slate-700 text-white shadow";
-                btnLogin.className = "flex-1 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-white";
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             if(state.token) {
                 showPage('dashboard-page');
-                updateWelcomeMessage();
+                updateUI();
                 fetchNotes();
             } else {
                 showPage('auth-page');
@@ -298,27 +360,27 @@
             document.getElementById(id).classList.add('active');
         }
 
-        function toast(msg, type = 'info') {
-            const t = document.getElementById('toast');
-            const txt = document.getElementById('toast-msg');
-            txt.textContent = msg;
-            t.classList.remove('-translate-y-32');
-            setTimeout(() => t.classList.add('-translate-y-32'), 3000);
-        }
+        function toggleAuth(mode) {
+            const loginForm = document.getElementById('login-form');
+            const regForm = document.getElementById('register-form');
+            const tabLogin = document.getElementById('tab-login');
+            const tabReg = document.getElementById('tab-register');
 
-        function escapeHtml(str) {
-            if(!str) return '';
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        }
-
-        function updateWelcomeMessage() {
-            const nameDisplay = document.getElementById('user-name-display');
-            const avatarText = document.getElementById('avatar-text');
-            const name = state.name || 'User';
-            nameDisplay.textContent = name;
-            avatarText.textContent = name.charAt(0).toUpperCase();
+            if(mode === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                tabLogin.style.background = 'var(--bg-dark)';
+                tabLogin.style.color = 'white';
+                tabReg.style.background = 'transparent';
+                tabReg.style.color = 'var(--text-muted)';
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                tabReg.style.background = 'var(--bg-dark)';
+                tabReg.style.color = 'white';
+                tabLogin.style.background = 'transparent';
+                tabLogin.style.color = 'var(--text-muted)';
+            }
         }
 
         async function api(endpoint, method = 'GET', body = null) {
@@ -339,13 +401,14 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             const res = await api('/auth/login', 'POST', { email, password });
+            
             if(res && res.token) {
                 state.token = res.token;
                 state.name = res.name || 'User';
                 localStorage.setItem('token', res.token);
                 localStorage.setItem('name', state.name);
                 showPage('dashboard-page');
-                updateWelcomeMessage();
+                updateUI();
                 fetchNotes();
                 toast('Welcome back!');
             } else {
@@ -355,8 +418,9 @@
 
         async function handleRegister(e) {
             e.preventDefault();
-            const errorEl = document.getElementById('registerError');
-            errorEl.classList.add('hidden');
+            const errEl = document.getElementById('reg-error');
+            errEl.classList.add('hidden');
+            
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-pass').value;
@@ -367,17 +431,22 @@
                     body: JSON.stringify({ name, email, password })
                 });
                 const data = await res.json().catch(() => null);
-                if (res.ok) {
-                    toast('Account created! Please log in.');
-                    toggleAuthMode('login');
+                if(res.ok) {
+                    toast('Account created! Login now.');
+                    toggleAuth('login');
                 } else {
-                    errorEl.textContent = (data && data.error) ? data.error : 'Registration failed.';
-                    errorEl.classList.remove('hidden');
+                    errEl.textContent = (data && data.error) ? data.error : 'Registration failed.';
+                    errEl.classList.remove('hidden');
                 }
-            } catch {
-                errorEl.textContent = 'Server unreachable';
-                errorEl.classList.remove('hidden');
+            } catch(e) {
+                errEl.textContent = 'Server unreachable.';
+                errEl.classList.remove('hidden');
             }
+        }
+
+        function updateUI() {
+            document.getElementById('user-display').textContent = state.name || 'User';
+            document.getElementById('avatar-txt').textContent = (state.name || 'U').charAt(0).toUpperCase();
         }
 
         function logout() {
@@ -387,7 +456,7 @@
 
         async function fetchNotes() {
             const grid = document.getElementById('notes-grid');
-            grid.innerHTML = '<div class="col-span-full flex justify-center py-20"><div class="spinner"></div></div>';
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><div class="spinner"></div></div>';
             const res = await api('/notes?page=1&pageSize=100');
             if(res) { state.notes = res.data || []; renderNotes(); }
             else { grid.innerHTML = ''; }
@@ -396,75 +465,57 @@
         function renderNotes() {
             const grid = document.getElementById('notes-grid');
             grid.innerHTML = '';
-            let filtered = state.notes;
             
-            if(state.category !== 'all') {
-                filtered = filtered.filter(n => (n.content||'').toLowerCase().includes('#'+state.category));
-            }
+            let filtered = state.notes;
+            if(state.category !== 'all') filtered = filtered.filter(n => (n.content||'').toLowerCase().includes('#'+state.category));
 
             if(filtered.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-500">
-                        <i class="fa-regular fa-folder-open text-5xl mb-4 opacity-30"></i>
-                        <p>No notes found here.</p>
-                        <button onclick="openModal()" class="mt-4 text-accent font-medium hover:underline">Create one?</button>
-                    </div>
-                `;
+                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">
+                        <i class="fa-regular fa-folder-open" style="font-size: 48px; opacity: 0.3; margin-bottom: 16px;"></i>
+                        <p>No notes found.</p>
+                    </div>`;
                 return;
             }
 
-            filtered.forEach((note, i) => {
+            filtered.forEach(note => {
                 const el = document.createElement('div');
-                el.className = 'note-card glass-panel p-6 rounded-2xl flex flex-col h-64 relative group cursor-pointer animate__animated animate__fadeInUp';
-                el.style.animationDelay = `${i * 0.05}s`;
+                el.className = 'note-card';
                 
-                let tagIcon = '<i class="fa-solid fa-note-sticky text-slate-500"></i>';
-                let content = note.content || '';
-                if(content.includes('#work')) tagIcon = '<div class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-bold uppercase">Work</div>';
-                else if(content.includes('#personal')) tagIcon = '<div class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-xs font-bold uppercase">Personal</div>';
-                else if(content.includes('#idea')) tagIcon = '<div class="px-2 py-1 rounded bg-amber-500/20 text-amber-400 text-xs font-bold uppercase">Idea</div>';
+                let tagTxt = '';
+                if(note.content.includes('#work')) tagTxt = 'WORK';
+                else if(note.content.includes('#personal')) tagTxt = 'PERSONAL';
+                else if(note.content.includes('#idea')) tagTxt = 'IDEA';
+
+                let tagHtml = tagTxt ? `<div class="note-tag" style="background: rgba(99,102,241,0.2); color: #818cf8;">${tagTxt}</div>` : '';
 
                 el.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
-                        ${tagIcon}
-                        <span class="text-xs text-slate-500">${new Date(note.updatedAt).toLocaleDateString()}</span>
-                    </div>
-                    <h3 class="font-bold text-lg text-white mb-2 line-clamp-1 group-hover:text-accent transition-colors">${escapeHtml(note.title)}</h3>
-                    <p class="text-slate-400 text-sm line-clamp-4 leading-relaxed">${escapeHtml(content)}</p>
-                    
-                    <div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all flex gap-2 translate-y-2 group-hover:translate-y-0">
-                        <button onclick="event.stopPropagation(); openModal(state.notes.find(n=>n.id==='${note.id}'))" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center transition-colors shadow-lg">
-                            <i class="fa-solid fa-pen text-xs"></i>
-                        </button>
-                        <button onclick="event.stopPropagation(); deleteNote('${note.id}')" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-red-500/20 hover:text-red-400 text-white flex items-center justify-center transition-colors shadow-lg">
-                            <i class="fa-solid fa-trash text-xs"></i>
-                        </button>
+                    ${tagHtml}
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">${new Date(note.updatedAt).toLocaleDateString()}</div>
+                    <div class="note-title">${esc(note.title)}</div>
+                    <div class="note-body">${esc(note.content)}</div>
+                    <div style="margin-top: auto; display: flex; gap: 8px;">
+                         <button onclick="deleteNote(event, '${note.id}')" class="btn" style="background: rgba(255,255,255,0.05); width: 32px; height: 32px; border-radius: 6px; color: var(--text-muted);"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
-                el.onclick = () => openModal(note);
+                el.onclick = (e) => { if(!e.target.closest('button')) openModal(note); };
                 grid.appendChild(el);
             });
         }
 
-        function filterCategory(cat, btn) {
+        function filterCat(cat, btn) {
             state.category = cat;
-            document.querySelectorAll('.nav-item').forEach(b => {
-                b.classList.remove('bg-accent/10', 'text-accent', 'border-accent/20');
-                b.classList.add('text-slate-400', 'hover:bg-white/5');
-            });
-            btn.classList.remove('text-slate-400', 'hover:bg-white/5');
-            btn.classList.add('bg-accent/10', 'text-accent', 'border', 'border-accent/20');
-            
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
             renderNotes();
-            if(window.innerWidth < 768) toggleSidebar();
+            if(window.innerWidth <= 768) toggleSidebar();
         }
 
-        function filterNotes(query) {
-            const lower = query.toLowerCase();
+        function filterNotes(q) {
+            const lower = q.toLowerCase();
             const cards = document.querySelectorAll('.note-card');
             cards.forEach(c => {
-                const text = c.innerText.toLowerCase();
-                c.style.display = text.includes(lower) ? 'flex' : 'none';
+                c.style.display = c.innerText.toLowerCase().includes(lower) ? 'flex' : 'none';
             });
         }
 
@@ -481,21 +532,11 @@
                 if(note.content.includes('#idea')) catSelect.value = 'ideas';
             }
 
-            const modal = document.getElementById('note-modal');
-            const content = document.getElementById('modal-content');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 10);
+            document.getElementById('note-modal').classList.add('open');
         }
 
         function closeModal() {
-            const modal = document.getElementById('note-modal');
-            const content = document.getElementById('modal-content');
-            content.classList.remove('scale-100', 'opacity-100');
-            content.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 300);
+            document.getElementById('note-modal').classList.remove('open');
         }
 
         async function saveNote() {
@@ -503,37 +544,27 @@
             let content = document.getElementById('note-content').value;
             const cat = document.getElementById('note-category').value;
             
-            if(!title) { toast('Please add a title'); return; }
-
-            if(cat !== 'general' && !content.includes('#'+cat)) {
-                content += `\n\n#${cat}`;
-            }
+            if(!title) { toast('Title required'); return; }
+            if(cat !== 'general' && !content.includes('#'+cat)) content += `\n\n#${cat}`;
 
             const method = state.editingId ? 'PUT' : 'POST';
             const url = state.editingId ? `/notes/${state.editingId}` : '/notes';
             
             const res = await api(url, method, { title, content });
-            if(res) {
-                closeModal();
+            if(res) { closeModal(); fetchNotes(); toast('Saved!'); }
+            else toast('Error saving');
+        }
+
+        async function deleteNote(e, id) {
+            e.stopPropagation();
+            if(confirm('Delete?')) {
+                await api(`/notes/${id}`, 'DELETE');
                 fetchNotes();
-                toast('Note saved successfully');
-            } else {
-                toast('Failed to save note');
+                toast('Deleted');
             }
         }
 
-        async function deleteNote(id) {
-            if(!confirm('Are you sure you want to delete this note?')) return;
-            const res = await api(`/notes/${id}`, 'DELETE');
-            if(res) {
-                fetchNotes();
-                toast('Note deleted');
-            }
-        }
-
-        function triggerScan() {
-            document.getElementById('scan-input').click();
-        }
+        function triggerScan() { document.getElementById('scan-input').click(); }
 
         async function handleScan(e) {
             const file = e.target.files[0];
@@ -542,38 +573,36 @@
             const fd = new FormData();
             fd.append('file', file);
             
-            const scanLoader = document.getElementById('scan-loading');
-            scanLoader.classList.remove('hidden');
-            scanLoader.classList.add('flex');
+            const loader = document.getElementById('scan-loading');
+            loader.classList.remove('hidden');
             
             try {
                 const res = await fetch(API_URL + '/notes/upload', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${state.token}` },
-                    body: fd
+                    method: 'POST', headers: { 'Authorization': `Bearer ${state.token}` }, body: fd
                 });
-                
-                scanLoader.classList.add('hidden');
-                scanLoader.classList.remove('flex');
-
-                if(res.ok) {
-                    toast('Image scanned successfully!');
-                    fetchNotes();
-                    closeModal();
-                } else {
-                    toast('Scan failed. Try a clearer image.');
-                }
-            } catch(err) {
-                scanLoader.classList.add('hidden');
-                scanLoader.classList.remove('flex');
-                toast('Error uploading image');
-            }
+                loader.classList.add('hidden');
+                if(res.ok) { toast('Scanned!'); fetchNotes(); closeModal(); }
+                else toast('Scan failed');
+            } catch { loader.classList.add('hidden'); toast('Error'); }
             e.target.value = '';
         }
 
         function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            sb.classList.toggle('-translate-x-full');
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function esc(str) {
+            if(!str) return '';
+            const d = document.createElement('div');
+            d.textContent = str;
+            return d.innerHTML;
         }
     </script>
 </body>
