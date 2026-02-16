@@ -310,6 +310,7 @@
                     <input type="text" id="reg-name" class="input-field" placeholder="Your Name" aria-label="Your Name" required>
                     <input type="email" id="reg-email" class="input-field" placeholder="Email address" aria-label="Email address" required>
                     <input type="password" id="reg-pass" class="input-field" placeholder="Password" aria-label="Password" required>
+                    <div id="registerError" style="color: #ef4444; font-weight: 600; margin-top: 0.75rem; display: none;"></div>
                     <button type="submit" class="btn-main">Create Account</button>
                 </form>
                 <div style="margin-top: 1.5rem; color: var(--text-muted);">
@@ -502,18 +503,31 @@
 
         async function handleRegister(e) {
             e.preventDefault();
+            const errorEl = document.getElementById('registerError');
+            errorEl.style.display = 'none';
+            errorEl.textContent = '';
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-pass').value;
-            // Pass name to backend
-            const res = await api('/auth/register', 'POST', { name, email, password });
-            if(res && res.success !== false) {
-                // If registration auto-logs in, store name here. Otherwise wait for login.
-                // Assuming standard flow: register -> login manually
-                toast('Account created! Please log in.');
-                switchAuth('login');
+            try {
+                const res = await fetch(API_URL + '/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+                const data = await res.json().catch(() => null);
+                if (res.ok) {
+                    toast('Account created! Please log in.');
+                    switchAuth('login');
+                } else {
+                    const msg = (data && data.error) ? data.error : 'Registration failed.';
+                    errorEl.textContent = msg;
+                    errorEl.style.display = 'block';
+                }
+            } catch {
+                errorEl.textContent = 'Registration failed.';
+                errorEl.style.display = 'block';
             }
-            else toast('Registration failed');
         }
 
         function logout() {
