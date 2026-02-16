@@ -387,7 +387,7 @@ app.MapPost("/auth/register", async (RegisterRequest request, NotesDbContext db)
     return Results.Created("/auth/register", new { user.Id, user.Email, user.Name });
 });
 
-app.MapPost("/auth/login", async (LoginRequest request, NotesDbContext db, IConfiguration config) =>
+app.MapPost("/auth/login", async (LoginRequest request, NotesDbContext db) =>
 {
     if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
         return Results.BadRequest(new { error = "Email and password are required" });
@@ -399,7 +399,7 @@ app.MapPost("/auth/login", async (LoginRequest request, NotesDbContext db, IConf
         return Results.Unauthorized();
 
     var tokenHandler = new JwtSecurityTokenHandler();
-    var key = Encoding.UTF8.GetBytes(config["Jwt:Key"]);
+    var key = keyBytes;
     var tokenDescriptor = new SecurityTokenDescriptor
     {
         Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) }),
