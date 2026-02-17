@@ -205,6 +205,187 @@
             border-radius: 50%; animation: spin 1s linear infinite; display: inline-block;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        .scan-tabs {
+            display: flex;
+            background: rgba(0,0,0,0.3);
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .scan-tab {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: inherit;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .scan-tab:hover { color: white; }
+        .scan-tab.active { background: var(--accent); color: white; }
+
+        .canvas-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .canvas-tool-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .canvas-tool-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+        .canvas-tool-btn.active {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--accent);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+        .canvas-size-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: inherit;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .canvas-size-btn.active {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--accent);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+        .canvas-color-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 0;
+        }
+        .canvas-color-btn.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4);
+        }
+        .canvas-separator {
+            width: 1px;
+            height: 24px;
+            background: var(--glass-border);
+            margin: 0 4px;
+        }
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        #drawing-canvas {
+            display: block;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            cursor: crosshair;
+            background: white;
+            max-width: 100%;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .upload-area {
+            border: 2px dashed rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .upload-area:hover {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        .upload-area i {
+            font-size: 48px;
+            color: var(--accent);
+            margin-bottom: 16px;
+            display: block;
+        }
+        .scan-loading-content {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .scan-loading-content .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 16px;
+            border-width: 3px;
+        }
+        .scan-preview-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .scan-preview-text {
+            width: 100%;
+            height: 200px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--text-main);
+            resize: vertical;
+            font-size: 15px;
+            line-height: 1.6;
+            font-family: inherit;
+        }
+        .scan-preview-text:focus {
+            border-color: var(--accent);
+            background: rgba(0,0,0,0.3);
+        }
+        .scan-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+        .btn-ghost {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            border: 1px solid var(--glass-border);
+        }
+        .btn-ghost:hover { background: rgba(255,255,255,0.1); color: white; }
     </style>
 </head>
 <body>
@@ -328,22 +509,100 @@
                         <option value="work">Work</option>
                         <option value="ideas">Ideas</option>
                     </select>
-                    <button onclick="triggerScan()" class="btn" style="background: rgba(255,255,255,0.05); color: white; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--glass-border);">
+                    <button onclick="openScanModal()" class="btn" style="background: rgba(255,255,255,0.05); color: white; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--glass-border);">
                         <i class="fa-solid fa-camera"></i> Scan
                     </button>
                 </div>
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <span id="scan-loading" class="hidden" style="font-size: 12px; color: var(--accent);"><div class="spinner"></div> Scanning...</span>
                     <button onclick="saveNote()" class="btn btn-primary" style="margin: 0; padding: 10px 24px;">Save Note</button>
                 </div>
             </div>
-            <input type="file" id="scan-input" hidden accept="image/*" onchange="handleScan(event)">
+        </div>
+    </div>
+
+    <div id="scan-modal" class="modal-overlay" style="z-index: 150;">
+        <div class="modal-card" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h3 style="font-size: 20px; font-weight: 700;">Scan Note</h3>
+                <button onclick="closeScanModal()" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div id="scan-step-input">
+                <div class="scan-tabs">
+                    <button class="scan-tab active" data-scan-tab="draw" onclick="switchScanTab('draw')">
+                        <i class="fa-solid fa-pen"></i> Draw
+                    </button>
+                    <button class="scan-tab" data-scan-tab="upload" onclick="switchScanTab('upload')">
+                        <i class="fa-solid fa-upload"></i> Upload
+                    </button>
+                </div>
+
+                <div id="scan-tab-draw">
+                    <div class="canvas-toolbar">
+                        <button class="canvas-tool-btn active" data-tool="pen" onclick="selectDrawingTool('pen')">
+                            <i class="fa-solid fa-pen"></i> Pen
+                        </button>
+                        <button class="canvas-tool-btn" data-tool="eraser" onclick="selectDrawingTool('eraser')">
+                            <i class="fa-solid fa-eraser"></i> Eraser
+                        </button>
+                        <button class="canvas-tool-btn" onclick="clearDrawingCanvas()">
+                            <i class="fa-solid fa-trash-can"></i> Clear
+                        </button>
+                        <div class="canvas-separator"></div>
+                        <button class="canvas-size-btn" data-size="2" onclick="selectPenSize(2)">S</button>
+                        <button class="canvas-size-btn active" data-size="4" onclick="selectPenSize(4)">M</button>
+                        <button class="canvas-size-btn" data-size="8" onclick="selectPenSize(8)">L</button>
+                        <div class="canvas-separator"></div>
+                        <button class="canvas-color-btn active" data-color="#000000" style="background: #000000;" onclick="selectPenColor('#000000')"></button>
+                        <button class="canvas-color-btn" data-color="#3b82f6" style="background: #3b82f6;" onclick="selectPenColor('#3b82f6')"></button>
+                        <button class="canvas-color-btn" data-color="#ef4444" style="background: #ef4444;" onclick="selectPenColor('#ef4444')"></button>
+                    </div>
+                    <div class="canvas-container">
+                        <canvas id="drawing-canvas"></canvas>
+                    </div>
+                    <button onclick="submitDrawing()" class="btn btn-primary" style="width: 100%; margin: 0; padding: 12px;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Scan Drawing
+                    </button>
+                </div>
+
+                <div id="scan-tab-upload" class="hidden">
+                    <div class="upload-area" onclick="document.getElementById('scan-file-input').click()">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p style="font-size: 16px; font-weight: 600; color: white; margin-bottom: 8px;">Click to upload an image</p>
+                        <p style="font-size: 13px; color: var(--text-muted);">Supports JPEG, PNG, GIF, WebP, BMP (max 10MB)</p>
+                    </div>
+                    <input type="file" id="scan-file-input" hidden accept="image/*" onchange="submitUploadedFile(event)">
+                </div>
+            </div>
+
+            <div id="scan-step-loading" class="hidden">
+                <div class="scan-loading-content">
+                    <div class="spinner"></div>
+                    <p style="color: var(--text-muted); font-size: 16px;">Processing your image...</p>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">Extracting text with OCR</p>
+                </div>
+            </div>
+
+            <div id="scan-step-preview" class="hidden">
+                <div class="scan-preview-label">Extracted Text</div>
+                <textarea id="scan-preview-text" class="scan-preview-text" placeholder="No text was extracted..."></textarea>
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">You can edit the text above before saving.</p>
+                <div class="scan-actions">
+                    <button onclick="scanTryAgain()" class="btn btn-ghost">
+                        <i class="fa-solid fa-rotate-left"></i> Try Again
+                    </button>
+                    <button onclick="scanSaveAsNote()" class="btn btn-primary" style="margin: 0; padding: 10px 24px;">
+                        <i class="fa-solid fa-check"></i> Save as Note
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         const API_URL = "";
         let state = { token: localStorage.getItem('token'), name: localStorage.getItem('name'), notes: [], editingId: null, category: 'all' };
+        let drawingState = { isDrawing: false, tool: 'pen', penColor: '#000000', penSize: 4, canvas: null, ctx: null, listenersReady: false };
 
         document.addEventListener('DOMContentLoaded', () => {
             if(state.token) {
@@ -564,27 +823,180 @@
             }
         }
 
-        function triggerScan() { document.getElementById('scan-input').click(); }
+        function openScanModal() {
+            switchScanStep('input');
+            switchScanTab('draw');
+            document.getElementById('scan-modal').classList.add('open');
+            initDrawingCanvas();
+        }
 
-        async function handleScan(e) {
+        function closeScanModal() {
+            document.getElementById('scan-modal').classList.remove('open');
+        }
+
+        function switchScanTab(tab) {
+            document.querySelectorAll('.scan-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-scan-tab="' + tab + '"]').classList.add('active');
+            document.getElementById('scan-tab-draw').classList.toggle('hidden', tab !== 'draw');
+            document.getElementById('scan-tab-upload').classList.toggle('hidden', tab !== 'upload');
+        }
+
+        function switchScanStep(step) {
+            document.getElementById('scan-step-input').classList.toggle('hidden', step !== 'input');
+            document.getElementById('scan-step-loading').classList.toggle('hidden', step !== 'loading');
+            document.getElementById('scan-step-preview').classList.toggle('hidden', step !== 'preview');
+        }
+
+        function initDrawingCanvas() {
+            const canvas = document.getElementById('drawing-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 640;
+            canvas.height = 380;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            drawingState.canvas = canvas;
+            drawingState.ctx = ctx;
+            drawingState.tool = 'pen';
+            drawingState.penColor = '#000000';
+            drawingState.penSize = 4;
+            updateToolButtons();
+            if(!drawingState.listenersReady) {
+                canvas.addEventListener('mousedown', handleCanvasPointerDown);
+                canvas.addEventListener('mousemove', handleCanvasPointerMove);
+                canvas.addEventListener('mouseup', handleCanvasPointerUp);
+                canvas.addEventListener('mouseleave', handleCanvasPointerUp);
+                canvas.addEventListener('touchstart', function(e) { e.preventDefault(); handleCanvasPointerDown(e.touches[0]); }, { passive: false });
+                canvas.addEventListener('touchmove', function(e) { e.preventDefault(); handleCanvasPointerMove(e.touches[0]); }, { passive: false });
+                canvas.addEventListener('touchend', handleCanvasPointerUp);
+                drawingState.listenersReady = true;
+            }
+        }
+
+        function getCanvasCoordinates(e) {
+            const canvas = drawingState.canvas;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+        }
+
+        function handleCanvasPointerDown(e) {
+            drawingState.isDrawing = true;
+            const pos = getCanvasCoordinates(e);
+            drawingState.ctx.beginPath();
+            drawingState.ctx.moveTo(pos.x, pos.y);
+        }
+
+        function handleCanvasPointerMove(e) {
+            if(!drawingState.isDrawing) return;
+            const pos = getCanvasCoordinates(e);
+            const ctx = drawingState.ctx;
+            ctx.lineWidth = drawingState.tool === 'eraser' ? drawingState.penSize * 3 : drawingState.penSize;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = drawingState.tool === 'eraser' ? '#ffffff' : drawingState.penColor;
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        function handleCanvasPointerUp() {
+            drawingState.isDrawing = false;
+        }
+
+        function selectDrawingTool(tool) {
+            drawingState.tool = tool;
+            updateToolButtons();
+        }
+
+        function selectPenSize(size) {
+            drawingState.penSize = size;
+            updateToolButtons();
+        }
+
+        function selectPenColor(color) {
+            drawingState.penColor = color;
+            drawingState.tool = 'pen';
+            updateToolButtons();
+        }
+
+        function updateToolButtons() {
+            document.querySelectorAll('.canvas-tool-btn[data-tool]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tool === drawingState.tool);
+            });
+            document.querySelectorAll('.canvas-size-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.size) === drawingState.penSize);
+            });
+            document.querySelectorAll('.canvas-color-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.color === drawingState.penColor);
+            });
+        }
+
+        function clearDrawingCanvas() {
+            const ctx = drawingState.ctx;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, drawingState.canvas.width, drawingState.canvas.height);
+        }
+
+        function submitDrawing() {
+            switchScanStep('loading');
+            drawingState.canvas.toBlob(function(blob) {
+                const formData = new FormData();
+                formData.append('file', blob, 'drawing.png');
+                processOcrRequest(formData);
+            }, 'image/png');
+        }
+
+        function submitUploadedFile(e) {
             const file = e.target.files[0];
             if(!file) return;
-
-            const fd = new FormData();
-            fd.append('file', file);
-            
-            const loader = document.getElementById('scan-loading');
-            loader.classList.remove('hidden');
-            
-            try {
-                const res = await fetch(API_URL + '/notes/upload', {
-                    method: 'POST', headers: { 'Authorization': `Bearer ${state.token}` }, body: fd
-                });
-                loader.classList.add('hidden');
-                if(res.ok) { toast('Scanned!'); fetchNotes(); closeModal(); }
-                else toast('Scan failed');
-            } catch { loader.classList.add('hidden'); toast('Error'); }
+            switchScanStep('loading');
+            const formData = new FormData();
+            formData.append('file', file);
+            processOcrRequest(formData);
             e.target.value = '';
+        }
+
+        async function processOcrRequest(formData) {
+            try {
+                const response = await fetch(API_URL + '/notes/scan', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${state.token}` },
+                    body: formData
+                });
+                if(!response.ok) {
+                    toast('Scan failed. Please try again.');
+                    switchScanStep('input');
+                    return;
+                }
+                const data = await response.json();
+                document.getElementById('scan-preview-text').value = data.text || '';
+                switchScanStep('preview');
+            } catch(err) {
+                toast('Error connecting to scan service');
+                switchScanStep('input');
+            }
+        }
+
+        function scanTryAgain() {
+            switchScanStep('input');
+        }
+
+        async function scanSaveAsNote() {
+            const extractedText = document.getElementById('scan-preview-text').value;
+            if(!extractedText.trim()) {
+                toast('No text to save');
+                return;
+            }
+            const title = 'Scanned Note - ' + new Date().toLocaleDateString();
+            const result = await api('/notes', 'POST', { title, content: extractedText });
+            if(result) {
+                closeScanModal();
+                closeModal();
+                fetchNotes();
+                toast('Note saved!');
+            } else {
+                toast('Error saving note');
+            }
         }
 
         function toggleSidebar() {
