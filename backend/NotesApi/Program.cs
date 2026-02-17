@@ -302,53 +302,75 @@ app.MapPost("/notes/upload", async (
     if (!allowedTypes.Contains(file.ContentType.ToLower()))
         return Results.BadRequest(new { error = "Only image files (JPEG, PNG, GIF, WebP, BMP) are allowed" });
 
-    var aiServiceUrl = Environment.GetEnvironmentVariable("AI_SERVICE_URL") 
+    var aiServiceUrl = Environment.GetEnvironmentVariable("AI_SERVICE_URL")
         ?? "http://localhost:8000/extract-text";
 
-    using var client = clientFactory.CreateClient();
-    using var content = new MultipartFormDataContent();
+    using var uploadMemoryStream = new MemoryStream();
+    await file.OpenReadStream().CopyToAsync(uploadMemoryStream);
+    var uploadFileBytes = uploadMemoryStream.ToArray();
 
-    using var fileStream = file.OpenReadStream();
-    var streamContent = new StreamContent(fileStream);
-    streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-
-    content.Add(streamContent, "file", file.FileName);
-
-    try
+    const int uploadMaxRetries = 3;
+    for (int attempt = 0; attempt < uploadMaxRetries; attempt++)
     {
-        var response = await client.PostAsync(aiServiceUrl, content);
-
-        if (!response.IsSuccessStatusCode)
-            return Results.Json(new { error = "Python AI Service failed." }, statusCode: (int)response.StatusCode);
-
-        var jsonString = await response.Content.ReadAsStringAsync();
-        using var doc = JsonDocument.Parse(jsonString);
-        
-        string extractedText = "";
-        if (doc.RootElement.TryGetProperty("text", out var textElement))
+        try
         {
-            extractedText = textElement.GetString() ?? "";
+            using var client = clientFactory.CreateClient();
+            using var formContent = new MultipartFormDataContent();
+            var streamContent = new StreamContent(new MemoryStream(uploadFileBytes));
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+            formContent.Add(streamContent, "file", file.FileName);
+
+            var response = await client.PostAsync(aiServiceUrl, formContent);
+
+            if ((int)response.StatusCode == 429)
+            {
+                if (attempt < uploadMaxRetries - 1)
+                {
+                    await Task.Delay((attempt + 1) * 1000);
+                    continue;
+                }
+                return Results.Json(new { error = "OCR service is busy. Please try again in a moment." }, statusCode: 503);
+            }
+
+            if (!response.IsSuccessStatusCode)
+                return Results.Json(new { error = "Python AI Service failed." }, statusCode: 502);
+
+            var jsonString = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(jsonString);
+
+            string extractedText = "";
+            if (doc.RootElement.TryGetProperty("text", out var textElement))
+            {
+                extractedText = textElement.GetString() ?? "";
+            }
+
+            var newNote = new Note
+            {
+                Id = Guid.NewGuid(),
+                Title = "Scanned Note - " + DateTime.Now.ToShortDateString(),
+                Content = extractedText,
+                UserId = userId,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            db.Notes.Add(newNote);
+            await db.SaveChangesAsync();
+
+            return Results.Ok(newNote);
         }
-
-        var newNote = new Note
+        catch (Exception)
         {
-            Id = Guid.NewGuid(),
-            Title = "Scanned Note - " + DateTime.Now.ToShortDateString(),
-            Content = extractedText,
-            UserId = userId,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-
-        db.Notes.Add(newNote);
-        await db.SaveChangesAsync();
-
-        return Results.Ok(newNote);
+            if (attempt < uploadMaxRetries - 1)
+            {
+                await Task.Delay((attempt + 1) * 1000);
+                continue;
+            }
+            return Results.Problem("AI service is currently unavailable. Please try again later.");
+        }
     }
-    catch (Exception)
-    {
-        return Results.Problem("AI service is currently unavailable. Please try again later.");
-    }
+
+    return Results.Problem("AI service is currently unavailable. Please try again later.");
 })
 .RequireAuthorization()
 .DisableAntiforgery();
@@ -375,33 +397,57 @@ app.MapPost("/notes/scan", async (
     var aiServiceUrl = Environment.GetEnvironmentVariable("AI_SERVICE_URL")
         ?? "http://localhost:8000/extract-text";
 
-    using var client = clientFactory.CreateClient();
-    using var content = new MultipartFormDataContent();
+    using var memoryStream = new MemoryStream();
+    await file.OpenReadStream().CopyToAsync(memoryStream);
+    var fileBytes = memoryStream.ToArray();
 
-    using var fileStream = file.OpenReadStream();
-    var streamContent = new StreamContent(fileStream);
-    streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-    content.Add(streamContent, "file", file.FileName);
-
-    try
+    const int maxRetries = 3;
+    for (int attempt = 0; attempt < maxRetries; attempt++)
     {
-        var response = await client.PostAsync(aiServiceUrl, content);
-        if (!response.IsSuccessStatusCode)
-            return Results.Json(new { error = "OCR service failed" }, statusCode: (int)response.StatusCode);
+        try
+        {
+            using var client = clientFactory.CreateClient();
+            using var formContent = new MultipartFormDataContent();
+            var streamContent = new StreamContent(new MemoryStream(fileBytes));
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+            formContent.Add(streamContent, "file", file.FileName);
 
-        var jsonString = await response.Content.ReadAsStringAsync();
-        using var doc = JsonDocument.Parse(jsonString);
+            var response = await client.PostAsync(aiServiceUrl, formContent);
 
-        string extractedText = "";
-        if (doc.RootElement.TryGetProperty("text", out var textElement))
-            extractedText = textElement.GetString() ?? "";
+            if ((int)response.StatusCode == 429)
+            {
+                if (attempt < maxRetries - 1)
+                {
+                    await Task.Delay((attempt + 1) * 1000);
+                    continue;
+                }
+                return Results.Json(new { error = "OCR service is busy. Please try again in a moment." }, statusCode: 503);
+            }
 
-        return Results.Ok(new { text = extractedText });
+            if (!response.IsSuccessStatusCode)
+                return Results.Json(new { error = "OCR service failed" }, statusCode: 502);
+
+            var jsonString = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(jsonString);
+
+            string extractedText = "";
+            if (doc.RootElement.TryGetProperty("text", out var textElement))
+                extractedText = textElement.GetString() ?? "";
+
+            return Results.Ok(new { text = extractedText });
+        }
+        catch (Exception)
+        {
+            if (attempt < maxRetries - 1)
+            {
+                await Task.Delay((attempt + 1) * 1000);
+                continue;
+            }
+            return Results.Problem("AI service is currently unavailable. Please try again later.");
+        }
     }
-    catch (Exception)
-    {
-        return Results.Problem("AI service is currently unavailable. Please try again later.");
-    }
+
+    return Results.Problem("AI service is currently unavailable. Please try again later.");
 })
 .RequireAuthorization()
 .DisableAntiforgery();
