@@ -40,7 +40,3 @@ async def extract_text(file: UploadFile = File(...)):
     except Exception as e:
         print(f"Error: {str(e)}")
         raise HTTPException(status_code=500, detail="OCR processing failed")
-
-@app.post("/ocr")
-async def extract_text_alias(file: UploadFile = File(...)):
-    return await extract_text(file)
