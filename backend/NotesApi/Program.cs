@@ -302,8 +302,9 @@ app.MapPost("/notes/upload", async (
     if (!allowedTypes.Contains(file.ContentType.ToLower()))
         return Results.BadRequest(new { error = "Only image files (JPEG, PNG, GIF, WebP, BMP) are allowed" });
 
-    var aiServiceUrl = Environment.GetEnvironmentVariable("AI_SERVICE_URL")
-        ?? "http://localhost:8000/extract-text";
+    var aiServiceBase = Environment.GetEnvironmentVariable("AI_SERVICE_URL")
+        ?? "http://localhost:8000";
+    var aiServiceUrl = aiServiceBase.TrimEnd('/') + "/extract-text";
 
     using var uploadMemoryStream = new MemoryStream();
     await file.OpenReadStream().CopyToAsync(uploadMemoryStream);
@@ -394,8 +395,9 @@ app.MapPost("/notes/scan", async (
     if (!allowedTypes.Contains(file.ContentType.ToLower()))
         return Results.BadRequest(new { error = "Only image files are allowed" });
 
-    var aiServiceUrl = Environment.GetEnvironmentVariable("AI_SERVICE_URL")
-        ?? "http://localhost:8000/extract-text";
+    var aiServiceBase = Environment.GetEnvironmentVariable("AI_SERVICE_URL")
+        ?? "http://localhost:8000";
+    var aiServiceUrl = aiServiceBase.TrimEnd('/') + "/extract-text";
 
     using var memoryStream = new MemoryStream();
     await file.OpenReadStream().CopyToAsync(memoryStream);

@@ -104,7 +104,7 @@ persistent-ai-ml-internship/
 ```
 DATABASE_URL=postgresql://user:pass@host/db?sslmode=require
 JWT_SECRET_KEY=your-secret-key-minimum-32-characters
-AI_SERVICE_URL=https://your-ai-service.onrender.com/ocr
+AI_SERVICE_URL=https://your-ai-service.onrender.com
 ```
 
 ### Backend (Optional)
