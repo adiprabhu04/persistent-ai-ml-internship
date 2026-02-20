@@ -1,10 +1,11 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from google.cloud import vision
 import pytesseract
 from PIL import Image, ImageEnhance
 import io
 
-app = FastAPI(title="Notely OCR Service (Lite)")
+app = FastAPI(title="Notely OCR Service")
 
 app.add_middleware(
     CORSMiddleware,
@@ -52,7 +53,7 @@ def get_tesseract_config(image_type: str = "auto") -> str:
 
 @app.get("/")
 def health_check():
-    return {"status": "healthy", "model": "Tesseract OCR"}
+    return {"status": "healthy", "model": "Google Cloud Vision OCR"}
 
 
 @app.get("/health")
@@ -64,16 +65,23 @@ def health():
 async def extract_text(
     file: UploadFile = File(...),
     image_type: str = Query(default="auto", description="Image type: auto, document, screenshot, photo, sparse"),
-    lang: str = Query(default="eng", description="Tesseract language code"),
+    lang: str = Query(default="eng", description="Tesseract language code (used as fallback)"),
 ):
     try:
         contents = await file.read()
         image = Image.open(io.BytesIO(contents))
 
-        processed = preprocess_image(image, image_type)
-
-        config = get_tesseract_config(image_type)
-        text = pytesseract.image_to_string(processed, lang=lang, config=config)
+        try:
+            client = vision.ImageAnnotatorClient()
+            vision_image = vision.Image(content=contents)
+            response = client.document_text_detection(image=vision_image)
+            if response.error.message:
+                raise Exception(response.error.message)
+            text = response.full_text_annotation.text
+        except Exception:
+            processed = preprocess_image(image, image_type)
+            config = get_tesseract_config(image_type)
+            text = pytesseract.image_to_string(processed, lang=lang, config=config)
 
         return {
             "success": True,
