@@ -17,9 +17,10 @@ A modern, full-stack notes application with AI-powered handwriting recognition (
 - Sort by newest, oldest, or title
 
 ### AI Features
-- Handwriting-to-text OCR using EasyOCR
+- Handwriting-to-text OCR using Google Cloud Vision API
 - Upload images of handwritten notes
 - Automatic text extraction and note creation
+- Falls back to Tesseract OCR if Vision API is unavailable
 
 ### UI/UX Features
 - Modern, responsive design
@@ -47,7 +48,7 @@ A modern, full-stack notes application with AI-powered handwriting recognition (
 
 ### AI Service
 - **Framework**: FastAPI (Python)
-- **OCR Engine**: EasyOCR
+- **OCR Engine**: Google Cloud Vision API (Tesseract fallback)
 - **Server**: Uvicorn ASGI
 
 ## Project Structure
@@ -115,7 +116,25 @@ ALLOWED_ORIGINS=https://yourdomain.com,https://app.yourdomain.com
 ### AI Service
 ```
 PORT=8080
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account-key.json
 ```
+
+#### Setting up Google Cloud Vision API
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the **Cloud Vision API** for your project
+4. Go to **IAM & Admin → Service Accounts** and create a service account
+5. Download the JSON key file for the service account
+6. Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the path of the downloaded JSON file:
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account-key.json"
+```
+
+On Render, add `GOOGLE_APPLICATION_CREDENTIALS` as an environment variable with the full contents of the JSON key file, or mount the file as a secret and point the variable to its path.
+
+The Vision API offers 1,000 free requests per month. If credentials are not configured, the service automatically falls back to Tesseract OCR.
 
 ## Local Development
 
@@ -236,6 +255,6 @@ This project is part of a full-stack internship program at Persistent Systems.
 
 ## Acknowledgments
 
-- EasyOCR for handwriting recognition
+- Google Cloud Vision API for handwriting recognition
 - Neon for PostgreSQL hosting
 - Render for deployment platform
