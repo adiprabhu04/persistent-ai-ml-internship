@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Notely | AI Workspace</title>
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -22,9 +22,9 @@
         body {
             font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+            background-image:
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%),
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%),
                 radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
             color: var(--text-main);
             height: 100vh;
@@ -49,11 +49,12 @@
             gap: 8px;
         }
         .btn:active { transform: scale(0.98); }
+        .btn:disabled { cursor: not-allowed; opacity: 0.7; transform: none !important; }
 
         .page { display: none; width: 100%; height: 100%; }
         .page.active { display: flex; }
         .hidden { display: none !important; }
-        
+
         .auth-container {
             display: flex;
             align-items: center;
@@ -93,11 +94,12 @@
             font-size: 16px;
             margin-top: 10px;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            font-family: inherit;
         }
-        .btn-primary:hover { background: var(--accent-hover); }
-        
+        .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
         .dashboard { display: flex; width: 100%; height: 100%; }
-        
+
         .sidebar {
             width: 280px;
             border-right: 1px solid var(--glass-border);
@@ -118,7 +120,7 @@
 
         .brand { font-size: 20px; font-weight: 700; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
         .brand-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #6366f1, #a855f7); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-        
+
         .nav-btn {
             width: 100%;
             padding: 12px 16px;
@@ -133,7 +135,7 @@
         }
         .nav-btn:hover { background: rgba(255,255,255,0.05); color: white; }
         .nav-btn.active { background: rgba(99, 102, 241, 0.15); color: var(--accent); border: 1px solid rgba(99, 102, 241, 0.2); }
-        
+
         .user-profile { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; gap: 12px; }
         .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(to right, #3b82f6, #14b8a6); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
 
@@ -183,7 +185,7 @@
         .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
         .close-btn { background: rgba(255,255,255,0.1); width: 32px; height: 32px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; }
         .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-        
+
         @media (max-width: 768px) {
             .dashboard { flex-direction: column; }
             .sidebar { position: fixed; height: 100%; left: -280px; transition: 0.3s; }
@@ -191,20 +193,113 @@
             .top-bar { flex-direction: column; align-items: flex-start; gap: 16px; }
             .search-box { width: 100%; }
             .mobile-header { display: flex; padding: 16px; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); }
+            #toast-container { top: 12px; right: 12px; left: 12px; }
+            .toast-item { min-width: auto; max-width: 100%; }
         }
         @media (min-width: 769px) { .mobile-header { display: none; } }
 
-        .toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            background: white; color: #0f172a; padding: 12px 24px; border-radius: 50px;
-            font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: 0.4s; z-index: 200;
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
         }
-        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast-item {
+            background: rgba(13, 20, 38, 0.97);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 13px 14px 13px 16px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            min-width: 300px;
+            max-width: 390px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2);
+            pointer-events: auto;
+            transform: translateX(calc(100% + 40px));
+            transition: transform 0.38s cubic-bezier(0.34, 1.15, 0.64, 1), opacity 0.38s ease;
+            opacity: 0;
+            border-left: 3px solid transparent;
+        }
+        .toast-item.toast-visible { transform: translateX(0); opacity: 1; }
+        .toast-item.toast-hiding {
+            transform: translateX(calc(100% + 40px));
+            opacity: 0;
+            transition: transform 0.3s ease-in, opacity 0.3s ease-in;
+        }
+        .toast-success { border-left-color: #10b981; }
+        .toast-error { border-left-color: #ef4444; }
+        .toast-info { border-left-color: #6366f1; }
+        .toast-warning { border-left-color: #f59e0b; }
+        .toast-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        .toast-success .toast-icon { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .toast-error .toast-icon { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .toast-info .toast-icon { background: rgba(99, 102, 241, 0.15); color: #6366f1; }
+        .toast-warning .toast-icon { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .toast-message {
+            flex: 1;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--text-main);
+            line-height: 1.45;
+        }
+        .toast-dismiss-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            opacity: 0.55;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+        }
+        .toast-dismiss-btn:hover { opacity: 1; }
+
         .spinner {
             width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: var(--accent);
-            border-radius: 50%; animation: spin 1s linear infinite; display: inline-block;
+            border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; flex-shrink: 0;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .skeleton-line {
+            background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.7s ease-in-out infinite;
+            border-radius: 6px;
+        }
+        .skeleton-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px;
+            height: 240px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
         .scan-tabs {
             display: flex;
@@ -304,7 +399,7 @@
         .canvas-container {
             display: flex;
             justify-content: center;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
         }
         #drawing-canvas {
             display: block;
@@ -320,7 +415,7 @@
         .upload-area {
             border: 2px dashed rgba(99, 102, 241, 0.3);
             border-radius: 16px;
-            padding: 60px 20px;
+            padding: 50px 20px;
             text-align: center;
             cursor: pointer;
             transition: 0.2s;
@@ -330,20 +425,43 @@
             background: rgba(99, 102, 241, 0.05);
         }
         .upload-area i {
-            font-size: 48px;
+            font-size: 44px;
             color: var(--accent);
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             display: block;
+        }
+        .upload-preview-img {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 14px;
         }
         .scan-loading-content {
             text-align: center;
             padding: 60px 20px;
         }
         .scan-loading-content .spinner {
-            width: 40px;
-            height: 40px;
-            margin: 0 auto 16px;
+            width: 42px;
+            height: 42px;
+            margin: 0 auto;
             border-width: 3px;
+        }
+        .scan-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 7px 14px;
+            background: rgba(99, 102, 241, 0.07);
+            border-radius: 9px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            border: 1px solid rgba(99, 102, 241, 0.12);
         }
         .scan-preview-label {
             font-size: 12px;
@@ -385,12 +503,22 @@
             font-family: inherit;
             border: 1px solid var(--glass-border);
         }
-        .btn-ghost:hover { background: rgba(255,255,255,0.1); color: white; }
+        .btn-ghost:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: white; }
+        .scan-error-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="toast" class="toast">Action Successful</div>
+    <div id="toast-container" role="region" aria-label="Notifications"></div>
 
     <div id="auth-page" class="page active">
         <div class="auth-container">
@@ -415,7 +543,7 @@
                         <label>Password</label>
                         <input type="password" id="login-password" class="glass-input" placeholder="••••••••" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Sign In</button>
+                    <button type="submit" id="login-btn" class="btn btn-primary">Sign In</button>
                 </form>
 
                 <form id="register-form" onsubmit="handleRegister(event)" class="hidden">
@@ -431,7 +559,7 @@
                         <label>Password</label>
                         <input type="password" id="reg-pass" class="glass-input" placeholder="••••••••" required>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="background: #10b981;">Create Account</button>
+                    <button type="submit" id="register-btn" class="btn btn-primary" style="background: #10b981;">Create Account</button>
                     <p id="reg-error" style="color: #ef4444; font-size: 13px; text-align: center; margin-top: 10px;" class="hidden"></p>
                 </form>
             </div>
@@ -445,7 +573,7 @@
                     <div class="brand-icon"><i class="fa-solid fa-layer-group"></i></div>
                     <span>Notely</span>
                 </div>
-                
+
                 <button onclick="openModal()" class="btn" style="background: rgba(255,255,255,0.1); color: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--glass-border);">
                     <i class="fa-solid fa-plus"></i> New Note
                 </button>
@@ -480,11 +608,11 @@
                     </div>
                     <div class="search-box">
                         <i class="fa-solid fa-search search-icon"></i>
-                        <input type="text" onkeyup="filterNotes(this.value)" class="glass-input" placeholder="Search notes...">
+                        <input type="text" id="search-input" onkeyup="filterNotes(this.value)" class="glass-input" placeholder="Search notes..." aria-label="Search notes">
                     </div>
                 </div>
 
-                <div id="notes-grid" class="notes-grid">
+                <div id="notes-grid" class="notes-grid" role="list" aria-label="Notes list">
                 </div>
             </main>
         </div>
@@ -496,9 +624,9 @@
                 <h3 style="font-size: 20px; font-weight: 700;">Edit Note</h3>
                 <button onclick="closeModal()" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
+
             <input type="text" id="note-title" placeholder="Untitled Note" style="width: 100%; background: transparent; border: none; font-size: 24px; font-weight: 700; color: white; margin-bottom: 16px;">
-            
+
             <textarea id="note-content" placeholder="Start typing or scan an image..." style="width: 100%; height: 200px; background: rgba(0,0,0,0.2); border: none; border-radius: 12px; padding: 16px; color: var(--text-muted); resize: none; font-size: 16px; margin-bottom: 20px;"></textarea>
 
             <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between;">
@@ -514,7 +642,7 @@
                     </button>
                 </div>
                 <div style="display: flex; gap: 10px; align-items: center;">
-                    <button onclick="saveNote()" class="btn btn-primary" style="margin: 0; padding: 10px 24px;">Save Note</button>
+                    <button onclick="saveNote()" id="save-note-btn" class="btn btn-primary" style="margin: 0; padding: 10px 24px;">Save Note</button>
                 </div>
             </div>
         </div>
@@ -538,6 +666,10 @@
                 </div>
 
                 <div id="scan-tab-draw">
+                    <div class="scan-hint">
+                        <i class="fa-solid fa-circle-info"></i>
+                        Draw or write here, then click Scan to extract text
+                    </div>
                     <div class="canvas-toolbar">
                         <button class="canvas-tool-btn active" data-tool="pen" onclick="selectDrawingTool('pen')">
                             <i class="fa-solid fa-pen"></i> Pen
@@ -566,27 +698,60 @@
                 </div>
 
                 <div id="scan-tab-upload" class="hidden">
-                    <div class="upload-area" onclick="document.getElementById('scan-file-input').click()">
+                    <div id="upload-drop-area" class="upload-area" onclick="document.getElementById('scan-file-input').click()">
                         <i class="fa-solid fa-cloud-arrow-up"></i>
                         <p style="font-size: 16px; font-weight: 600; color: white; margin-bottom: 8px;">Click to upload an image</p>
-                        <p style="font-size: 13px; color: var(--text-muted);">Supports JPEG, PNG, GIF, WebP, BMP (max 10MB)</p>
+                        <p style="font-size: 13px; color: var(--text-muted);">Upload a clear photo of text for best results</p>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px; opacity: 0.7;">JPEG, PNG, GIF, WebP, BMP — max 10MB</p>
                     </div>
-                    <input type="file" id="scan-file-input" hidden accept="image/*" onchange="submitUploadedFile(event)">
+                    <input type="file" id="scan-file-input" hidden accept="image/*" onchange="handleFileSelected(event)">
+
+                    <div id="upload-preview-section" class="hidden" style="margin-top: 4px;">
+                        <img id="upload-preview-img" src="" alt="Selected image preview" class="upload-preview-img">
+                        <div class="scan-hint" style="margin-bottom: 14px;">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Make sure text is clearly visible and well-lit for best OCR accuracy
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="chooseDifferentImage()" class="btn btn-ghost" style="flex: 1;">
+                                <i class="fa-solid fa-rotate"></i> Choose Different Image
+                            </button>
+                            <button onclick="processPendingUpload()" class="btn btn-primary" style="flex: 1; margin: 0; padding: 10px;">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Scan This Image
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div id="scan-step-loading" class="hidden">
-                <div class="scan-loading-content">
-                    <div class="spinner"></div>
-                    <p style="color: var(--text-muted); font-size: 16px;">Processing your image...</p>
-                    <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">Extracting text with OCR</p>
+                <div class="scan-loading-content" aria-live="polite">
+                    <div class="spinner" aria-hidden="true"></div>
+                    <p style="color: var(--text-main); font-size: 16px; font-weight: 600; margin-top: 18px;">Analyzing image...</p>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">Extracting text with OCR — this may take a few seconds</p>
+                </div>
+            </div>
+
+            <div id="scan-step-error" class="hidden">
+                <div style="text-align: center; padding: 40px 20px;" aria-live="assertive">
+                    <div class="scan-error-icon">
+                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 26px; color: #ef4444;"></i>
+                    </div>
+                    <p id="scan-error-title" style="font-size: 17px; font-weight: 700; color: var(--text-main); margin-bottom: 10px;"></p>
+                    <p id="scan-error-detail" style="font-size: 13px; color: var(--text-muted); margin-bottom: 26px; line-height: 1.65; max-width: 340px; margin-left: auto; margin-right: auto;"></p>
+                    <button onclick="switchScanStep('input')" class="btn btn-primary" style="margin: 0; padding: 11px 30px; width: auto; display: inline-flex;">
+                        <i class="fa-solid fa-rotate-left"></i> Try Again
+                    </button>
                 </div>
             </div>
 
             <div id="scan-step-preview" class="hidden">
                 <div class="scan-preview-label">Extracted Text</div>
-                <textarea id="scan-preview-text" class="scan-preview-text" placeholder="No text was extracted..."></textarea>
-                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">You can edit the text above before saving.</p>
+                <textarea id="scan-preview-text" class="scan-preview-text" placeholder="No text was extracted..." aria-label="Extracted text — editable before saving"></textarea>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 9px 0 14px; display: flex; align-items: center; gap: 7px;">
+                    <i class="fa-solid fa-pen-to-square" style="color: var(--accent); flex-shrink: 0;"></i>
+                    Review and edit the extracted text before saving as a note.
+                </p>
                 <div class="scan-actions">
                     <button onclick="scanTryAgain()" class="btn btn-ghost">
                         <i class="fa-solid fa-rotate-left"></i> Try Again
@@ -599,10 +764,28 @@
         </div>
     </div>
 
+    <div id="confirm-modal" class="modal-overlay" style="z-index: 200;">
+        <div class="modal-card" style="max-width: 380px; text-align: center;">
+            <div style="padding: 10px 0 26px;">
+                <div style="width: 58px; height: 58px; border-radius: 50%; background: rgba(239,68,68,0.12); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;">
+                    <i class="fa-solid fa-trash" style="color: #ef4444; font-size: 22px;"></i>
+                </div>
+                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 10px;">Delete Note</h3>
+                <p style="color: var(--text-muted); font-size: 14px; line-height: 1.55;">This note will be permanently deleted and cannot be recovered.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="cancelConfirm()" class="btn btn-ghost" style="flex: 1;">Keep Note</button>
+                <button onclick="executeConfirm()" class="btn" style="flex: 1; background: #ef4444; color: white; padding: 10px; border-radius: 12px; font-family: inherit; font-weight: 600;">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_URL = "";
         let state = { token: localStorage.getItem('token'), name: localStorage.getItem('name'), notes: [], editingId: null, category: 'all' };
         let drawingState = { isDrawing: false, tool: 'pen', penColor: '#000000', penSize: 4, canvas: null, ctx: null, listenersReady: false };
+        let pendingUploadFile = null;
+        let pendingConfirmAction = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             if(state.token) {
@@ -655,12 +838,27 @@
             } catch(e) { return null; }
         }
 
+        function setButtonLoading(btn, isLoading, loadingText = 'Loading...') {
+            if(isLoading) {
+                btn.dataset.originalHtml = btn.innerHTML;
+                btn.innerHTML = `<div class="spinner" style="width: 15px; height: 15px;" aria-hidden="true"></div> ${loadingText}`;
+                btn.disabled = true;
+            } else {
+                btn.innerHTML = btn.dataset.originalHtml || btn.innerHTML;
+                btn.disabled = false;
+            }
+        }
+
         async function handleLogin(e) {
             e.preventDefault();
+            const btn = document.getElementById('login-btn');
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
+
+            setButtonLoading(btn, true, 'Signing in...');
             const res = await api('/auth/login', 'POST', { email, password });
-            
+            setButtonLoading(btn, false);
+
             if(res && res.token) {
                 state.token = res.token;
                 state.name = res.name || 'User';
@@ -669,36 +867,40 @@
                 showPage('dashboard-page');
                 updateUI();
                 fetchNotes();
-                toast('Welcome back!');
+                toast('Welcome back!', 'success');
             } else {
-                toast('Invalid credentials');
+                toast('Invalid email or password. Please try again.', 'error');
             }
         }
 
         async function handleRegister(e) {
             e.preventDefault();
             const errEl = document.getElementById('reg-error');
+            const btn = document.getElementById('register-btn');
             errEl.classList.add('hidden');
-            
+
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-pass').value;
 
+            setButtonLoading(btn, true, 'Creating account...');
             try {
                 const res = await fetch(API_URL + '/auth/register', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, password })
                 });
                 const data = await res.json().catch(() => null);
+                setButtonLoading(btn, false);
                 if(res.ok) {
-                    toast('Account created! Login now.');
+                    toast('Account created! You can now sign in.', 'success');
                     toggleAuth('login');
                 } else {
-                    errEl.textContent = (data && data.error) ? data.error : 'Registration failed.';
+                    errEl.textContent = (data && data.error) ? data.error : 'Registration failed. Please try again.';
                     errEl.classList.remove('hidden');
                 }
-            } catch(e) {
-                errEl.textContent = 'Server unreachable.';
+            } catch(err) {
+                setButtonLoading(btn, false);
+                errEl.textContent = 'Unable to reach the server. Please check your connection.';
                 errEl.classList.remove('hidden');
             }
         }
@@ -715,24 +917,67 @@
 
         async function fetchNotes() {
             const grid = document.getElementById('notes-grid');
-            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><div class="spinner"></div></div>';
+            renderSkeletonLoaders(grid);
             const res = await api('/notes?page=1&pageSize=100');
-            if(res) { state.notes = res.data || []; renderNotes(); }
-            else { grid.innerHTML = ''; }
+            if(res) {
+                state.notes = res.data || [];
+                renderNotes();
+            } else {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 70px 20px;">
+                        <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(239,68,68,0.08); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;">
+                            <i class="fa-solid fa-wifi" style="font-size: 26px; color: #ef4444; opacity: 0.75;"></i>
+                        </div>
+                        <p style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Unable to load notes</p>
+                        <p style="font-size: 13px; margin-bottom: 22px;">Check your internet connection and try again.</p>
+                        <button onclick="fetchNotes()" class="btn btn-primary" style="margin: 0; padding: 10px 26px; width: auto; display: inline-flex;">
+                            <i class="fa-solid fa-rotate-right"></i> Retry
+                        </button>
+                    </div>`;
+            }
+        }
+
+        function renderSkeletonLoaders(grid) {
+            grid.innerHTML = Array(6).fill(0).map(() => `
+                <div class="skeleton-card" role="status" aria-label="Loading note">
+                    <div class="skeleton-line" style="width: 52px; height: 12px;"></div>
+                    <div class="skeleton-line" style="width: 72%; height: 20px;"></div>
+                    <div class="skeleton-line" style="width: 100%; height: 13px;"></div>
+                    <div class="skeleton-line" style="width: 86%; height: 13px;"></div>
+                    <div class="skeleton-line" style="width: 62%; height: 13px;"></div>
+                </div>
+            `).join('');
         }
 
         function renderNotes() {
             const grid = document.getElementById('notes-grid');
             grid.innerHTML = '';
-            
+
             let filtered = state.notes;
             if(state.category !== 'all') filtered = filtered.filter(n => (n.content||'').toLowerCase().includes('#'+state.category));
 
             if(filtered.length === 0) {
+                const isFirstVisit = state.notes.length === 0 && !localStorage.getItem('hasSeenWelcome');
+                if(isFirstVisit) localStorage.setItem('hasSeenWelcome', '1');
+
+                let emptyContent;
+                if(isFirstVisit) {
+                    emptyContent = `
+                        <p style="font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 10px;">Welcome to Notely!</p>
+                        <p style="font-size: 14px; margin-bottom: 6px;">Click <strong style="color: var(--accent);">+ New Note</strong> in the sidebar to create your first note.</p>
+                        <p style="font-size: 13px;">Or use <strong style="color: var(--accent);">Scan</strong> inside a note to extract text from an image.</p>`;
+                } else if(state.category !== 'all') {
+                    emptyContent = `
+                        <p style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">No ${state.category} notes yet</p>
+                        <p style="font-size: 13px;">Add a note tagged with <strong>#${state.category}</strong> to see it here.</p>`;
+                } else {
+                    emptyContent = `<p style="font-size: 15px; font-weight: 600; color: var(--text-main);">No notes found</p>`;
+                }
+
                 grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">
-                        <i class="fa-regular fa-folder-open" style="font-size: 48px; opacity: 0.3; margin-bottom: 16px;"></i>
-                        <p>No notes found.</p>
+                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 70px 20px;">
+                        <i class="fa-regular fa-folder-open" style="font-size: 52px; opacity: 0.22; margin-bottom: 22px; display: block;"></i>
+                        ${emptyContent}
                     </div>`;
                 return;
             }
@@ -740,13 +985,14 @@
             filtered.forEach(note => {
                 const el = document.createElement('div');
                 el.className = 'note-card';
-                
+                el.setAttribute('role', 'listitem');
+
                 let tagTxt = '';
                 if(note.content.includes('#work')) tagTxt = 'WORK';
                 else if(note.content.includes('#personal')) tagTxt = 'PERSONAL';
                 else if(note.content.includes('#idea')) tagTxt = 'IDEA';
 
-                let tagHtml = tagTxt ? `<div class="note-tag" style="background: rgba(99,102,241,0.2); color: #818cf8;">${tagTxt}</div>` : '';
+                const tagHtml = tagTxt ? `<div class="note-tag" style="background: rgba(99,102,241,0.2); color: #818cf8;">${tagTxt}</div>` : '';
 
                 el.innerHTML = `
                     ${tagHtml}
@@ -754,7 +1000,7 @@
                     <div class="note-title">${esc(note.title)}</div>
                     <div class="note-body">${esc(note.content)}</div>
                     <div style="margin-top: auto; display: flex; gap: 8px;">
-                         <button onclick="deleteNote(event, '${note.id}')" class="btn" style="background: rgba(255,255,255,0.05); width: 32px; height: 32px; border-radius: 6px; color: var(--text-muted);"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="deleteNote(event, '${note.id}')" class="btn" aria-label="Delete: ${esc(note.title)}" style="background: rgba(255,255,255,0.05); width: 32px; height: 32px; border-radius: 6px; color: var(--text-muted);"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
                 el.onclick = (e) => { if(!e.target.closest('button')) openModal(note); };
@@ -771,18 +1017,38 @@
         }
 
         function filterNotes(q) {
-            const lower = q.toLowerCase();
+            const lower = q.toLowerCase().trim();
+            const grid = document.getElementById('notes-grid');
             const cards = document.querySelectorAll('.note-card');
+            let visibleCount = 0;
+
             cards.forEach(c => {
-                c.style.display = c.innerText.toLowerCase().includes(lower) ? 'flex' : 'none';
+                const visible = c.innerText.toLowerCase().includes(lower);
+                c.style.display = visible ? 'flex' : 'none';
+                if(visible) visibleCount++;
             });
+
+            const existingEmptyMsg = grid.querySelector('[data-search-empty]');
+            if(existingEmptyMsg) existingEmptyMsg.remove();
+
+            if(lower && visibleCount === 0 && cards.length > 0) {
+                const msg = document.createElement('div');
+                msg.setAttribute('data-search-empty', '1');
+                msg.style.cssText = 'grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 70px 20px;';
+                msg.innerHTML = `
+                    <i class="fa-solid fa-magnifying-glass" style="font-size: 48px; opacity: 0.22; margin-bottom: 18px; display: block;"></i>
+                    <p style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">No results for &ldquo;${esc(q)}&rdquo;</p>
+                    <p style="font-size: 13px;">Try different keywords, or check your spelling.</p>
+                `;
+                grid.appendChild(msg);
+            }
         }
 
         function openModal(note = null) {
             state.editingId = note ? note.id : null;
             document.getElementById('note-title').value = note ? note.title : '';
             document.getElementById('note-content').value = note ? note.content : '';
-            
+
             const catSelect = document.getElementById('note-category');
             catSelect.value = 'general';
             if(note) {
@@ -790,6 +1056,10 @@
                 if(note.content.includes('#personal')) catSelect.value = 'personal';
                 if(note.content.includes('#idea')) catSelect.value = 'ideas';
             }
+
+            const saveBtn = document.getElementById('save-note-btn');
+            saveBtn.innerHTML = 'Save Note';
+            saveBtn.disabled = false;
 
             document.getElementById('note-modal').classList.add('open');
         }
@@ -802,30 +1072,59 @@
             const title = document.getElementById('note-title').value;
             let content = document.getElementById('note-content').value;
             const cat = document.getElementById('note-category').value;
-            
-            if(!title) { toast('Title required'); return; }
+            const saveBtn = document.getElementById('save-note-btn');
+
+            if(!title) { toast('Please enter a title for your note.', 'warning'); return; }
             if(cat !== 'general' && !content.includes('#'+cat)) content += `\n\n#${cat}`;
 
             const method = state.editingId ? 'PUT' : 'POST';
             const url = state.editingId ? `/notes/${state.editingId}` : '/notes';
-            
+
+            setButtonLoading(saveBtn, true, 'Saving...');
             const res = await api(url, method, { title, content });
-            if(res) { closeModal(); fetchNotes(); toast('Saved!'); }
-            else toast('Error saving');
+            setButtonLoading(saveBtn, false);
+
+            if(res) {
+                closeModal();
+                fetchNotes();
+                toast('Note saved successfully', 'success');
+            } else {
+                toast('Failed to save note. Please try again.', 'error');
+            }
         }
 
-        async function deleteNote(e, id) {
+        function deleteNote(e, id) {
             e.stopPropagation();
-            if(confirm('Delete?')) {
+            showConfirm(async () => {
                 await api(`/notes/${id}`, 'DELETE');
                 fetchNotes();
-                toast('Deleted');
-            }
+                toast('Note deleted', 'success');
+            });
+        }
+
+        function showConfirm(callback) {
+            pendingConfirmAction = callback;
+            document.getElementById('confirm-modal').classList.add('open');
+        }
+
+        function cancelConfirm() {
+            pendingConfirmAction = null;
+            document.getElementById('confirm-modal').classList.remove('open');
+        }
+
+        function executeConfirm() {
+            if(pendingConfirmAction) pendingConfirmAction();
+            pendingConfirmAction = null;
+            document.getElementById('confirm-modal').classList.remove('open');
         }
 
         function openScanModal() {
             switchScanStep('input');
             switchScanTab('draw');
+            pendingUploadFile = null;
+            document.getElementById('upload-drop-area').classList.remove('hidden');
+            document.getElementById('upload-preview-section').classList.add('hidden');
+            document.getElementById('scan-file-input').value = '';
             document.getElementById('scan-modal').classList.add('open');
             initDrawingCanvas();
         }
@@ -844,7 +1143,39 @@
         function switchScanStep(step) {
             document.getElementById('scan-step-input').classList.toggle('hidden', step !== 'input');
             document.getElementById('scan-step-loading').classList.toggle('hidden', step !== 'loading');
+            document.getElementById('scan-step-error').classList.toggle('hidden', step !== 'error');
             document.getElementById('scan-step-preview').classList.toggle('hidden', step !== 'preview');
+        }
+
+        function handleFileSelected(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+
+            pendingUploadFile = file;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                document.getElementById('upload-preview-img').src = ev.target.result;
+                document.getElementById('upload-drop-area').classList.add('hidden');
+                document.getElementById('upload-preview-section').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+
+        function chooseDifferentImage() {
+            pendingUploadFile = null;
+            document.getElementById('upload-preview-section').classList.add('hidden');
+            document.getElementById('upload-drop-area').classList.remove('hidden');
+            document.getElementById('scan-file-input').click();
+        }
+
+        function processPendingUpload() {
+            if(!pendingUploadFile) return;
+            switchScanStep('loading');
+            const formData = new FormData();
+            formData.append('file', pendingUploadFile);
+            pendingUploadFile = null;
+            processOcrRequest(formData);
         }
 
         function initDrawingCanvas() {
@@ -946,16 +1277,6 @@
             }, 'image/png');
         }
 
-        function submitUploadedFile(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            switchScanStep('loading');
-            const formData = new FormData();
-            formData.append('file', file);
-            processOcrRequest(formData);
-            e.target.value = '';
-        }
-
         async function processOcrRequest(formData) {
             try {
                 const response = await fetch(API_URL + '/notes/scan', {
@@ -964,17 +1285,56 @@
                     body: formData
                 });
                 if(!response.ok) {
-                    toast('Scan failed. Please try again.');
-                    switchScanStep('input');
+                    if(response.status === 503) {
+                        showScanError(
+                            'OCR service is starting up',
+                            'Please wait 30 seconds and try again. The service takes a moment to initialize after being idle.'
+                        );
+                    } else if(response.status === 413) {
+                        showScanError(
+                            'Image file too large',
+                            'Please use an image under 10MB and try again.'
+                        );
+                    } else if(response.status === 415) {
+                        showScanError(
+                            'Unsupported image format',
+                            'Please use a JPEG, PNG, GIF, WebP, or BMP image file.'
+                        );
+                    } else if(response.status >= 500) {
+                        showScanError(
+                            'Scan service error',
+                            'Something went wrong on our end. Please try again in a moment.'
+                        );
+                    } else {
+                        showScanError(
+                            'Scan failed',
+                            'Something went wrong processing your image. Please try a different image or try again.'
+                        );
+                    }
                     return;
                 }
                 const data = await response.json();
+                if(!data.text || !data.text.trim()) {
+                    showScanError(
+                        'No text found in image',
+                        'Try a clearer photo with better lighting. Make sure the text is legible and fills most of the frame.'
+                    );
+                    return;
+                }
                 document.getElementById('scan-preview-text').value = data.text || '';
                 switchScanStep('preview');
             } catch(err) {
-                toast('Error connecting to scan service');
-                switchScanStep('input');
+                showScanError(
+                    'Connection lost',
+                    'Please check your internet connection and try again.'
+                );
             }
+        }
+
+        function showScanError(title, detail) {
+            document.getElementById('scan-error-title').textContent = title;
+            document.getElementById('scan-error-detail').textContent = detail;
+            switchScanStep('error');
         }
 
         function scanTryAgain() {
@@ -984,18 +1344,18 @@
         async function scanSaveAsNote() {
             const extractedText = document.getElementById('scan-preview-text').value;
             if(!extractedText.trim()) {
-                toast('No text to save');
+                toast('No text to save. Edit the text above or try scanning again.', 'warning');
                 return;
             }
-            const title = 'Scanned Note - ' + new Date().toLocaleDateString();
+            const title = 'Scanned Note \u2014 ' + new Date().toLocaleDateString();
             const result = await api('/notes', 'POST', { title, content: extractedText });
             if(result) {
                 closeScanModal();
                 closeModal();
                 fetchNotes();
-                toast('Note saved!');
+                toast('Scan complete \u2014 note saved!', 'success');
             } else {
-                toast('Error saving note');
+                toast('Failed to save scanned note. Please try again.', 'error');
             }
         }
 
@@ -1003,11 +1363,41 @@
             document.getElementById('sidebar').classList.toggle('active');
         }
 
-        function toast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
+        function toast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const typeIcons = {
+                success: 'fa-circle-check',
+                error: 'fa-circle-xmark',
+                info: 'fa-circle-info',
+                warning: 'fa-triangle-exclamation'
+            };
+
+            const item = document.createElement('div');
+            item.className = `toast-item toast-${type}`;
+            item.setAttribute('role', 'alert');
+            item.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+            item.innerHTML = `
+                <div class="toast-icon" aria-hidden="true"><i class="fa-solid ${typeIcons[type] || typeIcons.info}"></i></div>
+                <div class="toast-message">${msg}</div>
+                <button class="toast-dismiss-btn btn" onclick="dismissToast(this.parentElement)" aria-label="Dismiss notification"><i class="fa-solid fa-xmark"></i></button>
+            `;
+
+            container.appendChild(item);
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => item.classList.add('toast-visible'));
+            });
+
+            const timerId = setTimeout(() => dismissToast(item), 4500);
+            item.dataset.timerId = timerId;
+        }
+
+        function dismissToast(item) {
+            if(!item || !item.parentElement) return;
+            clearTimeout(parseInt(item.dataset.timerId));
+            item.classList.remove('toast-visible');
+            item.classList.add('toast-hiding');
+            setTimeout(() => { if(item.parentElement) item.remove(); }, 360);
         }
 
         function esc(str) {
