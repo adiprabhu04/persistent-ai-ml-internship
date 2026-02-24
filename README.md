@@ -258,3 +258,4 @@ This project is part of a full-stack internship program at Persistent Systems.
 - Google Cloud Vision API for handwriting recognition
 - Neon for PostgreSQL hosting
 - Render for deployment platform
+
