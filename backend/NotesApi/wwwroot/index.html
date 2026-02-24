@@ -3,57 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Notely | AI Workspace</title>
+    <title>Notely</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --accent: #6366f1;
-            --accent-hover: #4f46e5;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --glass-bg: rgba(15, 23, 42, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.08);
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        body {
-            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-dark);
-            background-image:
-                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%),
-                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%),
-                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-            color: var(--text-main);
-            height: 100vh;
-            overflow: hidden;
+            --bg: #FAFAF9;
+            --surface: #FFFFFF;
+            --surface-secondary: #F5F5F4;
+            --border: #E5E5E5;
+            --border-subtle: rgba(0, 0, 0, 0.06);
+            --text: #1C1C1E;
+            --text-secondary: #6B6B6B;
+            --text-tertiary: #9E9E9E;
+            --accent: #8B5CF6;
+            --accent-hover: #7C3AED;
+            --accent-light: rgba(139, 92, 246, 0.08);
+            --accent-border: rgba(139, 92, 246, 0.18);
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.06);
+            --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12), 0 3px 8px rgba(0, 0, 0, 0.06);
         }
 
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0A0A0A;
+                --surface: #141414;
+                --surface-secondary: #1E1E1E;
+                --border: #2A2A2A;
+                --border-subtle: rgba(255, 255, 255, 0.06);
+                --text: #F5F5F5;
+                --text-secondary: #A0A0A0;
+                --text-tertiary: #5E5E5E;
+                --accent: #A78BFA;
+                --accent-hover: #8B5CF6;
+                --accent-light: rgba(167, 139, 250, 0.1);
+                --accent-border: rgba(167, 139, 250, 0.2);
+                --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+                --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+                --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+                --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.5);
+            }
         }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+        }
+
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-size: 15px;
+        }
+
         .btn {
             cursor: pointer;
             border: none;
-            transition: all 0.2s ease;
-            font-weight: 600;
+            background: none;
+            font-family: inherit;
+            font-size: inherit;
+            transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 7px;
+            white-space: nowrap;
+            line-height: 1;
         }
-        .btn:active { transform: scale(0.98); }
-        .btn:disabled { cursor: not-allowed; opacity: 0.7; transform: none !important; }
+
+        .btn:active:not(:disabled) { transform: scale(0.97); }
+        .btn:disabled { cursor: not-allowed; opacity: 0.45; transform: none !important; }
 
         .page { display: none; width: 100%; height: 100%; }
         .page.active { display: flex; }
         .hidden { display: none !important; }
+
+        select {
+            color-scheme: light dark;
+            font-family: inherit;
+        }
+
+        textarea {
+            font-family: inherit;
+        }
+
+        input {
+            font-family: inherit;
+        }
+
+
+        /* ── AUTH PAGE ─────────────────────────────────────── */
 
         .auth-container {
             display: flex;
@@ -61,142 +118,1140 @@
             justify-content: center;
             width: 100%;
             height: 100%;
-            position: relative;
-            padding: 20px;
+            background: var(--bg);
+            padding: 24px;
         }
+
         .auth-card {
             width: 100%;
             max-width: 400px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
             padding: 40px;
-            border-radius: 24px;
-            position: relative;
-            z-index: 10;
+            box-shadow: var(--shadow-lg);
         }
-        .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; color: var(--text-muted); font-size: 12px; font-weight: 700; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .glass-input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
+
+        .auth-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .auth-logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: 0.2s;
+            font-size: 22px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
         }
-        .glass-input:focus { border-color: var(--accent); background: rgba(255, 255, 255, 0.08); }
+
+        .auth-logo h1 {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text);
+        }
+
+        .auth-logo p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            background: var(--surface-secondary);
+            border: 1px solid var(--border);
+            padding: 4px;
+            border-radius: 11px;
+            margin-bottom: 28px;
+            gap: 2px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 9px 16px;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border: none;
+            font-weight: 500;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.15s ease;
+        }
+
+        .auth-tab.active {
+            background: var(--surface);
+            color: var(--text);
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .input-group { margin-bottom: 18px; }
+
+        .input-group label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 7px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            padding: 11px 14px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .form-input::placeholder { color: var(--text-tertiary); }
+
+        .form-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
         .btn-primary {
             width: 100%;
             background: var(--accent);
             color: white;
-            padding: 14px;
-            border-radius: 12px;
-            font-size: 16px;
-            margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-            font-family: inherit;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            margin-top: 8px;
+            letter-spacing: 0.01em;
         }
+
         .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+
+        /* ── DASHBOARD LAYOUT ──────────────────────────────── */
 
         .dashboard { display: flex; width: 100%; height: 100%; }
 
         .sidebar {
-            width: 280px;
-            border-right: 1px solid var(--glass-border);
+            width: 240px;
+            flex-shrink: 0;
+            border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            padding: 24px;
+            padding: 20px 12px;
+            background: var(--surface);
             z-index: 20;
-            background: rgba(15, 23, 42, 0.8);
         }
+
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             position: relative;
             overflow: hidden;
-            background: rgba(15, 23, 42, 0.4);
+            background: var(--bg);
         }
 
-        .brand { font-size: 20px; font-weight: 700; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
-        .brand-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #6366f1, #a855f7); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .brand {
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 8px;
+            color: var(--text);
+        }
+
+        .brand-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+        }
+
+        .btn-new-note {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            padding: 9px 14px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            letter-spacing: 0.01em;
+        }
+
+        .btn-new-note:hover:not(:disabled) { background: var(--accent-hover); }
+
+        .nav-section { margin-bottom: 8px; }
+
+        .nav-section-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0 10px;
+            margin-bottom: 4px;
+            display: block;
+        }
 
         .nav-btn {
             width: 100%;
-            padding: 12px 16px;
-            border-radius: 12px;
+            padding: 8px 10px;
+            border-radius: 8px;
             text-align: left;
-            color: var(--text-muted);
+            color: var(--text-secondary);
             background: transparent;
-            margin-bottom: 4px;
+            margin-bottom: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.14s ease;
+        }
+
+        .nav-btn i {
+            width: 15px;
+            text-align: center;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: var(--surface-secondary);
+            color: var(--text);
+        }
+
+        .nav-btn.active {
+            background: var(--accent-light);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.14s ease;
+        }
+
+        .user-row:hover { background: var(--surface-secondary); }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #6366F1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .user-info { flex: 1; overflow: hidden; }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-plan {
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+
+        .btn-logout {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-tertiary);
+            font-size: 13px;
+            flex-shrink: 0;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.14s ease;
+        }
+
+        .btn-logout:hover { background: rgba(239, 68, 68, 0.08); color: var(--error); }
+
+
+        /* ── TOP BAR ───────────────────────────────────────── */
+
+        .top-bar {
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            gap: 16px;
+            flex-shrink: 0;
+        }
+
+        .top-bar-left {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        .nav-btn:hover { background: rgba(255,255,255,0.05); color: white; }
-        .nav-btn.active { background: rgba(99, 102, 241, 0.15); color: var(--accent); border: 1px solid rgba(99, 102, 241, 0.2); }
 
-        .user-profile { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(to right, #3b82f6, #14b8a6); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+        .top-bar-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--text);
+        }
 
-        .top-bar { padding: 30px; display: flex; justify-content: space-between; align-items: center; }
-        .search-box { position: relative; width: 300px; }
-        .search-box input { padding-left: 40px; }
-        .search-icon { position: absolute; left: 14px; top: 14px; color: var(--text-muted); font-size: 14px; }
+        .notes-count-badge {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            background: var(--surface-secondary);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 100px;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-count {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+        }
+
+        .search-container { position: relative; width: 300px; }
+
+        .search-icon-el {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--surface-secondary);
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            padding: 9px 34px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .search-input::placeholder { color: var(--text-tertiary); }
+
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+            background: var(--surface);
+            outline: none;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 9px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--text-tertiary);
+            color: var(--bg);
+            font-size: 9px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.15s ease, background 0.15s ease;
+            pointer-events: none;
+        }
+
+        .search-clear.visible { opacity: 1; pointer-events: auto; }
+        .search-clear:hover { background: var(--text-secondary); }
+
+
+        /* ── NOTES AREA & GRID ─────────────────────────────── */
+
+        .notes-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 28px;
+        }
 
         .notes-grid {
-            padding: 0 30px 30px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 24px;
-            overflow-y: auto;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
             align-content: start;
         }
 
+
+        /* ── NOTE CARDS ────────────────────────────────────── */
+
         .note-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 24px;
-            height: 240px;
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 18px 20px;
+            min-height: 180px;
+            max-height: 230px;
             display: flex;
             flex-direction: column;
             cursor: pointer;
-            transition: 0.3s;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.2s ease;
+            box-shadow: var(--shadow-sm);
             position: relative;
+            overflow: hidden;
         }
-        .note-card:hover { transform: translateY(-4px); border-color: rgba(99, 102, 241, 0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .note-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .note-body { font-size: 14px; color: var(--text-muted); line-height: 1.6; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; }
-        .note-tag { position: absolute; top: 24px; right: 24px; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
+
+        @media (prefers-color-scheme: dark) {
+            .note-card {
+                box-shadow: none;
+                border-color: var(--border);
+            }
+            .note-card:hover {
+                border-color: var(--accent-border);
+                box-shadow: none;
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .note-card:hover {
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-hover);
+                border-color: transparent;
+            }
+        }
+
+        .note-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            gap: 8px;
+        }
+
+        .note-tag {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 100px;
+            letter-spacing: 0.01em;
+            flex-shrink: 0;
+        }
+
+        .tag-work { background: rgba(99, 102, 241, 0.1); color: #6366F1; }
+        .tag-personal { background: rgba(16, 185, 129, 0.1); color: #059669; }
+        .tag-ideas { background: rgba(245, 158, 11, 0.1); color: #D97706; }
+        .tag-general { background: var(--surface-secondary); color: var(--text-tertiary); border: 1px solid var(--border); }
+
+        @media (prefers-color-scheme: dark) {
+            .tag-work { background: rgba(99, 102, 241, 0.15); color: #818CF8; }
+            .tag-personal { background: rgba(16, 185, 129, 0.15); color: #34D399; }
+            .tag-ideas { background: rgba(245, 158, 11, 0.15); color: #FCD34D; }
+        }
+
+        .note-date { font-size: 12px; color: var(--text-tertiary); flex-shrink: 0; }
+
+        .note-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 7px;
+            letter-spacing: -0.15px;
+        }
+
+        .note-body {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            flex: 1;
+        }
+
+        .note-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .btn-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-tertiary);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.14s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-icon:hover {
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--error);
+        }
+
+
+        /* ── SKELETON LOADERS ──────────────────────────────── */
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-line {
+            background: linear-gradient(90deg,
+                var(--surface-secondary) 25%,
+                var(--border) 50%,
+                var(--surface-secondary) 75%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.8s ease-in-out infinite;
+            border-radius: 5px;
+        }
+
+        .skeleton-card {
+            background: var(--surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 18px 20px;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .skeleton-card { border-color: var(--border); }
+        }
+
+
+        /* ── EMPTY STATES ──────────────────────────────────── */
+
+        .empty-state {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 80px 24px;
+        }
+
+        .empty-icon {
+            width: 68px;
+            height: 68px;
+            border-radius: 18px;
+            background: var(--surface-secondary);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: var(--text-tertiary);
+            margin-bottom: 22px;
+        }
+
+        .empty-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            letter-spacing: -0.2px;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            max-width: 300px;
+            margin-bottom: 24px;
+        }
+
+        .btn-cta {
+            background: var(--accent);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: all 0.18s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .btn-cta:hover { background: var(--accent-hover); transform: translateY(-1px); }
+        .btn-cta:active { transform: scale(0.97); }
+
+
+        /* ── MODALS ────────────────────────────────────────── */
 
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-            z-index: 100; display: flex; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: 0.2s;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.38);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            padding: 20px;
         }
-        .modal-overlay.open { opacity: 1; pointer-events: auto; }
-        .modal-card {
-            width: 90%; max-width: 600px; background: #1e293b; border-radius: 20px; padding: 30px;
-            border: 1px solid var(--glass-border); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            transform: scale(0.95); transition: 0.2s;
-        }
-        .modal-overlay.open .modal-card { transform: scale(1); }
-        .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
-        .close-btn { background: rgba(255,255,255,0.1); width: 32px; height: 32px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; }
-        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
 
-        @media (max-width: 768px) {
-            .dashboard { flex-direction: column; }
-            .sidebar { position: fixed; height: 100%; left: -280px; transition: 0.3s; }
-            .sidebar.active { left: 0; }
-            .top-bar { flex-direction: column; align-items: flex-start; gap: 16px; }
-            .search-box { width: 100%; }
-            .mobile-header { display: flex; padding: 16px; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); }
-            #toast-container { top: 12px; right: 12px; left: 12px; }
-            .toast-item { min-width: auto; max-width: 100%; }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .modal-card {
+            width: 90%;
+            max-width: 580px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(14px);
+            transition: transform 0.25s cubic-bezier(0.34, 1.1, 0.64, 1);
         }
-        @media (min-width: 769px) { .mobile-header { display: none; } }
+
+        .modal-overlay.open .modal-card { transform: translateY(0); }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+        }
+
+        .modal-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.2px;
+        }
+
+        .btn-close {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: var(--surface-secondary);
+            color: var(--text-secondary);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.14s ease;
+        }
+
+        .btn-close:hover { background: var(--border); color: var(--text); }
+
+        .note-title-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1.5px solid var(--border);
+            color: var(--text);
+            font-size: 21px;
+            font-weight: 700;
+            padding: 0 0 12px 0;
+            margin-bottom: 16px;
+            letter-spacing: -0.3px;
+            font-family: inherit;
+            transition: border-color 0.15s ease;
+        }
+
+        .note-title-input::placeholder { color: var(--text-tertiary); }
+        .note-title-input:focus { border-bottom-color: var(--accent); }
+
+        .note-content-textarea {
+            width: 100%;
+            height: 175px;
+            background: var(--surface-secondary);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: var(--text);
+            resize: vertical;
+            font-size: 14px;
+            line-height: 1.65;
+            font-family: inherit;
+            margin-bottom: 20px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .note-content-textarea::placeholder { color: var(--text-tertiary); }
+
+        .note-content-textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+            background: var(--surface);
+            outline: none;
+        }
+
+        .modal-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .modal-footer-left { display: flex; gap: 8px; align-items: center; }
+        .modal-footer-right { display: flex; gap: 8px; align-items: center; }
+
+        .category-select {
+            background: var(--surface-secondary);
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color 0.15s ease;
+            -webkit-appearance: none;
+            appearance: none;
+            padding-right: 28px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239E9E9E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 9px center;
+        }
+
+        .category-select:focus { border-color: var(--accent); outline: none; }
+
+        .btn-scan-trigger {
+            background: var(--surface-secondary);
+            border: 1.5px solid var(--border);
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.14s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-scan-trigger:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .btn-save {
+            background: var(--accent);
+            color: white;
+            padding: 9px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: all 0.14s ease;
+        }
+
+        .btn-save:hover:not(:disabled) { background: var(--accent-hover); }
+
+
+        /* ── SCAN MODAL ────────────────────────────────────── */
+
+        .scan-tabs {
+            display: flex;
+            background: var(--surface-secondary);
+            border: 1px solid var(--border);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            gap: 3px;
+        }
+
+        .scan-tab {
+            flex: 1;
+            padding: 8px 16px;
+            border-radius: 7px;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border: none;
+            font-weight: 500;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.14s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+        }
+
+        .scan-tab:hover:not(.active) { color: var(--text); }
+
+        .scan-tab.active {
+            background: var(--surface);
+            color: var(--accent);
+            font-weight: 600;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .canvas-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            padding: 8px 10px;
+            background: var(--surface-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .canvas-tool-btn {
+            padding: 5px 10px;
+            border-radius: 7px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            font-family: inherit;
+            transition: all 0.14s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .canvas-tool-btn:hover { background: var(--surface); color: var(--text); }
+
+        .canvas-tool-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .canvas-size-btn {
+            width: 27px;
+            height: 27px;
+            border-radius: 7px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: inherit;
+            transition: all 0.14s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .canvas-size-btn:hover { background: var(--surface); color: var(--text); }
+        .canvas-size-btn.active { background: var(--accent); color: white; }
+
+        .canvas-color-btn {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2.5px solid transparent;
+            cursor: pointer;
+            transition: all 0.14s ease;
+            padding: 0;
+        }
+
+        .canvas-color-btn.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent-light);
+        }
+
+        .canvas-separator {
+            width: 1px;
+            height: 18px;
+            background: var(--border);
+            margin: 0 2px;
+        }
+
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        #drawing-canvas {
+            display: block;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            cursor: crosshair;
+            background: white;
+            max-width: 100%;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .scan-hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            background: var(--accent-light);
+            border: 1px solid var(--accent-border);
+            border-radius: 8px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .scan-hint i { color: var(--accent); flex-shrink: 0; }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 48px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            background: var(--surface-secondary);
+        }
+
+        .upload-area:hover {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .upload-area-icon {
+            font-size: 34px;
+            color: var(--accent);
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        .upload-preview-img {
+            max-width: 100%;
+            max-height: 260px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 14px;
+        }
+
+        .scan-loading-content {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .spinner {
+            width: 34px;
+            height: 34px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+            display: block;
+            margin: 0 auto 20px;
+        }
+
+        .spinner-inline {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.75s linear infinite;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .scan-preview-label {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            margin-bottom: 8px;
+        }
+
+        .scan-preview-text {
+            width: 100%;
+            height: 170px;
+            background: var(--surface-secondary);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: var(--text);
+            resize: vertical;
+            font-size: 14px;
+            line-height: 1.65;
+            font-family: inherit;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .scan-preview-text::placeholder { color: var(--text-tertiary); }
+
+        .scan-preview-text:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+            background: var(--surface);
+            outline: none;
+        }
+
+        .scan-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 14px;
+        }
+
+        .btn-ghost {
+            background: var(--surface-secondary);
+            color: var(--text-secondary);
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+            border: 1.5px solid var(--border);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.14s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .btn-ghost:hover:not(:disabled) {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .scan-error-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 22px;
+            color: var(--error);
+        }
+
+
+        /* ── CONFIRM MODAL ─────────────────────────────────── */
+
+        .confirm-delete-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 20px;
+            color: var(--error);
+        }
+
+        .btn-danger {
+            background: var(--error);
+            color: white;
+            padding: 9px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.14s ease;
+        }
+
+        .btn-danger:hover { background: #DC2626; }
+
+
+        /* ── TOAST NOTIFICATIONS ───────────────────────────── */
 
         #toast-container {
             position: fixed;
@@ -205,314 +1260,181 @@
             z-index: 9999;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             pointer-events: none;
         }
+
         .toast-item {
-            background: rgba(13, 20, 38, 0.97);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 14px;
-            padding: 13px 14px 13px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 11px 13px 11px 15px;
             display: flex;
             align-items: center;
             gap: 11px;
-            min-width: 300px;
-            max-width: 390px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2);
+            min-width: 270px;
+            max-width: 340px;
+            box-shadow: var(--shadow-lg);
             pointer-events: auto;
-            transform: translateX(calc(100% + 40px));
-            transition: transform 0.38s cubic-bezier(0.34, 1.15, 0.64, 1), opacity 0.38s ease;
+            transform: translateX(calc(100% + 32px));
+            transition: transform 0.35s cubic-bezier(0.34, 1.15, 0.64, 1), opacity 0.35s ease;
             opacity: 0;
             border-left: 3px solid transparent;
         }
+
         .toast-item.toast-visible { transform: translateX(0); opacity: 1; }
+
         .toast-item.toast-hiding {
-            transform: translateX(calc(100% + 40px));
+            transform: translateX(calc(100% + 32px));
             opacity: 0;
-            transition: transform 0.3s ease-in, opacity 0.3s ease-in;
+            transition: transform 0.28s ease-in, opacity 0.28s ease-in;
         }
-        .toast-success { border-left-color: #10b981; }
-        .toast-error { border-left-color: #ef4444; }
-        .toast-info { border-left-color: #6366f1; }
-        .toast-warning { border-left-color: #f59e0b; }
+
+        .toast-success { border-left-color: var(--success); }
+        .toast-error { border-left-color: var(--error); }
+        .toast-info { border-left-color: var(--accent); }
+        .toast-warning { border-left-color: var(--warning); }
+
         .toast-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: 12px;
             flex-shrink: 0;
         }
-        .toast-success .toast-icon { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-        .toast-error .toast-icon { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-        .toast-info .toast-icon { background: rgba(99, 102, 241, 0.15); color: #6366f1; }
-        .toast-warning .toast-icon { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+        .toast-success .toast-icon { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .toast-error .toast-icon { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+        .toast-info .toast-icon { background: var(--accent-light); color: var(--accent); }
+        .toast-warning .toast-icon { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+
         .toast-message {
             flex: 1;
-            font-size: 13.5px;
+            font-size: 13px;
             font-weight: 500;
-            color: var(--text-main);
-            line-height: 1.45;
+            color: var(--text);
+            line-height: 1.4;
         }
+
         .toast-dismiss-btn {
             background: none;
             border: none;
-            color: var(--text-muted);
+            color: var(--text-tertiary);
             cursor: pointer;
-            padding: 4px;
+            padding: 3px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 11px;
-            opacity: 0.55;
-            transition: opacity 0.2s;
+            border-radius: 4px;
+            transition: all 0.14s ease;
             flex-shrink: 0;
         }
-        .toast-dismiss-btn:hover { opacity: 1; }
 
-        .spinner {
-            width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: var(--accent);
-            border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; flex-shrink: 0;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .toast-dismiss-btn:hover { color: var(--text); background: var(--surface-secondary); }
 
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        .skeleton-line {
-            background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.7s ease-in-out infinite;
-            border-radius: 6px;
-        }
-        .skeleton-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 24px;
-            height: 240px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+
+        /* ── MOBILE HEADER ─────────────────────────────────── */
+
+        .mobile-header {
+            display: none;
+            padding: 14px 16px;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            flex-shrink: 0;
         }
 
-        .scan-tabs {
-            display: flex;
-            background: rgba(0,0,0,0.3);
-            padding: 4px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+        .mobile-brand {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.3px;
         }
-        .scan-tab {
-            flex: 1;
-            padding: 10px;
+
+        .btn-menu {
+            width: 36px;
+            height: 36px;
             border-radius: 8px;
-            background: transparent;
-            color: var(--text-muted);
-            cursor: pointer;
+            background: var(--surface-secondary);
+            color: var(--text-secondary);
             border: none;
-            font-weight: 600;
             font-size: 14px;
-            font-family: inherit;
-            transition: 0.2s;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            transition: all 0.14s ease;
         }
-        .scan-tab:hover { color: white; }
-        .scan-tab.active { background: var(--accent); color: white; }
 
-        .canvas-toolbar {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
+        .btn-menu:hover { background: var(--border); }
+
+
+        /* ── RESPONSIVE ────────────────────────────────────── */
+
+        @media (max-width: 768px) {
+            .dashboard { flex-direction: column; }
+            .mobile-header { display: flex; }
+
+            .sidebar {
+                position: fixed;
+                height: 100%;
+                left: -260px;
+                top: 0;
+                transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: var(--shadow-lg);
+                z-index: 50;
+            }
+
+            .sidebar.active { left: 0; }
+
+            .top-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                padding: 16px;
+            }
+
+            .top-bar-right {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .search-container { width: 100%; }
+            .notes-area { padding: 16px; }
+            .notes-grid { gap: 12px; }
+
+            #toast-container { top: 12px; right: 12px; left: 12px; }
+            .toast-item { min-width: auto; max-width: 100%; }
+
+            .modal-card { padding: 22px; }
         }
-        .canvas-tool-btn {
-            padding: 6px 12px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.05);
-            color: var(--text-muted);
-            border: 1px solid var(--glass-border);
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            font-family: inherit;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+
+        @media (min-width: 769px) { .mobile-header { display: none; } }
+
+        @media (max-width: 480px) {
+            .notes-grid { grid-template-columns: 1fr; }
+            .auth-card { padding: 28px 24px; }
         }
-        .canvas-tool-btn:hover { background: rgba(255,255,255,0.1); color: white; }
-        .canvas-tool-btn.active {
-            background: rgba(99, 102, 241, 0.2);
-            color: var(--accent);
-            border-color: rgba(99, 102, 241, 0.3);
+
+
+        /* ── ANIMATIONS ────────────────────────────────────── */
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .canvas-size-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.05);
-            color: var(--text-muted);
-            border: 1px solid var(--glass-border);
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 700;
-            font-family: inherit;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .canvas-size-btn.active {
-            background: rgba(99, 102, 241, 0.2);
-            color: var(--accent);
-            border-color: rgba(99, 102, 241, 0.3);
-        }
-        .canvas-color-btn {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            cursor: pointer;
-            transition: 0.2s;
-            padding: 0;
-        }
-        .canvas-color-btn.active {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4);
-        }
-        .canvas-separator {
-            width: 1px;
-            height: 24px;
-            background: var(--glass-border);
-            margin: 0 4px;
-        }
-        .canvas-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 8px;
-        }
-        #drawing-canvas {
-            display: block;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            cursor: crosshair;
-            background: white;
-            max-width: 100%;
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        .upload-area {
-            border: 2px dashed rgba(99, 102, 241, 0.3);
-            border-radius: 16px;
-            padding: 50px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .upload-area:hover {
-            border-color: var(--accent);
-            background: rgba(99, 102, 241, 0.05);
-        }
-        .upload-area i {
-            font-size: 44px;
-            color: var(--accent);
-            margin-bottom: 14px;
-            display: block;
-        }
-        .upload-preview-img {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            object-fit: contain;
-            display: block;
-            margin: 0 auto 14px;
-        }
-        .scan-loading-content {
-            text-align: center;
-            padding: 60px 20px;
-        }
-        .scan-loading-content .spinner {
-            width: 42px;
-            height: 42px;
-            margin: 0 auto;
-            border-width: 3px;
-        }
-        .scan-hint {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-align: center;
-            padding: 7px 14px;
-            background: rgba(99, 102, 241, 0.07);
-            border-radius: 9px;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            border: 1px solid rgba(99, 102, 241, 0.12);
-        }
-        .scan-preview-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-        .scan-preview-text {
-            width: 100%;
-            height: 200px;
-            background: rgba(0,0,0,0.2);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 16px;
-            color: var(--text-main);
-            resize: vertical;
-            font-size: 15px;
-            line-height: 1.6;
-            font-family: inherit;
-        }
-        .scan-preview-text:focus {
-            border-color: var(--accent);
-            background: rgba(0,0,0,0.3);
-        }
-        .scan-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 16px;
-        }
-        .btn-ghost {
-            background: rgba(255,255,255,0.05);
-            color: var(--text-muted);
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-family: inherit;
-            border: 1px solid var(--glass-border);
-        }
-        .btn-ghost:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: white; }
-        .scan-error-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: rgba(239, 68, 68, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 18px;
+
+        .note-card { animation: fadeInUp 0.22s ease both; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
@@ -520,139 +1442,184 @@
 
     <div id="toast-container" role="region" aria-label="Notifications"></div>
 
+    <!-- Auth Page -->
     <div id="auth-page" class="page active">
         <div class="auth-container">
-            <div class="auth-card glass-panel">
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <div class="brand-icon" style="width: 48px; height: 48px; margin: 0 auto 16px; font-size: 20px;"><i class="fa-solid fa-bolt"></i></div>
-                    <h1 style="font-size: 28px; font-weight: 700;">Notely</h1>
-                    <p style="color: var(--text-muted); margin-top: 8px;">Your second brain.</p>
+            <div class="auth-card">
+                <div class="auth-logo">
+                    <div class="auth-logo-icon">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </div>
+                    <h1>Notely</h1>
+                    <p>Your second brain.</p>
                 </div>
 
-                <div style="display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 12px; margin-bottom: 24px;">
-                    <button onclick="toggleAuth('login')" id="tab-login" class="btn" style="flex: 1; padding: 8px; border-radius: 8px; background: var(--bg-dark); color: white;">Login</button>
-                    <button onclick="toggleAuth('register')" id="tab-register" class="btn" style="flex: 1; padding: 8px; border-radius: 8px; color: var(--text-muted);">Register</button>
+                <div class="auth-tabs">
+                    <button onclick="toggleAuth('login')" id="tab-login" class="auth-tab active">Sign In</button>
+                    <button onclick="toggleAuth('register')" id="tab-register" class="auth-tab">Create Account</button>
                 </div>
 
                 <form id="login-form" onsubmit="handleLogin(event)">
                     <div class="input-group">
-                        <label>Email Address</label>
-                        <input type="email" id="login-email" class="glass-input" placeholder="you@example.com" required>
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" class="form-input" placeholder="you@example.com" required autocomplete="email">
                     </div>
                     <div class="input-group">
-                        <label>Password</label>
-                        <input type="password" id="login-password" class="glass-input" placeholder="••••••••" required>
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
                     </div>
                     <button type="submit" id="login-btn" class="btn btn-primary">Sign In</button>
                 </form>
 
                 <form id="register-form" onsubmit="handleRegister(event)" class="hidden">
                     <div class="input-group">
-                        <label>Full Name</label>
-                        <input type="text" id="reg-name" class="glass-input" placeholder="John Doe" required>
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" class="form-input" placeholder="Your name" required autocomplete="name">
                     </div>
                     <div class="input-group">
-                        <label>Email Address</label>
-                        <input type="email" id="reg-email" class="glass-input" placeholder="you@example.com" required>
+                        <label for="reg-email">Email</label>
+                        <input type="email" id="reg-email" class="form-input" placeholder="you@example.com" required autocomplete="email">
                     </div>
                     <div class="input-group">
-                        <label>Password</label>
-                        <input type="password" id="reg-pass" class="glass-input" placeholder="••••••••" required>
+                        <label for="reg-pass">Password</label>
+                        <input type="password" id="reg-pass" class="form-input" placeholder="Min. 6 characters" required autocomplete="new-password">
                     </div>
-                    <button type="submit" id="register-btn" class="btn btn-primary" style="background: #10b981;">Create Account</button>
-                    <p id="reg-error" style="color: #ef4444; font-size: 13px; text-align: center; margin-top: 10px;" class="hidden"></p>
+                    <button type="submit" id="register-btn" class="btn btn-primary" style="background: var(--success);">Create Account</button>
+                    <p id="reg-error" style="color: var(--error); font-size: 13px; text-align: center; margin-top: 12px;" class="hidden"></p>
                 </form>
             </div>
         </div>
     </div>
 
+    <!-- Dashboard Page -->
     <div id="dashboard-page" class="page">
         <div class="dashboard">
-            <aside id="sidebar" class="sidebar glass-panel">
+
+            <aside id="sidebar" class="sidebar" role="navigation" aria-label="Main navigation">
                 <div class="brand">
-                    <div class="brand-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <div class="brand-icon"><i class="fa-solid fa-pen-to-square"></i></div>
                     <span>Notely</span>
                 </div>
 
-                <button onclick="openModal()" class="btn" style="background: rgba(255,255,255,0.1); color: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--glass-border);">
+                <button onclick="openModal()" class="btn btn-new-note">
                     <i class="fa-solid fa-plus"></i> New Note
                 </button>
 
-                <nav style="flex: 1;">
-                    <button onclick="filterCat('all', this)" class="nav-btn active"><i class="fa-solid fa-note-sticky"></i> All Notes</button>
-                    <button onclick="filterCat('personal', this)" class="nav-btn"><i class="fa-solid fa-user"></i> Personal</button>
-                    <button onclick="filterCat('work', this)" class="nav-btn"><i class="fa-solid fa-briefcase"></i> Work</button>
-                    <button onclick="filterCat('ideas', this)" class="nav-btn"><i class="fa-solid fa-lightbulb"></i> Ideas</button>
-                </nav>
+                <div class="nav-section">
+                    <span class="nav-section-label">Views</span>
+                    <button onclick="filterCat('all', this)" class="nav-btn active" aria-current="page">
+                        <i class="fa-solid fa-note-sticky"></i>
+                        <span>All Notes</span>
+                    </button>
+                    <button onclick="filterCat('personal', this)" class="nav-btn">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Personal</span>
+                    </button>
+                    <button onclick="filterCat('work', this)" class="nav-btn">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <span>Work</span>
+                    </button>
+                    <button onclick="filterCat('ideas', this)" class="nav-btn">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        <span>Ideas</span>
+                    </button>
+                </div>
 
-                <div class="user-profile">
-                    <div class="avatar" id="avatar-txt">U</div>
-                    <div style="flex: 1; overflow: hidden;">
-                        <div style="font-weight: 700; font-size: 14px; white-space: nowrap;" id="user-display">User</div>
-                        <div style="font-size: 12px; color: var(--text-muted);">Pro Plan</div>
+                <div class="sidebar-footer">
+                    <div class="user-row">
+                        <div class="avatar" id="avatar-txt" aria-hidden="true">U</div>
+                        <div class="user-info">
+                            <div class="user-name" id="user-display">User</div>
+                            <div class="user-plan">Free Plan</div>
+                        </div>
+                        <button onclick="logout()" class="btn-logout" aria-label="Sign out">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
                     </div>
-                    <button onclick="logout()" class="btn" style="color: var(--text-muted);"><i class="fa-solid fa-right-from-bracket"></i></button>
                 </div>
             </aside>
 
             <main class="main-content">
-                <div class="mobile-header glass-panel">
-                    <div style="font-weight: 700;">Notely</div>
-                    <button onclick="toggleSidebar()" class="btn" style="color: white;"><i class="fa-solid fa-bars"></i></button>
+                <div class="mobile-header">
+                    <div class="mobile-brand">Notely</div>
+                    <button onclick="toggleSidebar()" class="btn-menu" aria-label="Toggle menu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
                 </div>
 
                 <div class="top-bar">
-                    <div>
-                        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">My Notes</h2>
-                        <p style="color: var(--text-muted); font-size: 14px;">Welcome back to your workspace.</p>
+                    <div class="top-bar-left">
+                        <span class="top-bar-title" id="view-title">All Notes</span>
+                        <span class="notes-count-badge hidden" id="notes-count-badge">0</span>
                     </div>
-                    <div class="search-box">
-                        <i class="fa-solid fa-search search-icon"></i>
-                        <input type="text" id="search-input" onkeyup="filterNotes(this.value)" class="glass-input" placeholder="Search notes..." aria-label="Search notes">
+                    <div class="top-bar-right">
+                        <span class="search-count hidden" id="search-count"></span>
+                        <div class="search-container">
+                            <i class="fa-solid fa-search search-icon-el" aria-hidden="true"></i>
+                            <input
+                                type="text"
+                                id="search-input"
+                                onkeyup="filterNotes(this.value)"
+                                oninput="updateSearchClear(this.value)"
+                                class="search-input"
+                                placeholder="Search notes..."
+                                aria-label="Search notes"
+                                autocomplete="off"
+                            >
+                            <button class="search-clear" id="search-clear-btn" onclick="clearSearch()" aria-label="Clear search">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div id="notes-grid" class="notes-grid" role="list" aria-label="Notes list">
+                <div class="notes-area">
+                    <div id="notes-grid" class="notes-grid" role="list" aria-label="Notes"></div>
                 </div>
             </main>
         </div>
     </div>
 
-    <div id="note-modal" class="modal-overlay">
+    <!-- Note Editor Modal -->
+    <div id="note-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title-label">
         <div class="modal-card">
             <div class="modal-header">
-                <h3 style="font-size: 20px; font-weight: 700;">Edit Note</h3>
-                <button onclick="closeModal()" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+                <span class="modal-title" id="modal-title-label">New Note</span>
+                <button onclick="closeModal()" class="btn-close btn" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
 
-            <input type="text" id="note-title" placeholder="Untitled Note" style="width: 100%; background: transparent; border: none; font-size: 24px; font-weight: 700; color: white; margin-bottom: 16px;">
+            <input type="text" id="note-title" class="note-title-input" placeholder="Note title...">
+            <textarea id="note-content" class="note-content-textarea" placeholder="Start writing..."></textarea>
 
-            <textarea id="note-content" placeholder="Start typing or scan an image..." style="width: 100%; height: 200px; background: rgba(0,0,0,0.2); border: none; border-radius: 12px; padding: 16px; color: var(--text-muted); resize: none; font-size: 16px; margin-bottom: 20px;"></textarea>
-
-            <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between;">
-                <div style="display: flex; gap: 10px;">
-                    <select id="note-category" style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 8px 12px; border-radius: 8px;">
+            <div class="modal-footer">
+                <div class="modal-footer-left">
+                    <select id="note-category" class="category-select" aria-label="Category">
                         <option value="general">No Category</option>
                         <option value="personal">Personal</option>
                         <option value="work">Work</option>
                         <option value="ideas">Ideas</option>
                     </select>
-                    <button onclick="openScanModal()" class="btn" style="background: rgba(255,255,255,0.05); color: white; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--glass-border);">
+                    <button onclick="openScanModal()" class="btn-scan-trigger btn">
                         <i class="fa-solid fa-camera"></i> Scan
                     </button>
                 </div>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <button onclick="saveNote()" id="save-note-btn" class="btn btn-primary" style="margin: 0; padding: 10px 24px;">Save Note</button>
+                <div class="modal-footer-right">
+                    <button onclick="saveNote()" id="save-note-btn" class="btn-save btn">Save Note</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="scan-modal" class="modal-overlay" style="z-index: 150;">
-        <div class="modal-card" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+    <!-- Scan Modal -->
+    <div id="scan-modal" class="modal-overlay" style="z-index: 150;" role="dialog" aria-modal="true" aria-label="Scan Note">
+        <div class="modal-card" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
-                <h3 style="font-size: 20px; font-weight: 700;">Scan Note</h3>
-                <button onclick="closeScanModal()" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+                <span class="modal-title">Scan Note</span>
+                <button onclick="closeScanModal()" class="btn-close btn" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
 
             <div id="scan-step-input">
@@ -668,7 +1635,7 @@
                 <div id="scan-tab-draw">
                     <div class="scan-hint">
                         <i class="fa-solid fa-circle-info"></i>
-                        Draw or write here, then click Scan to extract text
+                        Draw or write text below, then click Scan to extract it.
                     </div>
                     <div class="canvas-toolbar">
                         <button class="canvas-tool-btn active" data-tool="pen" onclick="selectDrawingTool('pen')">
@@ -685,24 +1652,24 @@
                         <button class="canvas-size-btn active" data-size="4" onclick="selectPenSize(4)">M</button>
                         <button class="canvas-size-btn" data-size="8" onclick="selectPenSize(8)">L</button>
                         <div class="canvas-separator"></div>
-                        <button class="canvas-color-btn active" data-color="#000000" style="background: #000000;" onclick="selectPenColor('#000000')"></button>
-                        <button class="canvas-color-btn" data-color="#3b82f6" style="background: #3b82f6;" onclick="selectPenColor('#3b82f6')"></button>
-                        <button class="canvas-color-btn" data-color="#ef4444" style="background: #ef4444;" onclick="selectPenColor('#ef4444')"></button>
+                        <button class="canvas-color-btn active" data-color="#000000" style="background: #000000;" onclick="selectPenColor('#000000')" aria-label="Black"></button>
+                        <button class="canvas-color-btn" data-color="#3b82f6" style="background: #3b82f6;" onclick="selectPenColor('#3b82f6')" aria-label="Blue"></button>
+                        <button class="canvas-color-btn" data-color="#ef4444" style="background: #ef4444;" onclick="selectPenColor('#ef4444')" aria-label="Red"></button>
                     </div>
                     <div class="canvas-container">
-                        <canvas id="drawing-canvas"></canvas>
+                        <canvas id="drawing-canvas" aria-label="Drawing canvas"></canvas>
                     </div>
-                    <button onclick="submitDrawing()" class="btn btn-primary" style="width: 100%; margin: 0; padding: 12px;">
+                    <button onclick="submitDrawing()" class="btn btn-primary" style="width: 100%; margin-top: 2px;">
                         <i class="fa-solid fa-wand-magic-sparkles"></i> Scan Drawing
                     </button>
                 </div>
 
                 <div id="scan-tab-upload" class="hidden">
-                    <div id="upload-drop-area" class="upload-area" onclick="document.getElementById('scan-file-input').click()">
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <p style="font-size: 16px; font-weight: 600; color: white; margin-bottom: 8px;">Click to upload an image</p>
-                        <p style="font-size: 13px; color: var(--text-muted);">Upload a clear photo of text for best results</p>
-                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px; opacity: 0.7;">JPEG, PNG, GIF, WebP, BMP — max 10MB</p>
+                    <div id="upload-drop-area" class="upload-area" onclick="document.getElementById('scan-file-input').click()" role="button" tabindex="0" aria-label="Click to upload image">
+                        <i class="fa-solid fa-cloud-arrow-up upload-area-icon"></i>
+                        <p style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Click to upload an image</p>
+                        <p style="font-size: 13px; color: var(--text-secondary);">Clear photos of text work best</p>
+                        <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 6px;">JPEG, PNG, GIF, WebP, BMP — max 10MB</p>
                     </div>
                     <input type="file" id="scan-file-input" hidden accept="image/*" onchange="handleFileSelected(event)">
 
@@ -710,14 +1677,14 @@
                         <img id="upload-preview-img" src="" alt="Selected image preview" class="upload-preview-img">
                         <div class="scan-hint" style="margin-bottom: 14px;">
                             <i class="fa-solid fa-circle-info"></i>
-                            Make sure text is clearly visible and well-lit for best OCR accuracy
+                            Make sure text is clearly visible and well-lit for best results.
                         </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button onclick="chooseDifferentImage()" class="btn btn-ghost" style="flex: 1;">
-                                <i class="fa-solid fa-rotate"></i> Choose Different Image
+                        <div style="display: flex; gap: 8px;">
+                            <button onclick="chooseDifferentImage()" class="btn-ghost" style="flex: 1;">
+                                <i class="fa-solid fa-rotate"></i> Choose Different
                             </button>
-                            <button onclick="processPendingUpload()" class="btn btn-primary" style="flex: 1; margin: 0; padding: 10px;">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i> Scan This Image
+                            <button onclick="processPendingUpload()" class="btn-save btn" style="flex: 1;">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Scan Image
                             </button>
                         </div>
                     </div>
@@ -727,19 +1694,19 @@
             <div id="scan-step-loading" class="hidden">
                 <div class="scan-loading-content" aria-live="polite">
                     <div class="spinner" aria-hidden="true"></div>
-                    <p style="color: var(--text-main); font-size: 16px; font-weight: 600; margin-top: 18px;">Analyzing image...</p>
-                    <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">Extracting text with OCR — this may take a few seconds</p>
+                    <p style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Analyzing image...</p>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Extracting text with OCR — this may take a few seconds.</p>
                 </div>
             </div>
 
             <div id="scan-step-error" class="hidden">
                 <div style="text-align: center; padding: 40px 20px;" aria-live="assertive">
                     <div class="scan-error-icon">
-                        <i class="fa-solid fa-triangle-exclamation" style="font-size: 26px; color: #ef4444;"></i>
+                        <i class="fa-solid fa-triangle-exclamation"></i>
                     </div>
-                    <p id="scan-error-title" style="font-size: 17px; font-weight: 700; color: var(--text-main); margin-bottom: 10px;"></p>
-                    <p id="scan-error-detail" style="font-size: 13px; color: var(--text-muted); margin-bottom: 26px; line-height: 1.65; max-width: 340px; margin-left: auto; margin-right: auto;"></p>
-                    <button onclick="switchScanStep('input')" class="btn btn-primary" style="margin: 0; padding: 11px 30px; width: auto; display: inline-flex;">
+                    <p id="scan-error-title" style="font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px;"></p>
+                    <p id="scan-error-detail" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 320px; margin-left: auto; margin-right: auto;"></p>
+                    <button onclick="switchScanStep('input')" class="btn-save btn" style="display: inline-flex;">
                         <i class="fa-solid fa-rotate-left"></i> Try Again
                     </button>
                 </div>
@@ -748,15 +1715,15 @@
             <div id="scan-step-preview" class="hidden">
                 <div class="scan-preview-label">Extracted Text</div>
                 <textarea id="scan-preview-text" class="scan-preview-text" placeholder="No text was extracted..." aria-label="Extracted text — editable before saving"></textarea>
-                <p style="font-size: 12px; color: var(--text-muted); margin: 9px 0 14px; display: flex; align-items: center; gap: 7px;">
+                <p style="font-size: 12px; color: var(--text-tertiary); margin: 10px 0 14px; display: flex; align-items: center; gap: 6px;">
                     <i class="fa-solid fa-pen-to-square" style="color: var(--accent); flex-shrink: 0;"></i>
-                    Review and edit the extracted text before saving as a note.
+                    Review and edit the extracted text before saving.
                 </p>
                 <div class="scan-actions">
-                    <button onclick="scanTryAgain()" class="btn btn-ghost">
+                    <button onclick="scanTryAgain()" class="btn-ghost">
                         <i class="fa-solid fa-rotate-left"></i> Try Again
                     </button>
-                    <button onclick="scanSaveAsNote()" class="btn btn-primary" style="margin: 0; padding: 10px 24px;">
+                    <button onclick="scanSaveAsNote()" class="btn-save btn">
                         <i class="fa-solid fa-check"></i> Save as Note
                     </button>
                 </div>
@@ -764,31 +1731,46 @@
         </div>
     </div>
 
-    <div id="confirm-modal" class="modal-overlay" style="z-index: 200;">
-        <div class="modal-card" style="max-width: 380px; text-align: center;">
-            <div style="padding: 10px 0 26px;">
-                <div style="width: 58px; height: 58px; border-radius: 50%; background: rgba(239,68,68,0.12); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;">
-                    <i class="fa-solid fa-trash" style="color: #ef4444; font-size: 22px;"></i>
+    <!-- Delete Confirm Modal -->
+    <div id="confirm-modal" class="modal-overlay" style="z-index: 200;" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+        <div class="modal-card" style="max-width: 360px; text-align: center;">
+            <div style="padding: 8px 0 22px;">
+                <div class="confirm-delete-icon">
+                    <i class="fa-solid fa-trash"></i>
                 </div>
-                <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 10px;">Delete Note</h3>
-                <p style="color: var(--text-muted); font-size: 14px; line-height: 1.55;">This note will be permanently deleted and cannot be recovered.</p>
+                <h3 id="confirm-title" style="font-size: 17px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.2px; color: var(--text);">Delete Note?</h3>
+                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6;">This note will be permanently deleted and cannot be recovered.</p>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="cancelConfirm()" class="btn btn-ghost" style="flex: 1;">Keep Note</button>
-                <button onclick="executeConfirm()" class="btn" style="flex: 1; background: #ef4444; color: white; padding: 10px; border-radius: 12px; font-family: inherit; font-weight: 600;">Delete</button>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="cancelConfirm()" class="btn-ghost" style="flex: 1;">Keep Note</button>
+                <button onclick="executeConfirm()" class="btn-danger">Delete</button>
             </div>
         </div>
     </div>
 
     <script>
         const API_URL = "";
-        let state = { token: localStorage.getItem('token'), name: localStorage.getItem('name'), notes: [], editingId: null, category: 'all' };
-        let drawingState = { isDrawing: false, tool: 'pen', penColor: '#000000', penSize: 4, canvas: null, ctx: null, listenersReady: false };
+        let state = {
+            token: localStorage.getItem('token'),
+            name: localStorage.getItem('name'),
+            notes: [],
+            editingId: null,
+            category: 'all'
+        };
+        let drawingState = {
+            isDrawing: false,
+            tool: 'pen',
+            penColor: '#000000',
+            penSize: 4,
+            canvas: null,
+            ctx: null,
+            listenersReady: false
+        };
         let pendingUploadFile = null;
         let pendingConfirmAction = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            if(state.token) {
+            if (state.token) {
                 showPage('dashboard-page');
                 updateUI();
                 fetchNotes();
@@ -808,40 +1790,42 @@
             const tabLogin = document.getElementById('tab-login');
             const tabReg = document.getElementById('tab-register');
 
-            if(mode === 'login') {
+            if (mode === 'login') {
                 loginForm.classList.remove('hidden');
                 regForm.classList.add('hidden');
-                tabLogin.style.background = 'var(--bg-dark)';
-                tabLogin.style.color = 'white';
-                tabReg.style.background = 'transparent';
-                tabReg.style.color = 'var(--text-muted)';
+                tabLogin.classList.add('active');
+                tabReg.classList.remove('active');
             } else {
                 loginForm.classList.add('hidden');
                 regForm.classList.remove('hidden');
-                tabReg.style.background = 'var(--bg-dark)';
-                tabReg.style.color = 'white';
-                tabLogin.style.background = 'transparent';
-                tabLogin.style.color = 'var(--text-muted)';
+                tabReg.classList.add('active');
+                tabLogin.classList.remove('active');
             }
         }
 
         async function api(endpoint, method = 'GET', body = null) {
-            const opts = { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${state.token}` } };
-            if(body) opts.body = JSON.stringify(body);
+            const opts = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${state.token}`
+                }
+            };
+            if (body) opts.body = JSON.stringify(body);
             try {
                 const res = await fetch(API_URL + endpoint, opts);
-                if(res.status === 401) logout();
+                if (res.status === 401) logout();
                 if (res.status === 204) return { success: true };
                 const text = await res.text();
                 if (!res.ok) return null;
                 return text ? JSON.parse(text) : { success: true };
-            } catch(e) { return null; }
+            } catch (e) { return null; }
         }
 
         function setButtonLoading(btn, isLoading, loadingText = 'Loading...') {
-            if(isLoading) {
+            if (isLoading) {
                 btn.dataset.originalHtml = btn.innerHTML;
-                btn.innerHTML = `<div class="spinner" style="width: 15px; height: 15px;" aria-hidden="true"></div> ${loadingText}`;
+                btn.innerHTML = `<span class="spinner-inline" aria-hidden="true"></span> ${loadingText}`;
                 btn.disabled = true;
             } else {
                 btn.innerHTML = btn.dataset.originalHtml || btn.innerHTML;
@@ -859,7 +1843,7 @@
             const res = await api('/auth/login', 'POST', { email, password });
             setButtonLoading(btn, false);
 
-            if(res && res.token) {
+            if (res && res.token) {
                 state.token = res.token;
                 state.name = res.name || 'User';
                 localStorage.setItem('token', res.token);
@@ -886,19 +1870,20 @@
             setButtonLoading(btn, true, 'Creating account...');
             try {
                 const res = await fetch(API_URL + '/auth/register', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, password })
                 });
                 const data = await res.json().catch(() => null);
                 setButtonLoading(btn, false);
-                if(res.ok) {
+                if (res.ok) {
                     toast('Account created! You can now sign in.', 'success');
                     toggleAuth('login');
                 } else {
                     errEl.textContent = (data && data.error) ? data.error : 'Registration failed. Please try again.';
                     errEl.classList.remove('hidden');
                 }
-            } catch(err) {
+            } catch (err) {
                 setButtonLoading(btn, false);
                 errEl.textContent = 'Unable to reach the server. Please check your connection.';
                 errEl.classList.remove('hidden');
@@ -919,18 +1904,18 @@
             const grid = document.getElementById('notes-grid');
             renderSkeletonLoaders(grid);
             const res = await api('/notes?page=1&pageSize=100');
-            if(res) {
+            if (res) {
                 state.notes = res.data || [];
                 renderNotes();
             } else {
                 grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 70px 20px;">
-                        <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(239,68,68,0.08); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;">
-                            <i class="fa-solid fa-wifi" style="font-size: 26px; color: #ef4444; opacity: 0.75;"></i>
+                    <div class="empty-state">
+                        <div class="empty-icon" style="background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.1);">
+                            <i class="fa-solid fa-wifi" style="color: var(--error); opacity: 0.7;"></i>
                         </div>
-                        <p style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">Unable to load notes</p>
-                        <p style="font-size: 13px; margin-bottom: 22px;">Check your internet connection and try again.</p>
-                        <button onclick="fetchNotes()" class="btn btn-primary" style="margin: 0; padding: 10px 26px; width: auto; display: inline-flex;">
+                        <div class="empty-title">Unable to load notes</div>
+                        <p class="empty-desc">Check your internet connection and try again.</p>
+                        <button onclick="fetchNotes()" class="btn-cta">
                             <i class="fa-solid fa-rotate-right"></i> Retry
                         </button>
                     </div>`;
@@ -938,12 +1923,16 @@
         }
 
         function renderSkeletonLoaders(grid) {
-            grid.innerHTML = Array(6).fill(0).map(() => `
-                <div class="skeleton-card" role="status" aria-label="Loading note">
-                    <div class="skeleton-line" style="width: 52px; height: 12px;"></div>
-                    <div class="skeleton-line" style="width: 72%; height: 20px;"></div>
-                    <div class="skeleton-line" style="width: 100%; height: 13px;"></div>
-                    <div class="skeleton-line" style="width: 86%; height: 13px;"></div>
+            grid.innerHTML = Array(6).fill(0).map((_, i) => `
+                <div class="skeleton-card" role="status" aria-label="Loading note" style="animation-delay: ${i * 0.04}s">
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+                        <div class="skeleton-line" style="width: 64px; height: 20px;"></div>
+                        <div style="flex: 1;"></div>
+                        <div class="skeleton-line" style="width: 44px; height: 13px;"></div>
+                    </div>
+                    <div class="skeleton-line" style="width: 70%; height: 17px; margin-top: 4px;"></div>
+                    <div class="skeleton-line" style="width: 100%; height: 13px; margin-top: 6px;"></div>
+                    <div class="skeleton-line" style="width: 88%; height: 13px;"></div>
                     <div class="skeleton-line" style="width: 62%; height: 13px;"></div>
                 </div>
             `).join('');
@@ -954,66 +1943,113 @@
             grid.innerHTML = '';
 
             let filtered = state.notes;
-            if(state.category !== 'all') filtered = filtered.filter(n => (n.content||'').toLowerCase().includes('#'+state.category));
+            if (state.category !== 'all') {
+                filtered = filtered.filter(n => (n.content || '').toLowerCase().includes('#' + state.category));
+            }
 
-            if(filtered.length === 0) {
+            const countBadge = document.getElementById('notes-count-badge');
+            if (filtered.length > 0) {
+                countBadge.textContent = filtered.length;
+                countBadge.classList.remove('hidden');
+            } else {
+                countBadge.classList.add('hidden');
+            }
+
+            if (filtered.length === 0) {
                 const isFirstVisit = state.notes.length === 0 && !localStorage.getItem('hasSeenWelcome');
-                if(isFirstVisit) localStorage.setItem('hasSeenWelcome', '1');
+                if (isFirstVisit) localStorage.setItem('hasSeenWelcome', '1');
 
-                let emptyContent;
-                if(isFirstVisit) {
-                    emptyContent = `
-                        <p style="font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 10px;">Welcome to Notely!</p>
-                        <p style="font-size: 14px; margin-bottom: 6px;">Click <strong style="color: var(--accent);">+ New Note</strong> in the sidebar to create your first note.</p>
-                        <p style="font-size: 13px;">Or use <strong style="color: var(--accent);">Scan</strong> inside a note to extract text from an image.</p>`;
-                } else if(state.category !== 'all') {
-                    emptyContent = `
-                        <p style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">No ${state.category} notes yet</p>
-                        <p style="font-size: 13px;">Add a note tagged with <strong>#${state.category}</strong> to see it here.</p>`;
+                if (isFirstVisit) {
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </div>
+                            <div class="empty-title">Welcome to Notely!</div>
+                            <p class="empty-desc">Your workspace is ready. Create your first note to get started, or scan a handwritten note to convert it to text.</p>
+                            <button onclick="openModal()" class="btn-cta">
+                                <i class="fa-solid fa-plus"></i> Create First Note
+                            </button>
+                        </div>`;
+                } else if (state.category !== 'all') {
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fa-solid fa-folder-open"></i>
+                            </div>
+                            <div class="empty-title">No ${state.category} notes</div>
+                            <p class="empty-desc">Notes tagged with <strong>#${state.category}</strong> will appear here.</p>
+                            <button onclick="openModal()" class="btn-cta">
+                                <i class="fa-solid fa-plus"></i> New Note
+                            </button>
+                        </div>`;
                 } else {
-                    emptyContent = `<p style="font-size: 15px; font-weight: 600; color: var(--text-main);">No notes found</p>`;
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fa-solid fa-note-sticky"></i>
+                            </div>
+                            <div class="empty-title">No notes yet</div>
+                            <p class="empty-desc">Create your first note to get started.</p>
+                            <button onclick="openModal()" class="btn-cta">
+                                <i class="fa-solid fa-plus"></i> New Note
+                            </button>
+                        </div>`;
                 }
-
-                grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 70px 20px;">
-                        <i class="fa-regular fa-folder-open" style="font-size: 52px; opacity: 0.22; margin-bottom: 22px; display: block;"></i>
-                        ${emptyContent}
-                    </div>`;
                 return;
             }
 
-            filtered.forEach(note => {
+            filtered.forEach((note, i) => {
                 const el = document.createElement('div');
                 el.className = 'note-card';
                 el.setAttribute('role', 'listitem');
+                el.style.animationDelay = `${i * 0.04}s`;
 
-                let tagTxt = '';
-                if(note.content.includes('#work')) tagTxt = 'WORK';
-                else if(note.content.includes('#personal')) tagTxt = 'PERSONAL';
-                else if(note.content.includes('#idea')) tagTxt = 'IDEA';
+                let tag = '';
+                let tagClass = '';
+                if ((note.content || '').includes('#work')) { tag = 'Work'; tagClass = 'tag-work'; }
+                else if ((note.content || '').includes('#personal')) { tag = 'Personal'; tagClass = 'tag-personal'; }
+                else if ((note.content || '').includes('#idea')) { tag = 'Ideas'; tagClass = 'tag-ideas'; }
+                else { tag = 'Note'; tagClass = 'tag-general'; }
 
-                const tagHtml = tagTxt ? `<div class="note-tag" style="background: rgba(99,102,241,0.2); color: #818cf8;">${tagTxt}</div>` : '';
+                const dateStr = new Date(note.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
                 el.innerHTML = `
-                    ${tagHtml}
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">${new Date(note.updatedAt).toLocaleDateString()}</div>
+                    <div class="note-card-top">
+                        <span class="note-tag ${tagClass}">${tag}</span>
+                        <span class="note-date">${dateStr}</span>
+                    </div>
                     <div class="note-title">${esc(note.title)}</div>
                     <div class="note-body">${esc(note.content)}</div>
-                    <div style="margin-top: auto; display: flex; gap: 8px;">
-                        <button onclick="deleteNote(event, '${note.id}')" class="btn" aria-label="Delete: ${esc(note.title)}" style="background: rgba(255,255,255,0.05); width: 32px; height: 32px; border-radius: 6px; color: var(--text-muted);"><i class="fa-solid fa-trash"></i></button>
+                    <div class="note-card-footer">
+                        <button onclick="deleteNote(event, '${note.id}')" class="btn-icon" aria-label="Delete: ${esc(note.title)}">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </div>
                 `;
-                el.onclick = (e) => { if(!e.target.closest('button')) openModal(note); };
+
+                el.onclick = (e) => {
+                    if (!e.target.closest('button')) openModal(note);
+                };
                 grid.appendChild(el);
             });
         }
 
         function filterCat(cat, btn) {
             state.category = cat;
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('active');
+                b.removeAttribute('aria-current');
+            });
             btn.classList.add('active');
+            btn.setAttribute('aria-current', 'page');
+
+            const titles = { all: 'All Notes', personal: 'Personal', work: 'Work', ideas: 'Ideas' };
+            document.getElementById('view-title').textContent = titles[cat] || 'Notes';
+
+            clearSearch();
             renderNotes();
-            if(window.innerWidth <= 768) toggleSidebar();
+            if (window.innerWidth <= 768) toggleSidebar();
         }
 
         function filterNotes(q) {
@@ -1025,36 +2061,60 @@
             cards.forEach(c => {
                 const visible = c.innerText.toLowerCase().includes(lower);
                 c.style.display = visible ? 'flex' : 'none';
-                if(visible) visibleCount++;
+                if (visible) visibleCount++;
             });
 
-            const existingEmptyMsg = grid.querySelector('[data-search-empty]');
-            if(existingEmptyMsg) existingEmptyMsg.remove();
+            const existingMsg = grid.querySelector('[data-search-empty]');
+            if (existingMsg) existingMsg.remove();
 
-            if(lower && visibleCount === 0 && cards.length > 0) {
+            const countEl = document.getElementById('search-count');
+            if (lower) {
+                countEl.textContent = `${visibleCount} result${visibleCount !== 1 ? 's' : ''}`;
+                countEl.classList.remove('hidden');
+            } else {
+                countEl.classList.add('hidden');
+            }
+
+            if (lower && visibleCount === 0 && cards.length > 0) {
                 const msg = document.createElement('div');
                 msg.setAttribute('data-search-empty', '1');
-                msg.style.cssText = 'grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 70px 20px;';
+                msg.className = 'empty-state';
                 msg.innerHTML = `
-                    <i class="fa-solid fa-magnifying-glass" style="font-size: 48px; opacity: 0.22; margin-bottom: 18px; display: block;"></i>
-                    <p style="font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">No results for &ldquo;${esc(q)}&rdquo;</p>
-                    <p style="font-size: 13px;">Try different keywords, or check your spelling.</p>
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <div class="empty-title">No results</div>
+                    <p class="empty-desc">No notes match &ldquo;${esc(q)}&rdquo;. Try different keywords.</p>
                 `;
                 grid.appendChild(msg);
             }
         }
 
+        function updateSearchClear(val) {
+            document.getElementById('search-clear-btn').classList.toggle('visible', val.length > 0);
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('search-input');
+            if (!input.value) return;
+            input.value = '';
+            filterNotes('');
+            updateSearchClear('');
+            document.getElementById('search-count').classList.add('hidden');
+        }
+
         function openModal(note = null) {
             state.editingId = note ? note.id : null;
+            document.getElementById('modal-title-label').textContent = note ? 'Edit Note' : 'New Note';
             document.getElementById('note-title').value = note ? note.title : '';
             document.getElementById('note-content').value = note ? note.content : '';
 
             const catSelect = document.getElementById('note-category');
             catSelect.value = 'general';
-            if(note) {
-                if(note.content.includes('#work')) catSelect.value = 'work';
-                if(note.content.includes('#personal')) catSelect.value = 'personal';
-                if(note.content.includes('#idea')) catSelect.value = 'ideas';
+            if (note) {
+                if ((note.content || '').includes('#work')) catSelect.value = 'work';
+                if ((note.content || '').includes('#personal')) catSelect.value = 'personal';
+                if ((note.content || '').includes('#idea')) catSelect.value = 'ideas';
             }
 
             const saveBtn = document.getElementById('save-note-btn');
@@ -1062,6 +2122,8 @@
             saveBtn.disabled = false;
 
             document.getElementById('note-modal').classList.add('open');
+
+            setTimeout(() => document.getElementById('note-title').focus(), 50);
         }
 
         function closeModal() {
@@ -1069,13 +2131,13 @@
         }
 
         async function saveNote() {
-            const title = document.getElementById('note-title').value;
+            const title = document.getElementById('note-title').value.trim();
             let content = document.getElementById('note-content').value;
             const cat = document.getElementById('note-category').value;
             const saveBtn = document.getElementById('save-note-btn');
 
-            if(!title) { toast('Please enter a title for your note.', 'warning'); return; }
-            if(cat !== 'general' && !content.includes('#'+cat)) content += `\n\n#${cat}`;
+            if (!title) { toast('Please enter a title for your note.', 'warning'); return; }
+            if (cat !== 'general' && !content.includes('#' + cat)) content += `\n\n#${cat}`;
 
             const method = state.editingId ? 'PUT' : 'POST';
             const url = state.editingId ? `/notes/${state.editingId}` : '/notes';
@@ -1084,10 +2146,10 @@
             const res = await api(url, method, { title, content });
             setButtonLoading(saveBtn, false);
 
-            if(res) {
+            if (res) {
                 closeModal();
                 fetchNotes();
-                toast('Note saved successfully', 'success');
+                toast('Note saved successfully.', 'success');
             } else {
                 toast('Failed to save note. Please try again.', 'error');
             }
@@ -1098,7 +2160,7 @@
             showConfirm(async () => {
                 await api(`/notes/${id}`, 'DELETE');
                 fetchNotes();
-                toast('Note deleted', 'success');
+                toast('Note deleted.', 'success');
             });
         }
 
@@ -1113,7 +2175,7 @@
         }
 
         function executeConfirm() {
-            if(pendingConfirmAction) pendingConfirmAction();
+            if (pendingConfirmAction) pendingConfirmAction();
             pendingConfirmAction = null;
             document.getElementById('confirm-modal').classList.remove('open');
         }
@@ -1135,7 +2197,7 @@
 
         function switchScanTab(tab) {
             document.querySelectorAll('.scan-tab').forEach(t => t.classList.remove('active'));
-            document.querySelector('[data-scan-tab="' + tab + '"]').classList.add('active');
+            document.querySelector(`[data-scan-tab="${tab}"]`).classList.add('active');
             document.getElementById('scan-tab-draw').classList.toggle('hidden', tab !== 'draw');
             document.getElementById('scan-tab-upload').classList.toggle('hidden', tab !== 'upload');
         }
@@ -1149,8 +2211,7 @@
 
         function handleFileSelected(e) {
             const file = e.target.files[0];
-            if(!file) return;
-
+            if (!file) return;
             pendingUploadFile = file;
             const reader = new FileReader();
             reader.onload = (ev) => {
@@ -1170,7 +2231,7 @@
         }
 
         function processPendingUpload() {
-            if(!pendingUploadFile) return;
+            if (!pendingUploadFile) return;
             switchScanStep('loading');
             const formData = new FormData();
             formData.append('file', pendingUploadFile);
@@ -1181,8 +2242,8 @@
         function initDrawingCanvas() {
             const canvas = document.getElementById('drawing-canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = 640;
-            canvas.height = 380;
+            canvas.width = 620;
+            canvas.height = 360;
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             drawingState.canvas = canvas;
@@ -1191,7 +2252,7 @@
             drawingState.penColor = '#000000';
             drawingState.penSize = 4;
             updateToolButtons();
-            if(!drawingState.listenersReady) {
+            if (!drawingState.listenersReady) {
                 canvas.addEventListener('mousedown', handleCanvasPointerDown);
                 canvas.addEventListener('mousemove', handleCanvasPointerMove);
                 canvas.addEventListener('mouseup', handleCanvasPointerUp);
@@ -1208,7 +2269,10 @@
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
             const scaleY = canvas.height / rect.height;
-            return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
         }
 
         function handleCanvasPointerDown(e) {
@@ -1219,7 +2283,7 @@
         }
 
         function handleCanvasPointerMove(e) {
-            if(!drawingState.isDrawing) return;
+            if (!drawingState.isDrawing) return;
             const pos = getCanvasCoordinates(e);
             const ctx = drawingState.ctx;
             ctx.lineWidth = drawingState.tool === 'eraser' ? drawingState.penSize * 3 : drawingState.penSize;
@@ -1284,50 +2348,31 @@
                     headers: { 'Authorization': `Bearer ${state.token}` },
                     body: formData
                 });
-                if(!response.ok) {
-                    if(response.status === 503) {
-                        showScanError(
-                            'OCR service is starting up',
-                            'Please wait 30 seconds and try again. The service takes a moment to initialize after being idle.'
-                        );
-                    } else if(response.status === 413) {
-                        showScanError(
-                            'Image file too large',
-                            'Please use an image under 10MB and try again.'
-                        );
-                    } else if(response.status === 415) {
-                        showScanError(
-                            'Unsupported image format',
-                            'Please use a JPEG, PNG, GIF, WebP, or BMP image file.'
-                        );
-                    } else if(response.status >= 500) {
-                        showScanError(
-                            'Scan service error',
-                            'Something went wrong on our end. Please try again in a moment.'
-                        );
+
+                if (!response.ok) {
+                    if (response.status === 503) {
+                        showScanError('OCR service is starting up', 'Please wait 30 seconds and try again. The service takes a moment to initialize after being idle.');
+                    } else if (response.status === 413) {
+                        showScanError('Image file too large', 'Please use an image under 10MB and try again.');
+                    } else if (response.status === 415) {
+                        showScanError('Unsupported image format', 'Please use a JPEG, PNG, GIF, WebP, or BMP image file.');
+                    } else if (response.status >= 500) {
+                        showScanError('Scan service error', 'Something went wrong on our end. Please try again in a moment.');
                     } else {
-                        showScanError(
-                            'Scan failed',
-                            'Something went wrong processing your image. Please try a different image or try again.'
-                        );
+                        showScanError('Scan failed', 'Something went wrong processing your image. Please try a different image or try again.');
                     }
                     return;
                 }
+
                 const data = await response.json();
-                if(!data.text || !data.text.trim()) {
-                    showScanError(
-                        'No text found in image',
-                        'Try a clearer photo with better lighting. Make sure the text is legible and fills most of the frame.'
-                    );
+                if (!data.text || !data.text.trim()) {
+                    showScanError('No text found in image', 'Try a clearer photo with better lighting. Make sure the text is legible and fills most of the frame.');
                     return;
                 }
                 document.getElementById('scan-preview-text').value = data.text || '';
                 switchScanStep('preview');
-            } catch(err) {
-                showScanError(
-                    'Connection lost',
-                    'Please check your internet connection and try again.'
-                );
+            } catch (err) {
+                showScanError('Connection lost', 'Please check your internet connection and try again.');
             }
         }
 
@@ -1343,13 +2388,13 @@
 
         async function scanSaveAsNote() {
             const extractedText = document.getElementById('scan-preview-text').value;
-            if(!extractedText.trim()) {
+            if (!extractedText.trim()) {
                 toast('No text to save. Edit the text above or try scanning again.', 'warning');
                 return;
             }
             const title = 'Scanned Note \u2014 ' + new Date().toLocaleDateString();
             const result = await api('/notes', 'POST', { title, content: extractedText });
-            if(result) {
+            if (result) {
                 closeScanModal();
                 closeModal();
                 fetchNotes();
@@ -1393,15 +2438,15 @@
         }
 
         function dismissToast(item) {
-            if(!item || !item.parentElement) return;
+            if (!item || !item.parentElement) return;
             clearTimeout(parseInt(item.dataset.timerId));
             item.classList.remove('toast-visible');
             item.classList.add('toast-hiding');
-            setTimeout(() => { if(item.parentElement) item.remove(); }, 360);
+            setTimeout(() => { if (item.parentElement) item.remove(); }, 320);
         }
 
         function esc(str) {
-            if(!str) return '';
+            if (!str) return '';
             const d = document.createElement('div');
             d.textContent = str;
             return d.innerHTML;
