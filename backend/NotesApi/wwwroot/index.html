@@ -31,6 +31,8 @@
             --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
             --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.06);
             --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12), 0 3px 8px rgba(0, 0, 0, 0.06);
+            --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+            --gradient-hover: linear-gradient(135deg, #7C3AED 0%, #DB2777 100%);
         }
 
         @media (prefers-color-scheme: dark) {
@@ -64,6 +66,8 @@
         body {
             font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--bg);
+            background-image: radial-gradient(circle, rgba(139, 92, 246, 0.045) 1px, transparent 1px);
+            background-size: 28px 28px;
             color: var(--text);
             height: 100vh;
             overflow: hidden;
@@ -119,6 +123,8 @@
             width: 100%;
             height: 100%;
             background: var(--bg);
+            background-image: radial-gradient(circle at 25% 25%, rgba(139, 92, 246, 0.07) 0%, transparent 50%),
+                              radial-gradient(circle at 75% 75%, rgba(236, 72, 153, 0.06) 0%, transparent 50%);
             padding: 24px;
         }
 
@@ -140,17 +146,18 @@
         }
 
         .auth-logo-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--accent);
-            border-radius: 14px;
+            width: 54px;
+            height: 54px;
+            background: var(--gradient-primary);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 22px;
+            font-size: 24px;
             margin-bottom: 16px;
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+            animation: logoBounce 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) both;
         }
 
         .auth-logo h1 {
@@ -228,7 +235,7 @@
 
         .btn-primary {
             width: 100%;
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: white;
             padding: 12px 20px;
             border-radius: 10px;
@@ -236,9 +243,14 @@
             font-weight: 600;
             margin-top: 8px;
             letter-spacing: 0.01em;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
         }
 
-        .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+        .btn-primary:hover:not(:disabled) {
+            background: var(--gradient-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.35);
+        }
 
 
         /* ── DASHBOARD LAYOUT ──────────────────────────────── */
@@ -280,7 +292,7 @@
         .brand-icon {
             width: 28px;
             height: 28px;
-            background: var(--accent);
+            background: var(--gradient-primary);
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -291,7 +303,7 @@
 
         .btn-new-note {
             width: 100%;
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: white;
             padding: 9px 14px;
             border-radius: 9px;
@@ -299,9 +311,14 @@
             font-weight: 600;
             margin-bottom: 24px;
             letter-spacing: 0.01em;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
         }
 
-        .btn-new-note:hover:not(:disabled) { background: var(--accent-hover); }
+        .btn-new-note:hover:not(:disabled) {
+            background: var(--gradient-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.35);
+        }
 
         .nav-section { margin-bottom: 8px; }
 
@@ -574,9 +591,9 @@
 
         @media (prefers-color-scheme: light) {
             .note-card:hover {
-                transform: translateY(-2px);
+                transform: translateY(-3px);
                 box-shadow: var(--shadow-hover);
-                border-color: transparent;
+                border-color: rgba(139, 92, 246, 0.28);
             }
         }
 
@@ -597,15 +614,17 @@
             flex-shrink: 0;
         }
 
-        .tag-work { background: rgba(99, 102, 241, 0.1); color: #6366F1; }
-        .tag-personal { background: rgba(16, 185, 129, 0.1); color: #059669; }
-        .tag-ideas { background: rgba(245, 158, 11, 0.1); color: #D97706; }
+        .tag-work { background: rgba(99, 102, 241, 0.12); color: #6366F1; border: 1px solid rgba(99, 102, 241, 0.22); }
+        .tag-personal { background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.22); }
+        .tag-ideas { background: rgba(245, 158, 11, 0.12); color: #D97706; border: 1px solid rgba(245, 158, 11, 0.22); }
+        .tag-scanned { background: rgba(236, 72, 153, 0.12); color: #DB2777; border: 1px solid rgba(236, 72, 153, 0.22); }
         .tag-general { background: var(--surface-secondary); color: var(--text-tertiary); border: 1px solid var(--border); }
 
         @media (prefers-color-scheme: dark) {
             .tag-work { background: rgba(99, 102, 241, 0.15); color: #818CF8; }
             .tag-personal { background: rgba(16, 185, 129, 0.15); color: #34D399; }
             .tag-ideas { background: rgba(245, 158, 11, 0.15); color: #FCD34D; }
+            .tag-scanned { background: rgba(236, 72, 153, 0.15); color: #F472B6; }
         }
 
         .note-date { font-size: 12px; color: var(--text-tertiary); flex-shrink: 0; }
@@ -738,22 +757,22 @@
         }
 
         .btn-cta {
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: white;
-            padding: 10px 20px;
+            padding: 11px 22px;
             border-radius: 9px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             border: none;
             font-family: inherit;
-            transition: all 0.18s ease;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 7px;
         }
 
-        .btn-cta:hover { background: var(--accent-hover); transform: translateY(-1px); }
+        .btn-cta:hover { background: var(--gradient-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(139, 92, 246, 0.35); }
         .btn-cta:active { transform: scale(0.97); }
 
 
@@ -783,11 +802,11 @@
             border-radius: 16px;
             padding: 28px;
             box-shadow: var(--shadow-lg);
-            transform: translateY(14px);
-            transition: transform 0.25s cubic-bezier(0.34, 1.1, 0.64, 1);
+            transform: translateY(18px) scale(0.97);
+            transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .modal-overlay.open .modal-card { transform: translateY(0); }
+        .modal-overlay.open .modal-card { transform: translateY(0) scale(1); }
 
         .modal-header {
             display: flex;
@@ -916,7 +935,7 @@
         }
 
         .btn-save {
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: white;
             padding: 9px 20px;
             border-radius: 8px;
@@ -925,10 +944,14 @@
             cursor: pointer;
             border: none;
             font-family: inherit;
-            transition: all 0.14s ease;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
         }
 
-        .btn-save:hover:not(:disabled) { background: var(--accent-hover); }
+        .btn-save:hover:not(:disabled) {
+            background: var(--gradient-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.32);
+        }
 
 
         /* ── SCAN MODAL ────────────────────────────────────── */
@@ -1001,7 +1024,7 @@
         .canvas-tool-btn:hover { background: var(--surface); color: var(--text); }
 
         .canvas-tool-btn.active {
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: white;
         }
 
@@ -1023,7 +1046,7 @@
         }
 
         .canvas-size-btn:hover { background: var(--surface); color: var(--text); }
-        .canvas-size-btn.active { background: var(--accent); color: white; }
+        .canvas-size-btn.active { background: var(--gradient-primary); color: white; }
 
         .canvas-color-btn {
             width: 22px;
@@ -1430,11 +1453,68 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .note-card { animation: fadeInUp 0.22s ease both; }
-
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
+        }
+
+        @keyframes noteCardIn {
+            from { opacity: 0; transform: translateY(18px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes floatBob {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes logoBounce {
+            from { transform: scale(0.5) rotate(-8deg); opacity: 0; }
+            to { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes cardSwoop {
+            0% { transform: translateX(0) rotate(0deg); opacity: 1; max-height: 300px; margin-bottom: 14px; }
+            70% { opacity: 0; }
+            100% { transform: translateX(160%) rotate(8deg); opacity: 0; max-height: 0; margin-bottom: 0; padding: 0; }
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes trashWobble {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-14deg); }
+            75% { transform: rotate(10deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        @keyframes checkBounce {
+            0% { transform: scale(0.6); }
+            60% { transform: scale(1.25); }
+            80% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+
+        .note-card { animation: noteCardIn 0.3s cubic-bezier(0.34, 1.1, 0.64, 1) both; }
+
+        .note-card.card-deleting {
+            animation: cardSwoop 0.4s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .btn-icon:hover i { animation: trashWobble 0.32s ease; }
+
+        .empty-state-emoji {
+            font-size: 66px;
+            line-height: 1;
+            margin-bottom: 18px;
+            display: block;
+            animation: floatBob 3.2s ease-in-out infinite;
+            user-select: none;
         }
     </style>
 </head>
@@ -1451,7 +1531,7 @@
                         <i class="fa-solid fa-pen-to-square"></i>
                     </div>
                     <h1>Notely</h1>
-                    <p>Your second brain.</p>
+                    <p>Where great ideas begin ✨</p>
                 </div>
 
                 <div class="auth-tabs">
@@ -1484,7 +1564,7 @@
                         <label for="reg-pass">Password</label>
                         <input type="password" id="reg-pass" class="form-input" placeholder="Min. 6 characters" required autocomplete="new-password">
                     </div>
-                    <button type="submit" id="register-btn" class="btn btn-primary" style="background: var(--success);">Create Account</button>
+                    <button type="submit" id="register-btn" class="btn btn-primary">Let's go! 🚀</button>
                     <p id="reg-error" style="color: var(--error); font-size: 13px; text-align: center; margin-top: 12px;" class="hidden"></p>
                 </form>
             </div>
@@ -1502,7 +1582,7 @@
                 </div>
 
                 <button onclick="openModal()" class="btn btn-new-note">
-                    <i class="fa-solid fa-plus"></i> New Note
+                    <i class="fa-solid fa-plus"></i> New Thought 💭
                 </button>
 
                 <div class="nav-section">
@@ -1562,7 +1642,7 @@
                                 onkeyup="filterNotes(this.value)"
                                 oninput="updateSearchClear(this.value)"
                                 class="search-input"
-                                placeholder="Search notes..."
+                                placeholder="Search your thoughts..."
                                 aria-label="Search notes"
                                 autocomplete="off"
                             >
@@ -1584,14 +1664,14 @@
     <div id="note-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title-label">
         <div class="modal-card">
             <div class="modal-header">
-                <span class="modal-title" id="modal-title-label">New Note</span>
+                <span class="modal-title" id="modal-title-label">New Thought 💭</span>
                 <button onclick="closeModal()" class="btn-close btn" aria-label="Close">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
-            <input type="text" id="note-title" class="note-title-input" placeholder="Note title...">
-            <textarea id="note-content" class="note-content-textarea" placeholder="Start writing..."></textarea>
+            <input type="text" id="note-title" class="note-title-input" placeholder="What's this about?">
+            <textarea id="note-content" class="note-content-textarea" placeholder="Pour your thoughts here..."></textarea>
 
             <div class="modal-footer">
                 <div class="modal-footer-left">
@@ -1606,7 +1686,7 @@
                     </button>
                 </div>
                 <div class="modal-footer-right">
-                    <button onclick="saveNote()" id="save-note-btn" class="btn-save btn">Save Note</button>
+                    <button onclick="saveNote()" id="save-note-btn" class="btn-save btn">Save ✨</button>
                 </div>
             </div>
         </div>
@@ -1616,7 +1696,7 @@
     <div id="scan-modal" class="modal-overlay" style="z-index: 150;" role="dialog" aria-modal="true" aria-label="Scan Note">
         <div class="modal-card" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
-                <span class="modal-title">Scan Note</span>
+                <span class="modal-title">Scan Your Writing ✍️</span>
                 <button onclick="closeScanModal()" class="btn-close btn" aria-label="Close">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -1694,8 +1774,8 @@
             <div id="scan-step-loading" class="hidden">
                 <div class="scan-loading-content" aria-live="polite">
                     <div class="spinner" aria-hidden="true"></div>
-                    <p style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Analyzing image...</p>
-                    <p style="font-size: 13px; color: var(--text-secondary);">Extracting text with OCR — this may take a few seconds.</p>
+                    <p style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Reading your writing... 🔍</p>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Hang tight, this takes just a moment!</p>
                 </div>
             </div>
 
@@ -1735,15 +1815,15 @@
     <div id="confirm-modal" class="modal-overlay" style="z-index: 200;" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
         <div class="modal-card" style="max-width: 360px; text-align: center;">
             <div style="padding: 8px 0 22px;">
-                <div class="confirm-delete-icon">
-                    <i class="fa-solid fa-trash"></i>
+                <div class="confirm-delete-icon" style="font-size: 32px; background: none; border: none;">
+                    💔
                 </div>
-                <h3 id="confirm-title" style="font-size: 17px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.2px; color: var(--text);">Delete Note?</h3>
-                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6;">This note will be permanently deleted and cannot be recovered.</p>
+                <h3 id="confirm-title" style="font-size: 17px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.2px; color: var(--text);">Delete this note?</h3>
+                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6;">Once it's gone, it's gone forever. No take-backs!</p>
             </div>
             <div style="display: flex; gap: 8px;">
-                <button onclick="cancelConfirm()" class="btn-ghost" style="flex: 1;">Keep Note</button>
-                <button onclick="executeConfirm()" class="btn-danger">Delete</button>
+                <button onclick="cancelConfirm()" class="btn-ghost" style="flex: 1;">Keep It</button>
+                <button onclick="executeConfirm()" class="btn-danger">Delete Forever</button>
             </div>
         </div>
     </div>
@@ -1851,9 +1931,9 @@
                 showPage('dashboard-page');
                 updateUI();
                 fetchNotes();
-                toast('Welcome back!', 'success');
+                toast('Welcome back! 👋', 'success');
             } else {
-                toast('Invalid email or password. Please try again.', 'error');
+                toast('Hmm, that didn\'t work. Double-check your details. 🤔', 'error');
             }
         }
 
@@ -1877,7 +1957,7 @@
                 const data = await res.json().catch(() => null);
                 setButtonLoading(btn, false);
                 if (res.ok) {
-                    toast('Account created! You can now sign in.', 'success');
+                    toast('You\'re all set! 🚀 Go ahead and sign in.', 'success');
                     toggleAuth('login');
                 } else {
                     errEl.textContent = (data && data.error) ? data.error : 'Registration failed. Please try again.';
@@ -1910,13 +1990,11 @@
             } else {
                 grid.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon" style="background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.1);">
-                            <i class="fa-solid fa-wifi" style="color: var(--error); opacity: 0.7;"></i>
-                        </div>
-                        <div class="empty-title">Unable to load notes</div>
-                        <p class="empty-desc">Check your internet connection and try again.</p>
+                        <span class="empty-state-emoji">😵</span>
+                        <div class="empty-title">Oops! Something went wrong</div>
+                        <p class="empty-desc">We couldn't load your notes. Check your connection and give it another shot!</p>
                         <button onclick="fetchNotes()" class="btn-cta">
-                            <i class="fa-solid fa-rotate-right"></i> Retry
+                            <i class="fa-solid fa-rotate-right"></i> Try Again
                         </button>
                     </div>`;
             }
@@ -1962,37 +2040,33 @@
                 if (isFirstVisit) {
                     grid.innerHTML = `
                         <div class="empty-state">
-                            <div class="empty-icon">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </div>
-                            <div class="empty-title">Welcome to Notely!</div>
-                            <p class="empty-desc">Your workspace is ready. Create your first note to get started, or scan a handwritten note to convert it to text.</p>
+                            <span class="empty-state-emoji">📝</span>
+                            <div class="empty-title">Welcome to Notely! 🎉</div>
+                            <p class="empty-desc">Your canvas is blank. Time to create something amazing! Jot down ideas, scan handwritten notes, or just capture what's on your mind.</p>
                             <button onclick="openModal()" class="btn-cta">
-                                <i class="fa-solid fa-plus"></i> Create First Note
+                                Start Writing ✍️
                             </button>
                         </div>`;
                 } else if (state.category !== 'all') {
+                    const catEmojis = { personal: '🌿', work: '💼', ideas: '💡' };
+                    const catEmoji = catEmojis[state.category] || '📂';
                     grid.innerHTML = `
                         <div class="empty-state">
-                            <div class="empty-icon">
-                                <i class="fa-solid fa-folder-open"></i>
-                            </div>
-                            <div class="empty-title">No ${state.category} notes</div>
-                            <p class="empty-desc">Notes tagged with <strong>#${state.category}</strong> will appear here.</p>
+                            <span class="empty-state-emoji">${catEmoji}</span>
+                            <div class="empty-title">Nothing here... yet! 🌱</div>
+                            <p class="empty-desc">Your ${state.category} space is wide open. Add a note tagged with <strong>#${state.category}</strong> and it'll appear here.</p>
                             <button onclick="openModal()" class="btn-cta">
-                                <i class="fa-solid fa-plus"></i> New Note
+                                New Thought 💭
                             </button>
                         </div>`;
                 } else {
                     grid.innerHTML = `
                         <div class="empty-state">
-                            <div class="empty-icon">
-                                <i class="fa-solid fa-note-sticky"></i>
-                            </div>
-                            <div class="empty-title">No notes yet</div>
-                            <p class="empty-desc">Create your first note to get started.</p>
+                            <span class="empty-state-emoji">✨</span>
+                            <div class="empty-title">Ready when you are!</div>
+                            <p class="empty-desc">No notes yet — but every great idea starts somewhere. What's on your mind?</p>
                             <button onclick="openModal()" class="btn-cta">
-                                <i class="fa-solid fa-plus"></i> New Note
+                                Start Writing ✍️
                             </button>
                         </div>`;
                 }
@@ -2010,9 +2084,10 @@
                 if ((note.content || '').includes('#work')) { tag = 'Work'; tagClass = 'tag-work'; }
                 else if ((note.content || '').includes('#personal')) { tag = 'Personal'; tagClass = 'tag-personal'; }
                 else if ((note.content || '').includes('#idea')) { tag = 'Ideas'; tagClass = 'tag-ideas'; }
+                else if ((note.title || '').startsWith('✍️')) { tag = 'Scanned'; tagClass = 'tag-scanned'; }
                 else { tag = 'Note'; tagClass = 'tag-general'; }
 
-                const dateStr = new Date(note.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const dateStr = relativeTime(note.updatedAt);
 
                 el.innerHTML = `
                     <div class="note-card-top">
@@ -2080,11 +2155,9 @@
                 msg.setAttribute('data-search-empty', '1');
                 msg.className = 'empty-state';
                 msg.innerHTML = `
-                    <div class="empty-icon">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </div>
-                    <div class="empty-title">No results</div>
-                    <p class="empty-desc">No notes match &ldquo;${esc(q)}&rdquo;. Try different keywords.</p>
+                    <span class="empty-state-emoji">🔮</span>
+                    <div class="empty-title">Nothing here...</div>
+                    <p class="empty-desc">Couldn't find anything for &ldquo;${esc(q)}&rdquo;. Try a different spell?</p>
                 `;
                 grid.appendChild(msg);
             }
@@ -2105,7 +2178,7 @@
 
         function openModal(note = null) {
             state.editingId = note ? note.id : null;
-            document.getElementById('modal-title-label').textContent = note ? 'Edit Note' : 'New Note';
+            document.getElementById('modal-title-label').textContent = note ? 'Edit Note ✏️' : 'New Thought 💭';
             document.getElementById('note-title').value = note ? note.title : '';
             document.getElementById('note-content').value = note ? note.content : '';
 
@@ -2118,7 +2191,7 @@
             }
 
             const saveBtn = document.getElementById('save-note-btn');
-            saveBtn.innerHTML = 'Save Note';
+            saveBtn.innerHTML = 'Save ✨';
             saveBtn.disabled = false;
 
             document.getElementById('note-modal').classList.add('open');
@@ -2136,7 +2209,7 @@
             const cat = document.getElementById('note-category').value;
             const saveBtn = document.getElementById('save-note-btn');
 
-            if (!title) { toast('Please enter a title for your note.', 'warning'); return; }
+            if (!title) { toast('Don\'t forget a title! 📌', 'warning'); return; }
             if (cat !== 'general' && !content.includes('#' + cat)) content += `\n\n#${cat}`;
 
             const method = state.editingId ? 'PUT' : 'POST';
@@ -2149,18 +2222,23 @@
             if (res) {
                 closeModal();
                 fetchNotes();
-                toast('Note saved successfully.', 'success');
+                toast('Saved! ✨', 'success');
             } else {
-                toast('Failed to save note. Please try again.', 'error');
+                toast('Oops! Couldn\'t save that. Try again? 😅', 'error');
             }
         }
 
         function deleteNote(e, id) {
             e.stopPropagation();
+            const card = e.target.closest('.note-card');
             showConfirm(async () => {
+                if (card && card.parentElement) {
+                    card.classList.add('card-deleting');
+                    await new Promise(r => setTimeout(r, 380));
+                }
                 await api(`/notes/${id}`, 'DELETE');
                 fetchNotes();
-                toast('Note deleted.', 'success');
+                toast('Gone forever 💨', 'success');
             });
         }
 
@@ -2389,18 +2467,18 @@
         async function scanSaveAsNote() {
             const extractedText = document.getElementById('scan-preview-text').value;
             if (!extractedText.trim()) {
-                toast('No text to save. Edit the text above or try scanning again.', 'warning');
+                toast('Nothing to save yet — edit the text above! 👆', 'warning');
                 return;
             }
-            const title = 'Scanned Note \u2014 ' + new Date().toLocaleDateString();
+            const title = '✍️ Scanned — ' + new Date().toLocaleDateString();
             const result = await api('/notes', 'POST', { title, content: extractedText });
             if (result) {
                 closeScanModal();
                 closeModal();
                 fetchNotes();
-                toast('Scan complete \u2014 note saved!', 'success');
+                toast('Scanned & saved! 📝', 'success');
             } else {
-                toast('Failed to save scanned note. Please try again.', 'error');
+                toast('Oops! Couldn\'t save the scan. Try again? 😅', 'error');
             }
         }
 
@@ -2450,6 +2528,47 @@
             const d = document.createElement('div');
             d.textContent = str;
             return d.innerHTML;
+        }
+
+        function relativeTime(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays}d ago`;
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        const _kc = [38,38,40,40,37,39,37,39,66,65];
+        let _kp = 0;
+        document.addEventListener('keydown', e => {
+            if (e.keyCode === _kc[_kp]) {
+                _kp++;
+                if (_kp === _kc.length) {
+                    _kp = 0;
+                    _launchConfetti();
+                }
+            } else {
+                _kp = 0;
+            }
+        });
+
+        function _launchConfetti() {
+            const colors = ['#8B5CF6','#EC4899','#F59E0B','#10B981','#3B82F6','#F97316'];
+            for (let i = 0; i < 90; i++) {
+                const c = document.createElement('div');
+                const size = Math.random() * 10 + 5;
+                c.style.cssText = `position:fixed;width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random()*colors.length)]};left:${Math.random()*100}vw;top:-30px;border-radius:${Math.random()>0.5?'50%':'3px'};animation:confettiFall ${Math.random()*2+1.5}s ease-in forwards;animation-delay:${Math.random()*0.6}s;z-index:9998;pointer-events:none;`;
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 3200);
+            }
+            toast('🎉 You found the easter egg!', 'success');
         }
     </script>
 </body>
