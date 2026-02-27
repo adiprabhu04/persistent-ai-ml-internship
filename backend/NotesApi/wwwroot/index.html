@@ -2020,22 +2020,34 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
 
-            setButtonLoading(btn, true, 'Signing in...');
             const hashedPassword = await sha256(password);
-            const res = await api('/auth/login', 'POST', { email, password: hashedPassword });
-            setButtonLoading(btn, false);
+            console.log('[login] email:', email, '| sha256 hash length:', hashedPassword.length);
 
-            if (res && res.token) {
-                state.token = res.token;
-                state.name = res.name || 'User';
-                localStorage.setItem('token', res.token);
-                localStorage.setItem('name', state.name);
-                showPage('dashboard-page');
-                updateUI();
-                fetchNotes();
-                toast('Welcome back! 👋', 'success');
-            } else {
-                toast('Hmm, that didn\'t work. Double-check your details. 🤔', 'error');
+            setButtonLoading(btn, true, 'Signing in...');
+            try {
+                const res = await fetch(API_URL + '/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password: hashedPassword })
+                });
+                const data = await res.json().catch(() => null);
+                setButtonLoading(btn, false);
+
+                if (res.ok && data && data.token) {
+                    state.token = data.token;
+                    state.name = data.name || 'User';
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('name', state.name);
+                    showPage('dashboard-page');
+                    updateUI();
+                    fetchNotes();
+                    toast('Welcome back! 👋', 'success');
+                } else {
+                    toast('Hmm, that didn\'t work. Double-check your details. 🤔', 'error');
+                }
+            } catch (err) {
+                setButtonLoading(btn, false);
+                toast('Unable to reach the server. Please check your connection.', 'error');
             }
         }
 
@@ -2050,6 +2062,7 @@
             const password = document.getElementById('reg-pass').value;
 
             const hashedPassword = await sha256(password);
+            console.log('[register] email:', email, '| sha256 hash length:', hashedPassword.length);
             setButtonLoading(btn, true, 'Creating account...');
             try {
                 const res = await fetch(API_URL + '/auth/register', {
