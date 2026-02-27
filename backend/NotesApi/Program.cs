@@ -467,8 +467,8 @@ app.MapPost("/auth/register", async (RegisterRequest request, NotesDbContext db)
     if (!System.Text.RegularExpressions.Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
         return Results.BadRequest(new { error = "Please enter a valid email address" });
 
-    if (request.Password.Length < 6)
-        return Results.BadRequest(new { error = "Password must be at least 6 characters" });
+    if (string.IsNullOrWhiteSpace(request.Password))
+        return Results.BadRequest(new { error = "Password is required" });
 
     if (await db.Users.AnyAsync(u => u.Email == email))
         return Results.Conflict(new { error = "User already exists" });
