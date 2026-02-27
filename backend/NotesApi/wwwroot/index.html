@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#8B5CF6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon-192.png">
     <title>Notely</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,6 +66,12 @@
             margin: 0;
             padding: 0;
             outline: none;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        *::-webkit-scrollbar {
+            display: none;
         }
 
         body {
@@ -75,6 +86,12 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             font-size: 15px;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
         }
 
         .btn {
@@ -1516,6 +1533,73 @@
             animation: floatBob 3.2s ease-in-out infinite;
             user-select: none;
         }
+
+        #drawing-canvas {
+            touch-action: none;
+        }
+
+        .notes-area, .modal-card, .auth-container {
+            touch-action: pan-y;
+        }
+
+        .install-prompt {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 16px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 320px;
+            width: calc(100% - 48px);
+            animation: slideUpPrompt 0.3s ease;
+        }
+
+        .install-prompt.hidden { display: none; }
+
+        @keyframes slideUpPrompt {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        .install-prompt-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .install-prompt-text {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .install-btn {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .install-dismiss {
+            color: var(--text-secondary);
+            padding: 4px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .install-dismiss:hover { background: var(--surface-secondary); }
     </style>
 </head>
 <body>
@@ -1828,6 +1912,16 @@
         </div>
     </div>
 
+    <div id="install-prompt" class="install-prompt hidden">
+        <div class="install-prompt-content">
+            <span class="install-prompt-text">Add Notely to your home screen</span>
+            <button onclick="installApp()" class="install-btn btn">Install</button>
+            <button onclick="dismissInstall()" class="install-dismiss btn" aria-label="Dismiss">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
     <script>
         const API_URL = "";
         let state = {
@@ -1913,6 +2007,13 @@
             }
         }
 
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
         async function handleLogin(e) {
             e.preventDefault();
             const btn = document.getElementById('login-btn');
@@ -1920,7 +2021,8 @@
             const password = document.getElementById('login-password').value;
 
             setButtonLoading(btn, true, 'Signing in...');
-            const res = await api('/auth/login', 'POST', { email, password });
+            const hashedPassword = await sha256(password);
+            const res = await api('/auth/login', 'POST', { email, password: hashedPassword });
             setButtonLoading(btn, false);
 
             if (res && res.token) {
@@ -1947,12 +2049,13 @@
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-pass').value;
 
+            const hashedPassword = await sha256(password);
             setButtonLoading(btn, true, 'Creating account...');
             try {
                 const res = await fetch(API_URL + '/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password })
+                    body: JSON.stringify({ name, email, password: hashedPassword })
                 });
                 const data = await res.json().catch(() => null);
                 setButtonLoading(btn, false);
@@ -2569,6 +2672,44 @@
                 setTimeout(() => c.remove(), 3200);
             }
             toast('🎉 You found the easter egg!', 'success');
+        }
+
+        let installPromptEvent = null;
+
+        window.addEventListener('beforeinstallprompt', e => {
+            e.preventDefault();
+            installPromptEvent = e;
+            if (!localStorage.getItem('pwa-install-dismissed')) {
+                document.getElementById('install-prompt').classList.remove('hidden');
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('install-prompt').classList.add('hidden');
+            localStorage.setItem('pwa-install-dismissed', '1');
+        });
+
+        function installApp() {
+            if (!installPromptEvent) return;
+            installPromptEvent.prompt();
+            installPromptEvent.userChoice.then(choice => {
+                if (choice.outcome === 'accepted') {
+                    localStorage.setItem('pwa-install-dismissed', '1');
+                }
+                installPromptEvent = null;
+                document.getElementById('install-prompt').classList.add('hidden');
+            });
+        }
+
+        function dismissInstall() {
+            document.getElementById('install-prompt').classList.add('hidden');
+            localStorage.setItem('pwa-install-dismissed', '1');
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js');
+            });
         }
     </script>
 </body>
