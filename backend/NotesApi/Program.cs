@@ -282,100 +282,6 @@ app.MapDelete("/notes/{id}", async (
 })
 .RequireAuthorization();
 
-app.MapPost("/notes/upload", async (
-    IFormFile file,
-    IHttpClientFactory clientFactory,
-    HttpContext context,
-    NotesDbContext db) =>
-{
-    var userId = AuthHelpers.GetUserId(context);
-    if (userId == null) return Results.Unauthorized();
-
-    if (file == null || file.Length == 0)
-        return Results.BadRequest(new { error = "No file uploaded" });
-
-    const long maxFileSize = 10 * 1024 * 1024;
-    if (file.Length > maxFileSize)
-        return Results.BadRequest(new { error = "File size must be under 10MB" });
-
-    var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/webp", "image/bmp" };
-    if (!allowedTypes.Contains(file.ContentType.ToLower()))
-        return Results.BadRequest(new { error = "Only image files (JPEG, PNG, GIF, WebP, BMP) are allowed" });
-
-    var aiServiceBase = Environment.GetEnvironmentVariable("AI_SERVICE_URL")
-        ?? "http://localhost:8000";
-    var aiServiceUrl = aiServiceBase.TrimEnd('/') + "/extract-text";
-
-    using var uploadMemoryStream = new MemoryStream();
-    await file.OpenReadStream().CopyToAsync(uploadMemoryStream);
-    var uploadFileBytes = uploadMemoryStream.ToArray();
-
-    const int uploadMaxRetries = 3;
-    for (int attempt = 0; attempt < uploadMaxRetries; attempt++)
-    {
-        try
-        {
-            using var client = clientFactory.CreateClient();
-            using var formContent = new MultipartFormDataContent();
-            var streamContent = new StreamContent(new MemoryStream(uploadFileBytes));
-            streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-            formContent.Add(streamContent, "file", file.FileName);
-
-            var response = await client.PostAsync(aiServiceUrl, formContent);
-
-            if ((int)response.StatusCode == 429)
-            {
-                if (attempt < uploadMaxRetries - 1)
-                {
-                    await Task.Delay((attempt + 1) * 1000);
-                    continue;
-                }
-                return Results.Json(new { error = "OCR service is busy. Please try again in a moment." }, statusCode: 503);
-            }
-
-            if (!response.IsSuccessStatusCode)
-                return Results.Json(new { error = "Python AI Service failed." }, statusCode: 502);
-
-            var jsonString = await response.Content.ReadAsStringAsync();
-            using var doc = JsonDocument.Parse(jsonString);
-
-            string extractedText = "";
-            if (doc.RootElement.TryGetProperty("text", out var textElement))
-            {
-                extractedText = textElement.GetString() ?? "";
-            }
-
-            var newNote = new Note
-            {
-                Id = Guid.NewGuid(),
-                Title = "Scanned Note - " + DateTime.Now.ToShortDateString(),
-                Content = extractedText,
-                UserId = userId,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
-
-            db.Notes.Add(newNote);
-            await db.SaveChangesAsync();
-
-            return Results.Ok(newNote);
-        }
-        catch (Exception)
-        {
-            if (attempt < uploadMaxRetries - 1)
-            {
-                await Task.Delay((attempt + 1) * 1000);
-                continue;
-            }
-            return Results.Problem("AI service is currently unavailable. Please try again later.");
-        }
-    }
-
-    return Results.Problem("AI service is currently unavailable. Please try again later.");
-})
-.RequireAuthorization()
-.DisableAntiforgery();
-
 app.MapPost("/notes/scan", async (
     IFormFile file,
     IHttpClientFactory clientFactory,
@@ -466,9 +372,6 @@ app.MapPost("/auth/register", async (RegisterRequest request, NotesDbContext db)
 
     if (!System.Text.RegularExpressions.Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
         return Results.BadRequest(new { error = "Please enter a valid email address" });
-
-    if (string.IsNullOrWhiteSpace(request.Password))
-        return Results.BadRequest(new { error = "Password is required" });
 
     if (await db.Users.AnyAsync(u => u.Email == email))
         return Results.Conflict(new { error = "User already exists" });
