@@ -3,64 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#8B5CF6">
+    <meta name="theme-color" content="#FFD60A">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icon-192.png">
     <title>Notely</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;1,14..32,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* ── DESIGN TOKENS ───────────────────────────────────── */
         :root {
-            --bg: #FAFAF9;
+            --bg: #F5F3EF;
             --surface: #FFFFFF;
-            --surface-secondary: #F5F5F4;
-            --border: #E5E5E5;
-            --border-subtle: rgba(0, 0, 0, 0.06);
-            --text: #1C1C1E;
+            --surface-secondary: #F0EDE8;
+            --border: #E8E5DE;
+            --border-subtle: rgba(0,0,0,0.06);
+            --text: #1A1A1A;
             --text-secondary: #6B6B6B;
             --text-tertiary: #9E9E9E;
-            --accent: #8B5CF6;
-            --accent-hover: #7C3AED;
-            --accent-light: rgba(139, 92, 246, 0.08);
-            --accent-border: rgba(139, 92, 246, 0.18);
-            --success: #10B981;
+            --accent: #FFD60A;
+            --accent-hover: #FFC107;
+            --accent-dark: #1A1A1A;
+            --success: #22C55E;
             --warning: #F59E0B;
             --error: #EF4444;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.06);
-            --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12), 0 3px 8px rgba(0, 0, 0, 0.06);
-            --gradient-primary: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
-            --gradient-hover: linear-gradient(135deg, #7C3AED 0%, #DB2777 100%);
+            --info: #3B82F6;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --shadow-fab: 0 4px 16px rgba(255,214,10,0.45);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --nav-h: 70px;
+            --header-h: 60px;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg: #1A1A1A;
-                --surface: #242424;
-                --surface-secondary: #2C2C2C;
-                --border: #333333;
-                --border-subtle: rgba(255, 255, 255, 0.06);
-                --text: #F5F5F5;
-                --text-secondary: #A0A0A0;
-                --text-tertiary: #5E5E5E;
-                --accent: #A78BFA;
-                --accent-hover: #8B5CF6;
-                --accent-light: rgba(167, 139, 250, 0.1);
-                --accent-border: rgba(167, 139, 250, 0.2);
-                --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-                --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-                --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
-                --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.5);
+                --bg: #1C1C1E;
+                --surface: #2C2C2E;
+                --surface-secondary: #3A3A3C;
+                --border: #3A3A3C;
+                --border-subtle: rgba(255,255,255,0.06);
+                --text: #F5F5F7;
+                --text-secondary: #AEAEB2;
+                --text-tertiary: #6E6E73;
+                --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+                --shadow-md: 0 2px 8px rgba(0,0,0,0.4);
+                --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
             }
         }
 
+        /* ── RESET ───────────────────────────────────────────── */
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
@@ -69,1208 +69,893 @@
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
-
-        *::-webkit-scrollbar {
-            display: none;
-        }
+        *::-webkit-scrollbar { display: none; }
 
         body {
-            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg);
-            background-image: radial-gradient(circle, rgba(139, 92, 246, 0.045) 1px, transparent 1px);
-            background-size: 28px 28px;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
             color: var(--text);
             height: 100vh;
             overflow: hidden;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
             font-size: 15px;
             overscroll-behavior: none;
             -webkit-overflow-scrolling: touch;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
-            padding-left: env(safe-area-inset-left);
-            padding-right: env(safe-area-inset-right);
         }
 
-        .btn {
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-family: inherit;
-            font-size: inherit;
-            transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            white-space: nowrap;
-            line-height: 1;
-        }
-
-        .btn:active:not(:disabled) { transform: scale(0.97); }
-        .btn:disabled { cursor: not-allowed; opacity: 0.45; transform: none !important; }
-
-        .page { display: none; width: 100%; height: 100%; }
-        .page.active { display: flex; }
+        .btn { cursor: pointer; border: none; background: none; font-family: inherit; transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .hidden { display: none !important; }
 
-        select { color-scheme: light dark; font-family: inherit; }
-        textarea, input { font-family: inherit; }
+        /* ── PAGES ───────────────────────────────────────────── */
+        .page { display: none; }
+        .page.active { display: flex; flex-direction: column; height: 100vh; }
 
-        /* ── AUTH PAGE ─────────────────────────────────────── */
-
-        .auth-container {
-            display: flex;
+        /* ── AUTH PAGE ───────────────────────────────────────── */
+        #auth-page {
+            background: var(--bg);
             align-items: center;
             justify-content: center;
-            width: 100%;
-            height: 100%;
-            background: var(--bg);
-            background-image: radial-gradient(circle at 25% 25%, rgba(139, 92, 246, 0.07) 0%, transparent 50%),
-                              radial-gradient(circle at 75% 75%, rgba(236, 72, 153, 0.06) 0%, transparent 50%);
-            padding: 24px;
+            padding: 24px 16px;
+            padding-bottom: calc(24px + env(safe-area-inset-bottom));
         }
 
         .auth-card {
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            padding: 32px 28px;
             width: 100%;
             max-width: 400px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 40px;
             box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
         }
 
         .auth-logo {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 32px;
+            text-align: center;
+            margin-bottom: 28px;
         }
 
         .auth-logo-icon {
-            width: 54px;
-            height: 54px;
-            background: var(--gradient-primary);
-            border-radius: 16px;
-            display: flex;
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
+            border-radius: 18px;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 24px;
-            margin-bottom: 16px;
-            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
-            animation: logoBounce 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+            font-size: 28px;
+            margin-bottom: 12px;
+            animation: logoBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
         }
 
-        .auth-logo h1 {
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            color: var(--text);
-        }
-
-        .auth-logo p {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-top: 5px;
-        }
+        .auth-logo h1 { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+        .auth-logo p { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 
         .auth-tabs {
             display: flex;
             background: var(--surface-secondary);
-            border: 1px solid var(--border);
-            padding: 4px;
-            border-radius: 11px;
-            margin-bottom: 28px;
-            gap: 2px;
+            border-radius: var(--radius-md);
+            padding: 3px;
+            margin-bottom: 24px;
         }
 
         .auth-tab {
             flex: 1;
-            padding: 9px 16px;
-            border-radius: 8px;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            border: none;
-            font-weight: 500;
+            padding: 9px;
             font-size: 14px;
-            font-family: inherit;
-            transition: all 0.15s ease;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-radius: 10px;
+            transition: all 0.2s ease;
         }
-
         .auth-tab.active {
             background: var(--surface);
             color: var(--text);
-            font-weight: 600;
             box-shadow: var(--shadow-sm);
         }
 
-        .input-group { margin-bottom: 18px; }
-
-        .input-group label {
-            display: block;
-            color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 7px;
-        }
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         .form-input {
             width: 100%;
-            background: var(--surface);
-            border: 1.5px solid var(--border);
-            color: var(--text);
             padding: 11px 14px;
-            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface-secondary);
+            color: var(--text);
             font-size: 15px;
             font-family: inherit;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            transition: border-color 0.15s;
         }
-
+        .form-input:focus { border-color: var(--accent); background: var(--surface); }
         .form-input::placeholder { color: var(--text-tertiary); }
-
-        .form-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-light);
-        }
 
         .btn-primary {
             width: 100%;
-            background: var(--gradient-primary);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 10px;
+            padding: 13px;
+            background: var(--accent);
+            color: var(--accent-dark);
+            border-radius: var(--radius-sm);
             font-size: 15px;
-            font-weight: 600;
-            margin-top: 8px;
-            letter-spacing: 0.01em;
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+            font-weight: 700;
+            margin-top: 6px;
+            letter-spacing: -0.1px;
+        }
+        .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+        .btn-primary:active:not(:disabled) { transform: scale(0.98); }
+
+        .auth-error {
+            font-size: 13px;
+            color: var(--error);
+            background: rgba(239,68,68,0.08);
+            border: 1px solid rgba(239,68,68,0.2);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            margin-top: 10px;
         }
 
-        .btn-primary:hover:not(:disabled) {
-            background: var(--gradient-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.35);
-        }
-
-
-        /* ── DASHBOARD LAYOUT ──────────────────────────────── */
-
-        .dashboard { display: flex; width: 100%; height: 100%; }
-
-        .sidebar {
-            width: 240px;
-            flex-shrink: 0;
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 20px 12px;
-            background: var(--surface);
-            z-index: 20;
-        }
-
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+        /* ── DASHBOARD LAYOUT ────────────────────────────────── */
+        #dashboard-page {
+            background: var(--bg);
             overflow: hidden;
+        }
+
+        /* ── APP HEADER ──────────────────────────────────────── */
+        .app-header {
+            flex-shrink: 0;
+            height: var(--header-h);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            background: var(--bg);
+            gap: 12px;
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .btn-header-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            color: var(--text-secondary);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .btn-header-icon:hover { background: var(--surface-secondary); color: var(--text); }
+        .btn-header-icon:active { transform: scale(0.9); }
+
+        .app-title {
+            flex: 1;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.5px;
+            text-align: center;
+        }
+
+        .header-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--accent-dark);
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.15s;
+        }
+        .header-avatar:active { transform: scale(0.9); }
+
+        /* ── SEARCH BAR ──────────────────────────────────────── */
+        .search-bar-panel {
+            flex-shrink: 0;
+            padding: 0 16px 10px;
+            background: var(--bg);
+            animation: slideDown 0.2s ease both;
+        }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+        .search-inner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 50px;
+            padding: 0 14px;
+            height: 42px;
+        }
+        .search-inner i.fa-magnifying-glass { color: var(--text-tertiary); font-size: 14px; flex-shrink: 0; }
+
+        #search-input {
+            flex: 1;
+            border: none;
+            background: none;
+            font-size: 15px;
+            color: var(--text);
+            font-family: inherit;
+        }
+        #search-input::placeholder { color: var(--text-tertiary); }
+
+        .search-clear {
+            color: var(--text-tertiary);
+            font-size: 13px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            opacity: 0;
+            transition: opacity 0.15s;
+            pointer-events: none;
+        }
+        .search-clear.visible { opacity: 1; pointer-events: auto; }
+        .search-clear:hover { background: var(--surface-secondary); color: var(--text); }
+
+        .search-count-label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            padding: 4px 4px 0;
+        }
+
+        /* ── FILTER TABS ─────────────────────────────────────── */
+        .filter-tabs-wrap {
+            flex-shrink: 0;
+            overflow-x: auto;
+            padding: 0 16px 12px;
             background: var(--bg);
         }
 
-        .brand {
-            font-size: 17px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            margin-bottom: 22px;
+        .filter-tabs {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 4px 8px;
-            color: var(--text);
-        }
-
-        .brand-icon {
-            width: 28px;
-            height: 28px;
-            background: var(--gradient-primary);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: white;
-        }
-
-        .btn-new-note {
-            width: 100%;
-            background: var(--gradient-primary);
-            color: white;
-            padding: 9px 14px;
-            border-radius: 9px;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 24px;
-            letter-spacing: 0.01em;
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
-        }
-
-        .btn-new-note:hover:not(:disabled) {
-            background: var(--gradient-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.35);
-        }
-
-        .nav-section { margin-bottom: 8px; }
-
-        .nav-section-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            padding: 0 10px;
-            margin-bottom: 4px;
-            display: block;
-        }
-
-        .nav-btn {
-            width: 100%;
-            padding: 8px 10px;
-            border-radius: 8px;
-            text-align: left;
-            color: var(--text-secondary);
-            background: transparent;
-            margin-bottom: 1px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.14s ease;
-        }
-
-        .nav-btn i {
-            width: 15px;
-            text-align: center;
-            font-size: 13px;
-            flex-shrink: 0;
-        }
-
-        .nav-btn:hover:not(.active) {
-            background: var(--surface-secondary);
-            color: var(--text);
-        }
-
-        .nav-btn.active {
-            background: var(--accent-light);
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        .sidebar-footer {
-            margin-top: auto;
-            padding-top: 14px;
-            border-top: 1px solid var(--border);
-        }
-
-        .user-row {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 8px;
-            border-radius: 8px;
-            transition: background 0.14s ease;
-        }
-
-        .user-row:hover { background: var(--surface-secondary); }
-
-        .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #6366F1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 13px;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .user-info { flex: 1; overflow: hidden; }
-
-        .user-name {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .user-plan {
-            font-size: 11px;
-            color: var(--text-tertiary);
-        }
-
-        .btn-logout {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            background: transparent;
-            color: var(--text-tertiary);
-            font-size: 13px;
-            flex-shrink: 0;
-            cursor: pointer;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.14s ease;
-        }
-
-        .btn-logout:hover { background: rgba(239, 68, 68, 0.08); color: var(--error); }
-
-
-        /* ── TOP BAR ───────────────────────────────────────── */
-
-        .top-bar {
-            padding: 18px 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            background: var(--surface);
-            gap: 16px;
-            flex-shrink: 0;
-        }
-
-        .top-bar-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .top-bar-title {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            color: var(--text);
-        }
-
-        .notes-count-badge {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-tertiary);
-            background: var(--surface-secondary);
-            border: 1px solid var(--border);
-            padding: 2px 8px;
-            border-radius: 100px;
-        }
-
-        .top-bar-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .search-count {
-            font-size: 12px;
-            color: var(--text-tertiary);
-            white-space: nowrap;
-        }
-
-        .search-container { position: relative; width: 300px; }
-
-        .search-icon-el {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-tertiary);
-            font-size: 12px;
-            pointer-events: none;
-        }
-
-        .search-input {
-            width: 100%;
-            background: var(--surface-secondary);
-            border: 1.5px solid var(--border);
-            color: var(--text);
-            padding: 9px 34px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-        }
-
-        .search-input::placeholder { color: var(--text-tertiary); }
-
-        .search-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-light);
-            background: var(--surface);
-            outline: none;
-        }
-
-        .search-clear {
-            position: absolute;
-            right: 9px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--text-tertiary);
-            color: var(--bg);
-            font-size: 9px;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.15s ease, background 0.15s ease;
-            pointer-events: none;
-        }
-
-        .search-clear.visible { opacity: 1; pointer-events: auto; }
-        .search-clear:hover { background: var(--text-secondary); }
-
-
-        /* ── NOTES AREA & GRID ─────────────────────────────── */
-
-        .notes-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px 28px;
-        }
-
-        .notes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 14px;
-            align-content: start;
-        }
-
-
-        /* ── NOTE CARDS ────────────────────────────────────── */
-
-        .note-card {
-            background: var(--surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 18px 20px;
-            min-height: 180px;
-            max-height: 230px;
-            display: flex;
-            flex-direction: column;
-            cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                        border-color 0.2s ease;
-            box-shadow: var(--shadow-sm);
-            position: relative;
-            overflow: hidden;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .note-card {
-                box-shadow: none;
-                border-color: var(--border);
-            }
-            .note-card:hover {
-                border-color: var(--accent-border);
-                box-shadow: none;
-            }
-        }
-
-        @media (prefers-color-scheme: light) {
-            .note-card:hover {
-                transform: translateY(-3px);
-                box-shadow: var(--shadow-hover);
-                border-color: rgba(139, 92, 246, 0.28);
-            }
-        }
-
-        .note-card-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
             gap: 8px;
+            min-width: max-content;
         }
 
-        .note-tag {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 3px 9px;
-            border-radius: 100px;
-            letter-spacing: 0.01em;
-            flex-shrink: 0;
-        }
-
-        .tag-work { background: rgba(99, 102, 241, 0.12); color: #6366F1; border: 1px solid rgba(99, 102, 241, 0.22); }
-        .tag-personal { background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.22); }
-        .tag-ideas { background: rgba(245, 158, 11, 0.12); color: #D97706; border: 1px solid rgba(245, 158, 11, 0.22); }
-        .tag-scanned { background: rgba(236, 72, 153, 0.12); color: #DB2777; border: 1px solid rgba(236, 72, 153, 0.22); }
-        .tag-general { background: var(--surface-secondary); color: var(--text-tertiary); border: 1px solid var(--border); }
-
-        @media (prefers-color-scheme: dark) {
-            .tag-work { background: rgba(99, 102, 241, 0.15); color: #818CF8; }
-            .tag-personal { background: rgba(16, 185, 129, 0.15); color: #34D399; }
-            .tag-ideas { background: rgba(245, 158, 11, 0.15); color: #FCD34D; }
-            .tag-scanned { background: rgba(236, 72, 153, 0.15); color: #F472B6; }
-        }
-
-        .note-date { font-size: 12px; color: var(--text-tertiary); flex-shrink: 0; }
-
-        .note-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text);
+        .filter-tab {
+            padding: 7px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: var(--surface);
+            border: 1.5px solid var(--border);
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 7px;
-            letter-spacing: -0.15px;
-        }
-
-        .note-body {
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1.65;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 4;
-            -webkit-box-orient: vertical;
-            flex: 1;
-        }
-
-        .note-card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            margin-top: 12px;
-            padding-top: 10px;
-            border-top: 1px solid var(--border-subtle);
-        }
-
-        .btn-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            background: transparent;
-            color: var(--text-tertiary);
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.14s ease;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-icon:hover {
-            background: rgba(239, 68, 68, 0.08);
-            color: var(--error);
-        }
-
-
-        /* ── SKELETON LOADERS ──────────────────────────────── */
-
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        .skeleton-line {
-            background: linear-gradient(90deg,
-                var(--surface-secondary) 25%,
-                var(--border) 50%,
-                var(--surface-secondary) 75%
-            );
-            background-size: 200% 100%;
-            animation: shimmer 1.8s ease-in-out infinite;
-            border-radius: 5px;
-        }
-
-        .skeleton-card {
-            background: var(--surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 18px 20px;
-            min-height: 180px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .skeleton-card { border-color: var(--border); }
-        }
-
-
-        /* ── EMPTY STATES ──────────────────────────────────── */
-
-        .empty-state {
-            grid-column: 1 / -1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: 80px 24px;
-        }
-
-        .empty-title {
-            font-size: 17px;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 8px;
-            letter-spacing: -0.2px;
-        }
-
-        .empty-desc {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.65;
-            max-width: 300px;
-            margin-bottom: 24px;
-        }
-
-        .btn-cta {
-            background: var(--gradient-primary);
-            color: white;
-            padding: 11px 22px;
-            border-radius: 9px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            font-family: inherit;
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-        }
-
-        .btn-cta:hover { background: var(--gradient-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(139, 92, 246, 0.35); }
-        .btn-cta:active { transform: scale(0.97); }
-
-
-        /* ── MODALS ────────────────────────────────────────── */
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.38);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-            padding: 20px;
-        }
-
-        .modal-overlay.open { opacity: 1; pointer-events: auto; }
-
-        .modal-card {
-            width: 90%;
-            max-width: 580px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 28px;
-            box-shadow: var(--shadow-lg);
-            transform: translateY(18px) scale(0.97);
-            transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .modal-overlay.open .modal-card { transform: translateY(0) scale(1); }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 22px;
-        }
-
-        .modal-title {
-            font-size: 17px;
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: -0.2px;
-        }
-
-        .btn-close {
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            background: var(--surface-secondary);
-            color: var(--text-secondary);
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            cursor: pointer;
-            transition: all 0.14s ease;
-        }
-
-        .btn-close:hover { background: var(--border); color: var(--text); }
-
-        .note-title-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            border-bottom: 1.5px solid var(--border);
-            color: var(--text);
-            font-size: 21px;
-            font-weight: 700;
-            padding: 0 0 12px 0;
-            margin-bottom: 16px;
-            letter-spacing: -0.3px;
-            font-family: inherit;
-            transition: border-color 0.15s ease;
-        }
-
-        .note-title-input::placeholder { color: var(--text-tertiary); }
-        .note-title-input:focus { border-bottom-color: var(--accent); }
-
-        .note-content-textarea {
-            width: 100%;
-            height: 175px;
-            background: var(--surface-secondary);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            padding: 14px 16px;
-            color: var(--text);
-            resize: vertical;
-            font-size: 14px;
-            line-height: 1.65;
-            font-family: inherit;
-            margin-bottom: 20px;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-        }
-
-        .note-content-textarea::placeholder { color: var(--text-tertiary); }
-
-        .note-content-textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-light);
-            background: var(--surface);
-            outline: none;
-        }
-
-        .modal-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .modal-footer-left, .modal-footer-right { display: flex; gap: 8px; align-items: center; }
-
-        .category-select {
-            background: var(--surface-secondary);
-            border: 1.5px solid var(--border);
-            color: var(--text);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-family: inherit;
-            font-weight: 500;
-            cursor: pointer;
-            transition: border-color 0.15s ease;
-            -webkit-appearance: none;
-            appearance: none;
-            padding-right: 28px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239E9E9E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 9px center;
-        }
-
-        .category-select:focus { border-color: var(--accent); outline: none; }
-
-        .btn-scan-trigger {
-            background: var(--surface-secondary);
-            border: 1.5px solid var(--border);
-            color: var(--text-secondary);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.14s ease;
+            transition: all 0.15s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
         }
-
-        .btn-scan-trigger:hover {
+        .filter-tab:active { transform: scale(0.96); }
+        .filter-tab.active {
+            background: var(--accent);
+            color: var(--accent-dark);
             border-color: var(--accent);
-            color: var(--accent);
-            background: var(--accent-light);
+            font-weight: 600;
         }
+
+        .tab-count {
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(0,0,0,0.12);
+            color: inherit;
+            border-radius: 50px;
+            padding: 1px 7px;
+        }
+        .filter-tab:not(.active) .tab-count { background: var(--surface-secondary); color: var(--text-secondary); }
+
+        /* ── NOTES AREA ──────────────────────────────────────── */
+        .notes-area {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 4px 16px calc(var(--nav-h) + 16px + env(safe-area-inset-bottom));
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        @media (min-width: 540px) {
+            .notes-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 900px) {
+            .notes-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* ── NOTE CARDS ──────────────────────────────────────── */
+        .note-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            animation: cardIn 0.25s ease both;
+        }
+        .note-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .note-card:active { transform: scale(0.98); }
+
+        .note-card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .note-title {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.35;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            letter-spacing: -0.2px;
+        }
+
+        .btn-delete-note {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            color: var(--text-tertiary);
+            font-size: 13px;
+            flex-shrink: 0;
+            margin-top: -2px;
+            transition: all 0.15s;
+        }
+        .btn-delete-note:hover { background: rgba(239,68,68,0.1); color: var(--error); }
+
+        .note-body {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .note-card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .note-date {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Tags */
+        .note-tag {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 9px;
+            border-radius: 50px;
+            letter-spacing: 0.2px;
+        }
+        .tag-work     { background: rgba(59,130,246,0.1);  color: #2563EB; }
+        .tag-personal { background: rgba(16,185,129,0.1);  color: #059669; }
+        .tag-ideas    { background: rgba(245,158,11,0.12); color: #D97706; }
+        .tag-scanned  { background: rgba(236,72,153,0.1);  color: #DB2777; }
+        .tag-general  { background: var(--surface-secondary); color: var(--text-secondary); }
+
+        @media (prefers-color-scheme: dark) {
+            .tag-work     { color: #60A5FA; }
+            .tag-personal { color: #34D399; }
+            .tag-ideas    { color: #FBBF24; }
+            .tag-scanned  { color: #F472B6; }
+        }
+
+        /* Deleting animation */
+        @keyframes cardSwoop {
+            to { transform: translateX(110%); opacity: 0; }
+        }
+        .card-deleting { animation: cardSwoop 0.35s ease-in forwards; }
+
+        /* ── SKELETON LOADERS ────────────────────────────────── */
+        .skeleton-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            animation: cardIn 0.25s ease both;
+        }
+        .skeleton-line {
+            background: var(--surface-secondary);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            animation: shimmer 1.4s ease infinite;
+        }
+        @keyframes shimmer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.45; }
+        }
+
+        /* ── EMPTY STATE ─────────────────────────────────────── */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 24px 80px;
+        }
+        .empty-state-emoji {
+            font-size: 52px;
+            display: block;
+            margin-bottom: 14px;
+            animation: floatBob 3s ease-in-out infinite;
+        }
+        .empty-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; letter-spacing: -0.4px; }
+        .empty-desc  { font-size: 14px; color: var(--text-secondary); line-height: 1.6; max-width: 280px; margin: 0 auto 24px; }
+        .btn-cta {
+            background: var(--accent);
+            color: var(--accent-dark);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 700;
+            box-shadow: var(--shadow-fab);
+            transition: all 0.15s;
+        }
+        .btn-cta:hover  { background: var(--accent-hover); transform: translateY(-1px); }
+        .btn-cta:active { transform: scale(0.97); }
+
+        /* ── BOTTOM NAVIGATION ───────────────────────────────── */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(var(--nav-h) + env(safe-area-inset-bottom));
+            padding-bottom: env(safe-area-inset-bottom);
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 50;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+        }
+
+        .nav-item {
+            flex: 1;
+            flex-direction: column;
+            gap: 3px;
+            padding: 8px 4px;
+            color: var(--text-tertiary);
+            font-size: 10px;
+            font-weight: 500;
+        }
+        .nav-item i { font-size: 20px; transition: transform 0.15s; }
+        .nav-item:active i { transform: scale(0.85); }
+        .nav-item.active { color: var(--text); }
+        .nav-item.active i { color: var(--text); }
+
+        .nav-fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: var(--accent-dark);
+            font-size: 24px;
+            font-weight: 300;
+            flex-shrink: 0;
+            box-shadow: var(--shadow-fab);
+            transform: translateY(-14px);
+            transition: all 0.15s ease;
+        }
+        .nav-fab:hover  { background: var(--accent-hover); transform: translateY(-16px); }
+        .nav-fab:active { transform: translateY(-14px) scale(0.93); }
+
+        /* ── MODAL SHARED ────────────────────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 100;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+        }
+        .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+        @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes floatBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes logoBounce { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes confettiFall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── NOTE EDITOR MODAL (bottom sheet) ────────────────── */
+        .note-sheet {
+            background: var(--surface);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            width: 100%;
+            max-width: 680px;
+            display: flex;
+            flex-direction: column;
+            animation: sheetUp 0.28s cubic-bezier(0.32, 0.72, 0, 1) both;
+            max-height: 92vh;
+            overflow: hidden;
+        }
+
+        @media (min-width: 641px) {
+            #note-modal { align-items: center; }
+            .note-sheet { border-radius: var(--radius-xl); max-width: 560px; animation: fadeIn 0.2s ease; }
+        }
+
+        .drag-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 10px auto 6px;
+            flex-shrink: 0;
+        }
+
+        .sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px 12px;
+            flex-shrink: 0;
+        }
+
+        .sheet-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+
+        .btn-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--surface-secondary);
+            color: var(--text-secondary);
+            font-size: 14px;
+            transition: all 0.15s;
+        }
+        .btn-close:hover { background: var(--border); color: var(--text); }
+
+        .sheet-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 16px 8px;
+        }
+
+        .note-title-input {
+            width: 100%;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            background: none;
+            border: none;
+            border-bottom: 1.5px solid var(--border);
+            padding: 0 0 10px;
+            margin-bottom: 14px;
+            font-family: inherit;
+            letter-spacing: -0.3px;
+        }
+        .note-title-input::placeholder { color: var(--text-tertiary); font-weight: 500; }
+        .note-title-input:focus { border-bottom-color: var(--accent); }
+
+        .note-content-textarea {
+            width: 100%;
+            min-height: 160px;
+            font-size: 15px;
+            color: var(--text);
+            background: none;
+            border: none;
+            resize: none;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+        .note-content-textarea::placeholder { color: var(--text-tertiary); }
+
+        .sheet-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+            gap: 10px;
+            background: var(--surface);
+        }
+
+        .sheet-footer-left { display: flex; align-items: center; gap: 8px; }
+
+        .category-select {
+            padding: 7px 10px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface-secondary);
+            color: var(--text);
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-scan-trigger {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            background: var(--surface-secondary);
+            color: var(--text-secondary);
+            font-size: 16px;
+            border: 1.5px solid var(--border);
+            transition: all 0.15s;
+        }
+        .btn-scan-trigger:hover { background: var(--accent); color: var(--accent-dark); border-color: var(--accent); }
 
         .btn-save {
-            background: var(--gradient-primary);
-            color: white;
             padding: 9px 20px;
-            border-radius: 8px;
+            background: var(--accent);
+            color: var(--accent-dark);
+            border-radius: var(--radius-sm);
             font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            font-family: inherit;
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+            font-weight: 700;
+            transition: all 0.15s;
+        }
+        .btn-save:hover:not(:disabled) { background: var(--accent-hover); }
+        .btn-save:active:not(:disabled) { transform: scale(0.97); }
+
+        /* ── SCAN MODAL ──────────────────────────────────────── */
+        #scan-modal { align-items: center; }
+
+        .scan-modal-card {
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            width: calc(100% - 32px);
+            max-width: 640px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
         }
 
-        .btn-save:hover:not(:disabled) {
-            background: var(--gradient-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.32);
+        .scan-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
         }
 
-
-        /* ── SCAN MODAL ────────────────────────────────────── */
+        .scan-modal-title { font-size: 17px; font-weight: 700; color: var(--text); }
 
         .scan-tabs {
             display: flex;
             background: var(--surface-secondary);
-            border: 1px solid var(--border);
-            padding: 4px;
-            border-radius: 10px;
-            margin-bottom: 18px;
-            gap: 3px;
+            border-radius: var(--radius-md);
+            padding: 3px;
+            margin-bottom: 14px;
         }
 
         .scan-tab {
             flex: 1;
-            padding: 8px 16px;
-            border-radius: 7px;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            border: none;
+            padding: 8px;
+            font-size: 14px;
             font-weight: 500;
-            font-size: 13px;
-            font-family: inherit;
-            transition: all 0.14s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
+            color: var(--text-secondary);
+            border-radius: 10px;
+            transition: all 0.15s;
         }
-
-        .scan-tab:hover:not(.active) { color: var(--text); }
-
-        .scan-tab.active {
-            background: var(--surface);
-            color: var(--accent);
-            font-weight: 600;
-            box-shadow: var(--shadow-sm);
-        }
+        .scan-tab.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
 
         .canvas-toolbar {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
+            padding: 6px 8px;
+            background: var(--surface-secondary);
+            border-radius: var(--radius-md);
             margin-bottom: 10px;
             flex-wrap: wrap;
-            padding: 8px 10px;
-            background: var(--surface-secondary);
-            border: 1px solid var(--border);
-            border-radius: 10px;
         }
 
         .canvas-tool-btn {
-            padding: 5px 10px;
-            border-radius: 7px;
-            background: transparent;
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
             color: var(--text-secondary);
-            border: none;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 500;
-            font-family: inherit;
-            transition: all 0.14s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
+            font-size: 14px;
+            transition: all 0.15s;
         }
-
         .canvas-tool-btn:hover { background: var(--surface); color: var(--text); }
-
-        .canvas-tool-btn.active {
-            background: var(--gradient-primary);
-            color: white;
-        }
+        .canvas-tool-btn.active { background: var(--accent); color: var(--accent-dark); }
 
         .canvas-size-btn {
-            width: 27px;
-            height: 27px;
-            border-radius: 7px;
-            background: transparent;
-            color: var(--text-secondary);
-            border: none;
-            cursor: pointer;
-            font-size: 10px;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            font-size: 11px;
             font-weight: 700;
-            font-family: inherit;
-            transition: all 0.14s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.15s;
         }
-
-        .canvas-size-btn:hover { background: var(--surface); color: var(--text); }
-        .canvas-size-btn.active { background: var(--gradient-primary); color: white; }
+        .canvas-size-btn:hover { background: var(--surface); }
+        .canvas-size-btn.active { background: var(--accent); color: var(--accent-dark); }
 
         .canvas-color-btn {
             width: 22px;
             height: 22px;
             border-radius: 50%;
-            border: 2.5px solid transparent;
-            cursor: pointer;
-            transition: all 0.14s ease;
-            padding: 0;
+            border: 2px solid transparent;
+            transition: all 0.15s;
         }
-
-        .canvas-color-btn.active {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 2px var(--accent-light);
-        }
-
-        .canvas-separator {
-            width: 1px;
-            height: 18px;
-            background: var(--border);
-            margin: 0 2px;
-        }
+        .canvas-color-btn.active { border-color: var(--text); transform: scale(1.2); }
+        .canvas-separator { width: 1px; height: 22px; background: var(--border); margin: 0 2px; }
 
         .canvas-container {
-            display: flex;
-            justify-content: center;
+            background: #FFFFFF;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1.5px solid var(--border);
             margin-bottom: 12px;
         }
 
         #drawing-canvas {
             display: block;
-            border-radius: 10px;
-            border: 1.5px solid var(--border);
-            cursor: crosshair;
-            background: white;
-            max-width: 100%;
+            width: 100%;
             touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
+            cursor: crosshair;
         }
 
         .scan-hint {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
             font-size: 12px;
             color: var(--text-secondary);
-            padding: 8px 12px;
-            background: var(--accent-light);
-            border: 1px solid var(--accent-border);
-            border-radius: 8px;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 7px;
+            background: var(--surface-secondary);
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            line-height: 1.5;
         }
-
-        .scan-hint i { color: var(--accent); flex-shrink: 0; }
+        .scan-hint i { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
 
         .upload-area {
             border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 48px 20px;
+            border-radius: var(--radius-lg);
+            padding: 36px 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.18s ease;
-            background: var(--surface-secondary);
+            transition: all 0.15s;
+            margin-bottom: 12px;
         }
+        .upload-area:hover { border-color: var(--accent); background: rgba(255,214,10,0.04); }
 
-        .upload-area:hover {
-            border-color: var(--accent);
-            background: var(--accent-light);
-        }
+        .upload-area-icon { font-size: 32px; margin-bottom: 10px; }
+        .upload-area p   { font-size: 14px; color: var(--text-secondary); }
+        .upload-area span { font-size: 12px; color: var(--text-tertiary); display: block; margin-top: 4px; }
 
-        .upload-area-icon {
-            font-size: 34px;
-            color: var(--accent);
-            margin-bottom: 14px;
-            display: block;
-        }
+        #upload-preview-section { margin-bottom: 12px; }
+        .upload-preview-img { width: 100%; max-height: 220px; object-fit: contain; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--surface-secondary); }
 
-        .upload-preview-img {
-            max-width: 100%;
-            max-height: 260px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            object-fit: contain;
-            display: block;
-            margin: 0 auto 14px;
-        }
-
-        .scan-loading-content {
-            text-align: center;
-            padding: 60px 20px;
-        }
-
+        .scan-loading-content { text-align: center; padding: 32px 0; }
         .spinner {
-            width: 34px;
-            height: 34px;
+            width: 40px; height: 40px;
             border: 3px solid var(--border);
             border-top-color: var(--accent);
             border-radius: 50%;
-            animation: spin 0.75s linear infinite;
-            display: block;
-            margin: 0 auto 20px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 14px;
         }
-
         .spinner-inline {
-            width: 14px;
-            height: 14px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.75s linear infinite;
             display: inline-block;
-            flex-shrink: 0;
+            width: 14px; height: 14px;
+            border: 2px solid rgba(0,0,0,0.2);
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .scan-error-icon { font-size: 36px; text-align: center; margin-bottom: 8px; }
 
-        .scan-preview-label {
-            font-size: 11px;
-            color: var(--text-tertiary);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-            margin-bottom: 8px;
-        }
+        .scan-preview-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
 
         .scan-preview-text {
             width: 100%;
-            height: 170px;
-            background: var(--surface-secondary);
+            min-height: 120px;
+            padding: 12px;
             border: 1.5px solid var(--border);
-            border-radius: 10px;
-            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            background: var(--surface-secondary);
             color: var(--text);
-            resize: vertical;
             font-size: 14px;
-            line-height: 1.65;
             font-family: inherit;
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            resize: vertical;
+            line-height: 1.6;
+            margin-bottom: 12px;
         }
+        .scan-preview-text:focus { border-color: var(--accent); outline: none; }
 
-        .scan-preview-text::placeholder { color: var(--text-tertiary); }
-
-        .scan-preview-text:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-light);
-            background: var(--surface);
-            outline: none;
-        }
-
-        .scan-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-            margin-top: 14px;
-        }
+        .scan-actions { display: flex; gap: 8px; justify-content: flex-end; }
 
         .btn-ghost {
-            background: var(--surface-secondary);
-            color: var(--text-secondary);
             padding: 9px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-family: inherit;
             border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 14px;
             font-weight: 500;
-            cursor: pointer;
-            transition: all 0.14s ease;
+            font-family: inherit;
+            background: var(--surface-secondary);
+            transition: all 0.15s;
+        }
+        .btn-ghost:hover { background: var(--border); color: var(--text); }
+
+        .btn-scan-submit {
+            padding: 9px 18px;
+            background: var(--accent);
+            color: var(--accent-dark);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
             display: inline-flex;
             align-items: center;
-            gap: 7px;
+            gap: 6px;
+            transition: all 0.15s;
         }
+        .btn-scan-submit:hover { background: var(--accent-hover); }
 
-        .btn-ghost:hover:not(:disabled) {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: var(--accent-light);
+        /* ── CONFIRM MODAL ───────────────────────────────────── */
+        #confirm-modal { align-items: center; }
+
+        .confirm-card {
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            padding: 28px 24px;
+            width: calc(100% - 48px);
+            max-width: 340px;
+            text-align: center;
+            animation: fadeIn 0.2s ease;
         }
+        .confirm-card h3 { font-size: 17px; font-weight: 700; margin: 10px 0 6px; color: var(--text); }
+        .confirm-card p  { font-size: 14px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 22px; }
 
-        .scan-error-icon {
-            width: 58px;
-            height: 58px;
-            border-radius: 16px;
-            background: rgba(239, 68, 68, 0.08);
-            border: 1px solid rgba(239, 68, 68, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 18px;
-            font-size: 22px;
-            color: var(--error);
-        }
+        .confirm-btns { display: flex; gap: 8px; }
+        .confirm-btns button { flex: 1; padding: 11px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; font-family: inherit; transition: all 0.15s; }
 
+        .btn-keep { background: var(--surface-secondary); color: var(--text); border: 1.5px solid var(--border); }
+        .btn-keep:hover { background: var(--border); }
 
-        /* ── CONFIRM MODAL ─────────────────────────────────── */
-
-        .confirm-delete-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 14px;
-            background: rgba(239, 68, 68, 0.08);
-            border: 1px solid rgba(239, 68, 68, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 18px;
-            font-size: 20px;
-            color: var(--error);
-        }
-
-        .btn-danger {
-            background: var(--error);
-            color: white;
-            padding: 9px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            font-family: inherit;
-            border: none;
-            cursor: pointer;
-            flex: 1;
-            transition: all 0.14s ease;
-        }
-
+        .btn-danger { background: var(--error); color: #fff; border: none; }
         .btn-danger:hover { background: #DC2626; }
+        .btn-danger:active { transform: scale(0.97); }
 
-
-        /* ── TOAST NOTIFICATIONS ───────────────────────────── */
-
+        /* ── TOASTS ──────────────────────────────────────────── */
         #toast-container {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: calc(env(safe-area-inset-top) + 12px);
+            right: 12px;
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -1279,1422 +964,1145 @@
         }
 
         .toast-item {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 11px 13px 11px 15px;
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            min-width: 270px;
-            max-width: 340px;
-            box-shadow: var(--shadow-lg);
-            pointer-events: auto;
-            transform: translateX(calc(100% + 32px));
-            transition: transform 0.35s cubic-bezier(0.34, 1.15, 0.64, 1), opacity 0.35s ease;
-            opacity: 0;
-            border-left: 3px solid transparent;
-        }
-
-        .toast-item.toast-visible { transform: translateX(0); opacity: 1; }
-
-        .toast-item.toast-hiding {
-            transform: translateX(calc(100% + 32px));
-            opacity: 0;
-            transition: transform 0.28s ease-in, opacity 0.28s ease-in;
-        }
-
-        .toast-success { border-left-color: var(--success); }
-        .toast-error { border-left-color: var(--error); }
-        .toast-info { border-left-color: var(--accent); }
-        .toast-warning { border-left-color: var(--warning); }
-
-        .toast-icon {
-            width: 28px;
-            height: 28px;
-            border-radius: 7px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            flex-shrink: 0;
-        }
-
-        .toast-success .toast-icon { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-        .toast-error .toast-icon { background: rgba(239, 68, 68, 0.1); color: var(--error); }
-        .toast-info .toast-icon { background: var(--accent-light); color: var(--accent); }
-        .toast-warning .toast-icon { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
-
-        .toast-message {
-            flex: 1;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text);
-            line-height: 1.4;
-        }
-
-        .toast-dismiss-btn {
-            background: none;
-            border: none;
-            color: var(--text-tertiary);
-            cursor: pointer;
-            padding: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            border-radius: 4px;
-            transition: all 0.14s ease;
-            flex-shrink: 0;
-        }
-
-        .toast-dismiss-btn:hover { color: var(--text); background: var(--surface-secondary); }
-
-
-        /* ── MOBILE HEADER ─────────────────────────────────── */
-
-        .mobile-header {
-            display: none;
-            padding: 14px 16px;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            background: var(--surface);
-            flex-shrink: 0;
-        }
-
-        .mobile-brand {
-            font-size: 17px;
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: -0.3px;
-        }
-
-        .btn-menu {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            background: var(--surface-secondary);
-            color: var(--text-secondary);
-            border: none;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.14s ease;
-        }
-
-        .btn-menu:hover { background: var(--border); }
-
-
-        /* ── RESPONSIVE ────────────────────────────────────── */
-
-        @media (max-width: 768px) {
-            .dashboard { flex-direction: column; }
-            .mobile-header { display: flex; }
-
-            .sidebar {
-                position: fixed;
-                height: 100%;
-                left: -260px;
-                top: 0;
-                transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-                box-shadow: var(--shadow-lg);
-                z-index: 50;
-            }
-
-            .sidebar.active { left: 0; }
-
-            .top-bar {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 12px;
-                padding: 16px;
-            }
-
-            .top-bar-right {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
-            }
-
-            .search-container { width: 100%; }
-            .notes-area { padding: 16px; }
-            .notes-grid { gap: 12px; }
-
-            #toast-container { top: 12px; right: 12px; left: 12px; }
-            .toast-item { min-width: auto; max-width: 100%; }
-
-            .modal-card { padding: 22px; }
-        }
-
-        @media (max-width: 480px) {
-            .notes-grid { grid-template-columns: 1fr; }
-            .auth-card { padding: 28px 24px; }
-        }
-
-
-        /* ── ANIMATIONS ────────────────────────────────────── */
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes noteCardIn {
-            from { opacity: 0; transform: translateY(18px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        @keyframes floatBob {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes logoBounce {
-            from { transform: scale(0.5) rotate(-8deg); opacity: 0; }
-            to { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        @keyframes cardSwoop {
-            0% { transform: translateX(0) rotate(0deg); opacity: 1; max-height: 300px; margin-bottom: 14px; }
-            70% { opacity: 0; }
-            100% { transform: translateX(160%) rotate(8deg); opacity: 0; max-height: 0; margin-bottom: 0; padding: 0; }
-        }
-
-        @keyframes confettiFall {
-            0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
-        }
-
-        @keyframes trashWobble {
-            0% { transform: rotate(0deg); }
-            25% { transform: rotate(-14deg); }
-            75% { transform: rotate(10deg); }
-            100% { transform: rotate(0deg); }
-        }
-
-        .note-card { animation: noteCardIn 0.3s cubic-bezier(0.34, 1.1, 0.64, 1) both; }
-
-        .note-card.card-deleting {
-            animation: cardSwoop 0.4s cubic-bezier(0.4, 0, 1, 1) forwards !important;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .btn-icon:hover i { animation: trashWobble 0.32s ease; }
-
-        .empty-state-emoji {
-            font-size: 66px;
-            line-height: 1;
-            margin-bottom: 18px;
-            display: block;
-            animation: floatBob 3.2s ease-in-out infinite;
-            user-select: none;
-        }
-
-        .notes-area, .modal-card, .auth-container {
-            touch-action: pan-y;
-        }
-
-        .install-prompt {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 12px 16px;
-            box-shadow: var(--shadow-lg);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            max-width: 320px;
-            width: calc(100% - 48px);
-            animation: slideUpPrompt 0.3s ease;
-        }
-
-        .install-prompt.hidden { display: none; }
-
-        @keyframes slideUpPrompt {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-
-        .install-prompt-content {
             display: flex;
             align-items: center;
             gap: 10px;
-            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            min-width: 220px;
+            max-width: min(340px, calc(100vw - 24px));
+            box-shadow: var(--shadow-lg);
+            pointer-events: auto;
+            transform: translateX(120%);
+            opacity: 0;
+            transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
         }
+        .toast-item.toast-visible { transform: none; opacity: 1; }
+        .toast-item.toast-hiding  { transform: translateX(120%); opacity: 0; }
 
-        .install-prompt-text {
-            flex: 1;
-            font-size: 13px;
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        .install-btn {
-            background: var(--gradient-primary);
-            color: white;
-            padding: 7px 14px;
+        .toast-icon {
+            width: 28px; height: 28px;
             border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
             font-size: 13px;
-            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .toast-success .toast-icon { background: rgba(34,197,94,0.12); color: var(--success); }
+        .toast-error   .toast-icon { background: rgba(239,68,68,0.12); color: var(--error); }
+        .toast-info    .toast-icon { background: rgba(59,130,246,0.12); color: var(--info); }
+        .toast-warning .toast-icon { background: rgba(245,158,11,0.12); color: var(--warning); }
+
+        .toast-message { flex: 1; font-size: 13px; color: var(--text); line-height: 1.4; font-weight: 500; }
+
+        .toast-dismiss-btn {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            color: var(--text-tertiary);
+            font-size: 11px;
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+        .toast-dismiss-btn:hover { background: var(--surface-secondary); color: var(--text); }
+
+        /* ── INSTALL PROMPT ──────────────────────────────────── */
+        .install-prompt {
+            position: fixed;
+            bottom: calc(var(--nav-h) + 12px + env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 80;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 10px 16px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
             white-space: nowrap;
         }
-
-        .install-dismiss {
-            color: var(--text-secondary);
-            padding: 4px;
-            border-radius: 6px;
-            font-size: 14px;
+        .install-prompt-text { font-size: 13px; font-weight: 500; color: var(--text); }
+        .install-btn {
+            padding: 6px 14px;
+            background: var(--accent);
+            color: var(--accent-dark);
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
         }
-
+        .install-dismiss {
+            color: var(--text-tertiary);
+            font-size: 14px;
+            width: 24px; height: 24px;
+            border-radius: 50%;
+        }
         .install-dismiss:hover { background: var(--surface-secondary); }
+
+        /* ── HIDDEN ELEMENTS ─────────────────────────────────── */
+        #user-display { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="toast-container" role="region" aria-label="Notifications"></div>
-
-    <!-- Auth Page -->
-    <div id="auth-page" class="page active">
-        <div class="auth-container">
-            <div class="auth-card">
-                <div class="auth-logo">
-                    <div class="auth-logo-icon">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                    </div>
-                    <h1>Notely</h1>
-                    <p>Where great ideas begin ✨</p>
-                </div>
-
-                <div class="auth-tabs">
-                    <button onclick="toggleAuth('login')" id="tab-login" class="auth-tab active">Sign In</button>
-                    <button onclick="toggleAuth('register')" id="tab-register" class="auth-tab">Create Account</button>
-                </div>
-
-                <form id="login-form" onsubmit="handleLogin(event)">
-                    <div class="input-group">
-                        <label for="login-email">Email</label>
-                        <input type="email" id="login-email" class="form-input" placeholder="you@example.com" required autocomplete="email">
-                    </div>
-                    <div class="input-group">
-                        <label for="login-password">Password</label>
-                        <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
-                    </div>
-                    <button type="submit" id="login-btn" class="btn btn-primary">Sign In</button>
-                </form>
-
-                <form id="register-form" onsubmit="handleRegister(event)" class="hidden">
-                    <div class="input-group">
-                        <label for="reg-name">Full Name</label>
-                        <input type="text" id="reg-name" class="form-input" placeholder="Your name" required autocomplete="name">
-                    </div>
-                    <div class="input-group">
-                        <label for="reg-email">Email</label>
-                        <input type="email" id="reg-email" class="form-input" placeholder="you@example.com" required autocomplete="email">
-                    </div>
-                    <div class="input-group">
-                        <label for="reg-pass">Password</label>
-                        <input type="password" id="reg-pass" class="form-input" placeholder="Min. 6 characters" required autocomplete="new-password">
-                    </div>
-                    <button type="submit" id="register-btn" class="btn btn-primary">Let's go! 🚀</button>
-                    <p id="reg-error" style="color: var(--error); font-size: 13px; text-align: center; margin-top: 12px;" class="hidden"></p>
-                </form>
-            </div>
+<!-- ── AUTH PAGE ──────────────────────────────────────────────── -->
+<div id="auth-page" class="page active">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <div class="auth-logo-icon">✍️</div>
+            <h1>Notely</h1>
+            <p>Capture every thought, beautifully.</p>
         </div>
-    </div>
 
-    <!-- Dashboard Page -->
-    <div id="dashboard-page" class="page">
-        <div class="dashboard">
-
-            <aside id="sidebar" class="sidebar" role="navigation" aria-label="Main navigation">
-                <div class="brand">
-                    <div class="brand-icon"><i class="fa-solid fa-pen-to-square"></i></div>
-                    <span>Notely</span>
-                </div>
-
-                <button onclick="openModal()" class="btn btn-new-note">
-                    <i class="fa-solid fa-plus"></i> New Thought 💭
-                </button>
-
-                <div class="nav-section">
-                    <span class="nav-section-label">Views</span>
-                    <button onclick="filterCat('all', this)" class="nav-btn active" aria-current="page">
-                        <i class="fa-solid fa-note-sticky"></i>
-                        <span>All Notes</span>
-                    </button>
-                    <button onclick="filterCat('personal', this)" class="nav-btn">
-                        <i class="fa-solid fa-user"></i>
-                        <span>Personal</span>
-                    </button>
-                    <button onclick="filterCat('work', this)" class="nav-btn">
-                        <i class="fa-solid fa-briefcase"></i>
-                        <span>Work</span>
-                    </button>
-                    <button onclick="filterCat('ideas', this)" class="nav-btn">
-                        <i class="fa-solid fa-lightbulb"></i>
-                        <span>Ideas</span>
-                    </button>
-                </div>
-
-                <div class="sidebar-footer">
-                    <div class="user-row">
-                        <div class="avatar" id="avatar-txt" aria-hidden="true">U</div>
-                        <div class="user-info">
-                            <div class="user-name" id="user-display">User</div>
-                            <div class="user-plan">Free Plan</div>
-                        </div>
-                        <button onclick="logout()" class="btn-logout" aria-label="Sign out">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                        </button>
-                    </div>
-                </div>
-            </aside>
-
-            <main class="main-content">
-                <div class="mobile-header">
-                    <div class="mobile-brand">Notely</div>
-                    <button onclick="toggleSidebar()" class="btn-menu" aria-label="Toggle menu">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-                </div>
-
-                <div class="top-bar">
-                    <div class="top-bar-left">
-                        <span class="top-bar-title" id="view-title">All Notes</span>
-                        <span class="notes-count-badge hidden" id="notes-count-badge">0</span>
-                    </div>
-                    <div class="top-bar-right">
-                        <span class="search-count hidden" id="search-count"></span>
-                        <div class="search-container">
-                            <i class="fa-solid fa-search search-icon-el" aria-hidden="true"></i>
-                            <input
-                                type="text"
-                                id="search-input"
-                                onkeyup="filterNotes(this.value)"
-                                oninput="updateSearchClear(this.value)"
-                                class="search-input"
-                                placeholder="Search your thoughts..."
-                                aria-label="Search notes"
-                                autocomplete="off"
-                            >
-                            <button class="search-clear" id="search-clear-btn" onclick="clearSearch()" aria-label="Clear search">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="notes-area">
-                    <div id="notes-grid" class="notes-grid" role="list" aria-label="Notes"></div>
-                </div>
-            </main>
+        <div class="auth-tabs">
+            <button id="tab-login" class="auth-tab btn active" onclick="toggleAuth('login')">Sign In</button>
+            <button id="tab-register" class="auth-tab btn" onclick="toggleAuth('register')">Create Account</button>
         </div>
+
+        <!-- Login -->
+        <form id="login-form" onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" class="form-input" placeholder="you@example.com" required autocomplete="email">
+            </div>
+            <div class="input-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+            <button id="login-btn" type="submit" class="btn-primary btn">Sign In</button>
+        </form>
+
+        <!-- Register -->
+        <form id="register-form" class="hidden" onsubmit="handleRegister(event)">
+            <div class="input-group">
+                <label for="reg-name">Name</label>
+                <input type="text" id="reg-name" class="form-input" placeholder="Your name" required autocomplete="name">
+            </div>
+            <div class="input-group">
+                <label for="reg-email">Email</label>
+                <input type="email" id="reg-email" class="form-input" placeholder="you@example.com" required autocomplete="email">
+            </div>
+            <div class="input-group">
+                <label for="reg-pass">Password</label>
+                <input type="password" id="reg-pass" class="form-input" placeholder="Min. 6 characters" required autocomplete="new-password">
+            </div>
+            <button id="register-btn" type="submit" class="btn-primary btn">Create Account</button>
+            <div id="reg-error" class="auth-error hidden"></div>
+        </form>
     </div>
+</div>
 
-    <!-- Note Editor Modal -->
-    <div id="note-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title-label">
-        <div class="modal-card">
-            <div class="modal-header">
-                <span class="modal-title" id="modal-title-label">New Thought 💭</span>
-                <button onclick="closeModal()" class="btn-close btn" aria-label="Close">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
+<!-- ── DASHBOARD PAGE ─────────────────────────────────────────── -->
+<div id="dashboard-page" class="page">
 
-            <input type="text" id="note-title" class="note-title-input" placeholder="What's this about?">
-            <textarea id="note-content" class="note-content-textarea" placeholder="Pour your thoughts here..."></textarea>
-
-            <div class="modal-footer">
-                <div class="modal-footer-left">
-                    <select id="note-category" class="category-select" aria-label="Category">
-                        <option value="general">No Category</option>
-                        <option value="personal">Personal</option>
-                        <option value="work">Work</option>
-                        <option value="ideas">Ideas</option>
-                    </select>
-                    <button onclick="openScanModal()" class="btn-scan-trigger btn">
-                        <i class="fa-solid fa-camera"></i> Scan
-                    </button>
-                </div>
-                <div class="modal-footer-right">
-                    <button onclick="saveNote()" id="save-note-btn" class="btn-save btn">Save ✨</button>
-                </div>
-            </div>
+    <!-- Header -->
+    <header class="app-header">
+        <button class="btn-header-icon btn" onclick="toggleSearch()" aria-label="Search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <h1 id="view-title" class="app-title">Your Notes</h1>
+        <div class="header-avatar" title="Logged in" aria-hidden="true">
+            <span id="avatar-txt">U</span>
         </div>
-    </div>
+    </header>
 
-    <!-- Scan Modal -->
-    <div id="scan-modal" class="modal-overlay" style="z-index: 150;" role="dialog" aria-modal="true" aria-label="Scan Note">
-        <div class="modal-card" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
-            <div class="modal-header">
-                <span class="modal-title">Scan Your Writing ✍️</span>
-                <button onclick="closeScanModal()" class="btn-close btn" aria-label="Close">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <div id="scan-step-input">
-                <div class="scan-tabs">
-                    <button class="scan-tab active" data-scan-tab="draw" onclick="switchScanTab('draw')">
-                        <i class="fa-solid fa-pen"></i> Draw
-                    </button>
-                    <button class="scan-tab" data-scan-tab="upload" onclick="switchScanTab('upload')">
-                        <i class="fa-solid fa-upload"></i> Upload
-                    </button>
-                </div>
-
-                <div id="scan-tab-draw">
-                    <div class="scan-hint">
-                        <i class="fa-solid fa-circle-info"></i>
-                        Draw or write text below, then click Scan to extract it.
-                    </div>
-                    <div class="canvas-toolbar">
-                        <button class="canvas-tool-btn active" data-tool="pen" onclick="selectDrawingTool('pen')">
-                            <i class="fa-solid fa-pen"></i> Pen
-                        </button>
-                        <button class="canvas-tool-btn" data-tool="eraser" onclick="selectDrawingTool('eraser')">
-                            <i class="fa-solid fa-eraser"></i> Eraser
-                        </button>
-                        <button class="canvas-tool-btn" onclick="clearDrawingCanvas()">
-                            <i class="fa-solid fa-trash-can"></i> Clear
-                        </button>
-                        <div class="canvas-separator"></div>
-                        <button class="canvas-size-btn" data-size="2" onclick="selectPenSize(2)">S</button>
-                        <button class="canvas-size-btn active" data-size="4" onclick="selectPenSize(4)">M</button>
-                        <button class="canvas-size-btn" data-size="8" onclick="selectPenSize(8)">L</button>
-                        <div class="canvas-separator"></div>
-                        <button class="canvas-color-btn active" data-color="#000000" style="background: #000000;" onclick="selectPenColor('#000000')" aria-label="Black"></button>
-                        <button class="canvas-color-btn" data-color="#3b82f6" style="background: #3b82f6;" onclick="selectPenColor('#3b82f6')" aria-label="Blue"></button>
-                        <button class="canvas-color-btn" data-color="#ef4444" style="background: #ef4444;" onclick="selectPenColor('#ef4444')" aria-label="Red"></button>
-                    </div>
-                    <div class="canvas-container">
-                        <canvas id="drawing-canvas" aria-label="Drawing canvas"></canvas>
-                    </div>
-                    <button onclick="submitDrawing()" class="btn btn-primary" style="width: 100%; margin-top: 2px;">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Scan Drawing
-                    </button>
-                </div>
-
-                <div id="scan-tab-upload" class="hidden">
-                    <div id="upload-drop-area" class="upload-area" onclick="document.getElementById('scan-file-input').click()" role="button" tabindex="0" aria-label="Click to upload image">
-                        <i class="fa-solid fa-cloud-arrow-up upload-area-icon"></i>
-                        <p style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Click to upload an image</p>
-                        <p style="font-size: 13px; color: var(--text-secondary);">Clear photos of text work best</p>
-                        <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 6px;">JPEG, PNG, GIF, WebP, BMP — max 10MB</p>
-                    </div>
-                    <input type="file" id="scan-file-input" hidden accept="image/*" onchange="handleFileSelected(event)">
-
-                    <div id="upload-preview-section" class="hidden" style="margin-top: 4px;">
-                        <img id="upload-preview-img" src="" alt="Selected image preview" class="upload-preview-img">
-                        <div class="scan-hint" style="margin-bottom: 14px;">
-                            <i class="fa-solid fa-circle-info"></i>
-                            Make sure text is clearly visible and well-lit for best results.
-                        </div>
-                        <div style="display: flex; gap: 8px;">
-                            <button onclick="chooseDifferentImage()" class="btn-ghost" style="flex: 1;">
-                                <i class="fa-solid fa-rotate"></i> Choose Different
-                            </button>
-                            <button onclick="processPendingUpload()" class="btn-save btn" style="flex: 1;">
-                                <i class="fa-solid fa-wand-magic-sparkles"></i> Scan Image
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="scan-step-loading" class="hidden">
-                <div class="scan-loading-content" aria-live="polite">
-                    <div class="spinner" aria-hidden="true"></div>
-                    <p style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Reading your writing... 🔍</p>
-                    <p style="font-size: 13px; color: var(--text-secondary);">Hang tight, this takes just a moment!</p>
-                </div>
-            </div>
-
-            <div id="scan-step-error" class="hidden">
-                <div style="text-align: center; padding: 40px 20px;" aria-live="assertive">
-                    <div class="scan-error-icon">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                    </div>
-                    <p id="scan-error-title" style="font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px;"></p>
-                    <p id="scan-error-detail" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.65; max-width: 320px; margin-left: auto; margin-right: auto;"></p>
-                    <button onclick="switchScanStep('input')" class="btn-save btn" style="display: inline-flex;">
-                        <i class="fa-solid fa-rotate-left"></i> Try Again
-                    </button>
-                </div>
-            </div>
-
-            <div id="scan-step-preview" class="hidden">
-                <div class="scan-preview-label">Extracted Text</div>
-                <textarea id="scan-preview-text" class="scan-preview-text" placeholder="No text was extracted..." aria-label="Extracted text — editable before saving"></textarea>
-                <p style="font-size: 12px; color: var(--text-tertiary); margin: 10px 0 14px; display: flex; align-items: center; gap: 6px;">
-                    <i class="fa-solid fa-pen-to-square" style="color: var(--accent); flex-shrink: 0;"></i>
-                    Review and edit the extracted text before saving.
-                </p>
-                <div class="scan-actions">
-                    <button onclick="switchScanStep('input')" class="btn-ghost">
-                        <i class="fa-solid fa-rotate-left"></i> Try Again
-                    </button>
-                    <button onclick="scanSaveAsNote()" class="btn-save btn">
-                        <i class="fa-solid fa-check"></i> Save as Note
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirm Modal -->
-    <div id="confirm-modal" class="modal-overlay" style="z-index: 200;" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
-        <div class="modal-card" style="max-width: 360px; text-align: center;">
-            <div style="padding: 8px 0 22px;">
-                <div class="confirm-delete-icon" style="font-size: 32px; background: none; border: none;">
-                    💔
-                </div>
-                <h3 id="confirm-title" style="font-size: 17px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.2px; color: var(--text);">Delete this note?</h3>
-                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6;">Once it's gone, it's gone forever. No take-backs!</p>
-            </div>
-            <div style="display: flex; gap: 8px;">
-                <button onclick="cancelConfirm()" class="btn-ghost" style="flex: 1;">Keep It</button>
-                <button onclick="executeConfirm()" class="btn-danger">Delete Forever</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="install-prompt" class="install-prompt hidden">
-        <div class="install-prompt-content">
-            <span class="install-prompt-text">Add Notely to your home screen</span>
-            <button onclick="installApp()" class="install-btn btn">Install</button>
-            <button onclick="dismissInstall()" class="install-dismiss btn" aria-label="Dismiss">
+    <!-- Search bar (collapsible) -->
+    <div id="search-bar" class="search-bar-panel hidden">
+        <div class="search-inner">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input type="text" id="search-input" class="search-input" placeholder="Search notes…"
+                   oninput="filterNotes(this.value); updateSearchClear(this.value)" autocomplete="off">
+            <button id="search-clear-btn" class="search-clear btn" onclick="clearSearch()" aria-label="Clear search">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
+        <span id="search-count" class="search-count-label hidden"></span>
     </div>
 
-    <script>
-        const API_URL = "";
-        let state = {
-            token: localStorage.getItem('token'),
-            name: localStorage.getItem('name'),
-            notes: [],
-            editingId: null,
-            category: 'all'
-        };
-        let drawingState = {
-            isDrawing: false,
-            tool: 'pen',
-            penColor: '#000000',
-            penSize: 4,
-            canvas: null,
-            ctx: null,
-            listenersReady: false
-        };
-        let pendingUploadFile = null;
-        let pendingConfirmAction = null;
+    <!-- Filter tabs -->
+    <div class="filter-tabs-wrap">
+        <div class="filter-tabs" role="tablist">
+            <button class="filter-tab nav-btn active" role="tab" aria-selected="true" data-cat="all"
+                    onclick="filterCat('all', this)">
+                All
+                <span id="notes-count-badge" class="tab-count hidden">0</span>
+            </button>
+            <button class="filter-tab nav-btn" role="tab" aria-selected="false" data-cat="personal"
+                    onclick="filterCat('personal', this)">Personal</button>
+            <button class="filter-tab nav-btn" role="tab" aria-selected="false" data-cat="work"
+                    onclick="filterCat('work', this)">Work</button>
+            <button class="filter-tab nav-btn" role="tab" aria-selected="false" data-cat="ideas"
+                    onclick="filterCat('ideas', this)">Ideas</button>
+        </div>
+    </div>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (state.token) {
+    <!-- Notes grid -->
+    <main class="notes-area">
+        <div class="notes-grid" id="notes-grid" role="list" aria-label="Notes"></div>
+    </main>
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-item btn" onclick="toggleSearch()" aria-label="Search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <span>Search</span>
+        </button>
+        <button class="nav-item btn" onclick="filterCat('all', document.querySelector('.filter-tab[data-cat=all]'))" aria-label="All notes">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </button>
+        <button class="nav-fab btn" onclick="openModal()" aria-label="New note">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+        <button class="nav-item btn" onclick="openScanModal()" aria-label="Scan handwriting">
+            <i class="fa-solid fa-camera"></i>
+            <span>Scan</span>
+        </button>
+        <button class="nav-item btn" onclick="logout()" aria-label="Log out">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Logout</span>
+        </button>
+    </nav>
+</div>
+
+<!-- ── NOTE EDITOR MODAL ──────────────────────────────────────── -->
+<div id="note-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title-label">
+    <div class="note-sheet">
+        <div class="drag-handle" aria-hidden="true"></div>
+        <div class="sheet-header">
+            <span id="modal-title-label" class="sheet-title">New Thought 💭</span>
+            <button onclick="closeModal()" class="btn-close btn" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="sheet-body">
+            <input type="text" id="note-title" class="note-title-input"
+                   placeholder="Note title…" maxlength="200" autocomplete="off" aria-label="Note title">
+            <textarea id="note-content" class="note-content-textarea"
+                      placeholder="What's on your mind? Use #work, #personal, or #ideas to categorize…"
+                      aria-label="Note content"></textarea>
+        </div>
+        <div class="sheet-footer">
+            <div class="sheet-footer-left">
+                <select id="note-category" class="category-select" aria-label="Category">
+                    <option value="general">📝 General</option>
+                    <option value="work">💼 Work</option>
+                    <option value="personal">🌿 Personal</option>
+                    <option value="ideas">💡 Ideas</option>
+                </select>
+                <button onclick="openScanModal()" class="btn-scan-trigger btn" title="Scan handwriting" aria-label="Scan handwriting">
+                    <i class="fa-solid fa-camera"></i>
+                </button>
+            </div>
+            <button id="save-note-btn" onclick="saveNote()" class="btn-save btn">Save ✨</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── SCAN MODAL ────────────────────────────────────────────── -->
+<div id="scan-modal" class="modal-overlay" style="z-index:150;" role="dialog" aria-modal="true" aria-label="Scan handwriting">
+    <div class="scan-modal-card">
+        <div class="scan-modal-header">
+            <span class="scan-modal-title">Scan Your Writing ✍️</span>
+            <button onclick="closeScanModal()" class="btn-close btn" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Step: Input -->
+        <div id="scan-step-input">
+            <div class="scan-tabs">
+                <button class="scan-tab btn active" data-scan-tab="draw" onclick="switchScanTab('draw')">
+                    <i class="fa-solid fa-pen-nib"></i> Draw
+                </button>
+                <button class="scan-tab btn" data-scan-tab="upload" onclick="switchScanTab('upload')">
+                    <i class="fa-solid fa-image"></i> Upload
+                </button>
+            </div>
+
+            <!-- Draw tab -->
+            <div id="scan-tab-draw">
+                <div class="scan-hint">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Draw or write text below, then click Scan to extract it.
+                </div>
+                <div class="canvas-toolbar">
+                    <button class="canvas-tool-btn btn active" data-tool="pen" onclick="selectDrawingTool('pen')" title="Pen">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                    <button class="canvas-tool-btn btn" data-tool="eraser" onclick="selectDrawingTool('eraser')" title="Eraser">
+                        <i class="fa-solid fa-eraser"></i>
+                    </button>
+                    <button class="canvas-tool-btn btn" onclick="clearDrawingCanvas()" title="Clear">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                    <div class="canvas-separator"></div>
+                    <button class="canvas-size-btn btn" data-size="2" onclick="selectPenSize(2)">S</button>
+                    <button class="canvas-size-btn btn active" data-size="4" onclick="selectPenSize(4)">M</button>
+                    <button class="canvas-size-btn btn" data-size="8" onclick="selectPenSize(8)">L</button>
+                    <div class="canvas-separator"></div>
+                    <button class="canvas-color-btn btn active" data-color="#000000" style="background:#000000;" onclick="selectPenColor('#000000')" aria-label="Black"></button>
+                    <button class="canvas-color-btn btn" data-color="#2563EB" style="background:#2563EB;" onclick="selectPenColor('#2563EB')" aria-label="Blue"></button>
+                    <button class="canvas-color-btn btn" data-color="#DC2626" style="background:#DC2626;" onclick="selectPenColor('#DC2626')" aria-label="Red"></button>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="drawing-canvas" aria-label="Drawing canvas"></canvas>
+                </div>
+                <div style="text-align:right;">
+                    <button onclick="submitDrawing()" class="btn-scan-submit btn">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Scan Drawing
+                    </button>
+                </div>
+            </div>
+
+            <!-- Upload tab -->
+            <div id="scan-tab-upload" class="hidden">
+                <div id="upload-drop-area" class="upload-area" onclick="document.getElementById('scan-file-input').click()"
+                     role="button" tabindex="0" aria-label="Click to upload image">
+                    <div class="upload-area-icon">📷</div>
+                    <p>Tap to choose an image</p>
+                    <span>JPEG, PNG, WebP, GIF up to 10MB</span>
+                </div>
+                <input type="file" id="scan-file-input" hidden accept="image/*" onchange="handleFileSelected(event)">
+
+                <div id="upload-preview-section" class="hidden">
+                    <img id="upload-preview-img" src="" alt="Preview" class="upload-preview-img">
+                    <div style="display:flex;gap:8px;margin-top:10px;justify-content:flex-end;">
+                        <button onclick="chooseDifferentImage()" class="btn-ghost btn">
+                            <i class="fa-solid fa-rotate-left"></i> Choose Different
+                        </button>
+                        <button onclick="processPendingUpload()" class="btn-scan-submit btn">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Scan Image
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step: Loading -->
+        <div id="scan-step-loading" class="hidden">
+            <div class="scan-loading-content">
+                <div class="spinner" aria-hidden="true"></div>
+                <p style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;">Extracting text…</p>
+                <p style="font-size:13px;color:var(--text-secondary);">Our AI is reading your writing</p>
+            </div>
+        </div>
+
+        <!-- Step: Error -->
+        <div id="scan-step-error" class="hidden">
+            <div style="text-align:center;padding:20px 0;">
+                <div class="scan-error-icon">😕</div>
+                <p id="scan-error-title" style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;"></p>
+                <p id="scan-error-detail" style="font-size:13px;color:var(--text-secondary);margin-bottom:22px;line-height:1.6;max-width:300px;margin-left:auto;margin-right:auto;"></p>
+                <button onclick="switchScanStep('input')" class="btn-save btn">Try Again</button>
+            </div>
+        </div>
+
+        <!-- Step: Preview -->
+        <div id="scan-step-preview" class="hidden">
+            <div class="scan-preview-label">Extracted Text</div>
+            <textarea id="scan-preview-text" class="scan-preview-text"
+                      placeholder="No text was extracted…"
+                      aria-label="Extracted text — editable before saving"></textarea>
+            <p style="font-size:12px;color:var(--text-tertiary);margin-bottom:14px;display:flex;align-items:center;gap:6px;">
+                <i class="fa-solid fa-pen-to-square" style="color:var(--accent);flex-shrink:0;"></i>
+                Review and edit the extracted text before saving.
+            </p>
+            <div class="scan-actions">
+                <button onclick="switchScanStep('input')" class="btn-ghost btn">
+                    <i class="fa-solid fa-rotate-left"></i> Try Again
+                </button>
+                <button onclick="scanSaveAsNote()" class="btn-save btn">
+                    <i class="fa-solid fa-check"></i> Save as Note
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── CONFIRM MODAL ──────────────────────────────────────────── -->
+<div id="confirm-modal" class="modal-overlay" style="z-index:200;" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+    <div class="confirm-card">
+        <div style="font-size:36px;">💔</div>
+        <h3 id="confirm-title">Delete this note?</h3>
+        <p>Once it's gone, it's gone forever. No take-backs!</p>
+        <div class="confirm-btns">
+            <button onclick="cancelConfirm()" class="btn-keep btn">Keep It</button>
+            <button onclick="executeConfirm()" class="btn-danger btn">Delete Forever</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── INSTALL PROMPT ─────────────────────────────────────────── -->
+<div id="install-prompt" class="install-prompt hidden">
+    <span class="install-prompt-text">Add Notely to your home screen</span>
+    <button onclick="installApp()" class="install-btn btn">Install</button>
+    <button onclick="dismissInstall()" class="install-dismiss btn" aria-label="Dismiss">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+</div>
+
+<!-- ── TOASTS ─────────────────────────────────────────────────── -->
+<div id="toast-container" role="region" aria-label="Notifications" aria-live="polite"></div>
+
+<!-- Hidden element for updateUI compatibility -->
+<span id="user-display"></span>
+
+<script>
+    const API_URL = "";
+    let state = {
+        token: localStorage.getItem('token'),
+        name: localStorage.getItem('name'),
+        notes: [],
+        editingId: null,
+        category: 'all'
+    };
+    let drawingState = {
+        isDrawing: false,
+        tool: 'pen',
+        penColor: '#000000',
+        penSize: 4,
+        canvas: null,
+        ctx: null,
+        listenersReady: false
+    };
+    let pendingUploadFile = null;
+    let pendingConfirmAction = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (state.token) {
+            showPage('dashboard-page');
+            updateUI();
+            fetchNotes();
+        } else {
+            showPage('auth-page');
+        }
+    });
+
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function toggleAuth(mode) {
+        const loginForm = document.getElementById('login-form');
+        const regForm   = document.getElementById('register-form');
+        const tabLogin  = document.getElementById('tab-login');
+        const tabReg    = document.getElementById('tab-register');
+        if (mode === 'login') {
+            loginForm.classList.remove('hidden');
+            regForm.classList.add('hidden');
+            tabLogin.classList.add('active');
+            tabReg.classList.remove('active');
+        } else {
+            loginForm.classList.add('hidden');
+            regForm.classList.remove('hidden');
+            tabReg.classList.add('active');
+            tabLogin.classList.remove('active');
+        }
+    }
+
+    async function api(endpoint, method = 'GET', body = null) {
+        const opts = {
+            method,
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${state.token}` }
+        };
+        if (body) opts.body = JSON.stringify(body);
+        try {
+            const res = await fetch(API_URL + endpoint, opts);
+            if (res.status === 401) logout();
+            if (res.status === 204) return { success: true };
+            const text = await res.text();
+            if (!res.ok) return null;
+            return text ? JSON.parse(text) : { success: true };
+        } catch (e) { return null; }
+    }
+
+    function setButtonLoading(btn, isLoading, loadingText = 'Loading...') {
+        if (isLoading) {
+            btn.dataset.originalHtml = btn.innerHTML;
+            btn.innerHTML = `<span class="spinner-inline" aria-hidden="true"></span> ${loadingText}`;
+            btn.disabled = true;
+        } else {
+            btn.innerHTML = btn.dataset.originalHtml || btn.innerHTML;
+            btn.disabled = false;
+        }
+    }
+
+    async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+        return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        const btn = document.getElementById('login-btn');
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        setButtonLoading(btn, true, 'Signing in...');
+        let hashedPassword;
+        try {
+            hashedPassword = await sha256(password);
+        } catch {
+            setButtonLoading(btn, false);
+            toast('Secure hashing unavailable. Please use HTTPS.', 'error');
+            return;
+        }
+        try {
+            const res = await fetch(API_URL + '/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: hashedPassword })
+            });
+            const data = await res.json().catch(() => null);
+            setButtonLoading(btn, false);
+            if (res.ok && data && data.token) {
+                state.token = data.token;
+                state.name = data.name || 'User';
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('name', state.name);
                 showPage('dashboard-page');
                 updateUI();
                 fetchNotes();
+                toast('Welcome back! 👋', 'success');
             } else {
-                showPage('auth-page');
+                toast('Hmm, that didn\'t work. Double-check your details. 🤔', 'error');
             }
-        });
-
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        } catch (err) {
+            setButtonLoading(btn, false);
+            toast('Unable to reach the server. Please check your connection.', 'error');
         }
+    }
 
-        function toggleAuth(mode) {
-            const loginForm = document.getElementById('login-form');
-            const regForm = document.getElementById('register-form');
-            const tabLogin = document.getElementById('tab-login');
-            const tabReg = document.getElementById('tab-register');
-
-            if (mode === 'login') {
-                loginForm.classList.remove('hidden');
-                regForm.classList.add('hidden');
-                tabLogin.classList.add('active');
-                tabReg.classList.remove('active');
+    async function handleRegister(e) {
+        e.preventDefault();
+        const errEl = document.getElementById('reg-error');
+        const btn   = document.getElementById('register-btn');
+        errEl.classList.add('hidden');
+        const name     = document.getElementById('reg-name').value;
+        const email    = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-pass').value;
+        setButtonLoading(btn, true, 'Creating account...');
+        let hashedPassword;
+        try {
+            hashedPassword = await sha256(password);
+        } catch {
+            setButtonLoading(btn, false);
+            errEl.textContent = 'Secure hashing unavailable. Please use HTTPS.';
+            errEl.classList.remove('hidden');
+            return;
+        }
+        try {
+            const res = await fetch(API_URL + '/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password: hashedPassword })
+            });
+            const data = await res.json().catch(() => null);
+            setButtonLoading(btn, false);
+            if (res.ok) {
+                toast('You\'re all set! 🚀 Go ahead and sign in.', 'success');
+                toggleAuth('login');
             } else {
-                loginForm.classList.add('hidden');
-                regForm.classList.remove('hidden');
-                tabReg.classList.add('active');
-                tabLogin.classList.remove('active');
-            }
-        }
-
-        async function api(endpoint, method = 'GET', body = null) {
-            const opts = {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${state.token}`
-                }
-            };
-            if (body) opts.body = JSON.stringify(body);
-            try {
-                const res = await fetch(API_URL + endpoint, opts);
-                if (res.status === 401) logout();
-                if (res.status === 204) return { success: true };
-                const text = await res.text();
-                if (!res.ok) return null;
-                return text ? JSON.parse(text) : { success: true };
-            } catch (e) { return null; }
-        }
-
-        function setButtonLoading(btn, isLoading, loadingText = 'Loading...') {
-            if (isLoading) {
-                btn.dataset.originalHtml = btn.innerHTML;
-                btn.innerHTML = `<span class="spinner-inline" aria-hidden="true"></span> ${loadingText}`;
-                btn.disabled = true;
-            } else {
-                btn.innerHTML = btn.dataset.originalHtml || btn.innerHTML;
-                btn.disabled = false;
-            }
-        }
-
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const btn = document.getElementById('login-btn');
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-
-            setButtonLoading(btn, true, 'Signing in...');
-            let hashedPassword;
-            try {
-                hashedPassword = await sha256(password);
-            } catch {
-                setButtonLoading(btn, false);
-                toast('Secure hashing unavailable. Please use HTTPS.', 'error');
-                return;
-            }
-
-            try {
-                const res = await fetch(API_URL + '/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password: hashedPassword })
-                });
-                const data = await res.json().catch(() => null);
-                setButtonLoading(btn, false);
-
-                if (res.ok && data && data.token) {
-                    state.token = data.token;
-                    state.name = data.name || 'User';
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('name', state.name);
-                    showPage('dashboard-page');
-                    updateUI();
-                    fetchNotes();
-                    toast('Welcome back! 👋', 'success');
-                } else {
-                    toast('Hmm, that didn\'t work. Double-check your details. 🤔', 'error');
-                }
-            } catch (err) {
-                setButtonLoading(btn, false);
-                toast('Unable to reach the server. Please check your connection.', 'error');
-            }
-        }
-
-        async function handleRegister(e) {
-            e.preventDefault();
-            const errEl = document.getElementById('reg-error');
-            const btn = document.getElementById('register-btn');
-            errEl.classList.add('hidden');
-
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-pass').value;
-
-            setButtonLoading(btn, true, 'Creating account...');
-            let hashedPassword;
-            try {
-                hashedPassword = await sha256(password);
-            } catch {
-                setButtonLoading(btn, false);
-                errEl.textContent = 'Secure hashing unavailable. Please use HTTPS.';
-                errEl.classList.remove('hidden');
-                return;
-            }
-
-            try {
-                const res = await fetch(API_URL + '/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password: hashedPassword })
-                });
-                const data = await res.json().catch(() => null);
-                setButtonLoading(btn, false);
-                if (res.ok) {
-                    toast('You\'re all set! 🚀 Go ahead and sign in.', 'success');
-                    toggleAuth('login');
-                } else {
-                    errEl.textContent = (data && data.error) ? data.error : 'Registration failed. Please try again.';
-                    errEl.classList.remove('hidden');
-                }
-            } catch (err) {
-                setButtonLoading(btn, false);
-                errEl.textContent = 'Unable to reach the server. Please check your connection.';
+                errEl.textContent = (data && data.error) ? data.error : 'Registration failed. Please try again.';
                 errEl.classList.remove('hidden');
             }
+        } catch (err) {
+            setButtonLoading(btn, false);
+            errEl.textContent = 'Unable to reach the server. Please check your connection.';
+            errEl.classList.remove('hidden');
+        }
+    }
+
+    function updateUI() {
+        document.getElementById('user-display').textContent = state.name || 'User';
+        document.getElementById('avatar-txt').textContent = (state.name || 'U').charAt(0).toUpperCase();
+    }
+
+    function logout() {
+        localStorage.clear();
+        location.reload();
+    }
+
+    function toggleSearch() {
+        const bar = document.getElementById('search-bar');
+        const hidden = bar.classList.contains('hidden');
+        bar.classList.toggle('hidden');
+        if (hidden) {
+            setTimeout(() => document.getElementById('search-input').focus(), 50);
+        } else {
+            clearSearch();
+        }
+    }
+
+    function toggleSidebar() { /* no sidebar in new design */ }
+
+    async function fetchNotes() {
+        const grid = document.getElementById('notes-grid');
+        renderSkeletonLoaders(grid);
+        const res = await api('/notes?page=1&pageSize=100');
+        if (res) {
+            state.notes = res.data || [];
+            renderNotes();
+        } else {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <span class="empty-state-emoji">😵</span>
+                    <div class="empty-title">Oops! Something went wrong</div>
+                    <p class="empty-desc">We couldn't load your notes. Check your connection and give it another shot!</p>
+                    <button onclick="fetchNotes()" class="btn-cta btn">
+                        <i class="fa-solid fa-rotate-right"></i> Try Again
+                    </button>
+                </div>`;
+        }
+    }
+
+    function renderSkeletonLoaders(grid) {
+        grid.innerHTML = Array(6).fill(0).map((_, i) => `
+            <div class="skeleton-card" role="status" aria-label="Loading note" style="animation-delay:${i*0.04}s">
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+                    <div class="skeleton-line" style="width:65%;height:18px;"></div>
+                    <div style="flex:1"></div>
+                    <div class="skeleton-line" style="width:22px;height:22px;border-radius:50%;margin-bottom:0;"></div>
+                </div>
+                <div class="skeleton-line" style="width:100%;height:13px;"></div>
+                <div class="skeleton-line" style="width:88%;height:13px;"></div>
+                <div class="skeleton-line" style="width:60%;height:13px;margin-bottom:0;"></div>
+                <div style="display:flex;justify-content:space-between;margin-top:10px;align-items:center;">
+                    <div class="skeleton-line" style="width:60px;height:12px;margin-bottom:0;"></div>
+                    <div class="skeleton-line" style="width:48px;height:20px;border-radius:50px;margin-bottom:0;"></div>
+                </div>
+            </div>`).join('');
+    }
+
+    function renderNotes() {
+        const grid = document.getElementById('notes-grid');
+        grid.innerHTML = '';
+
+        let filtered = state.notes;
+        if (state.category !== 'all') {
+            filtered = filtered.filter(n => (n.content || '').toLowerCase().includes('#' + state.category));
         }
 
-        function updateUI() {
-            document.getElementById('user-display').textContent = state.name || 'User';
-            document.getElementById('avatar-txt').textContent = (state.name || 'U').charAt(0).toUpperCase();
+        const q = document.querySelector('.search-input')?.value?.toLowerCase() || '';
+        if (q) {
+            filtered = filtered.filter(n =>
+                (n.title || '').toLowerCase().includes(q) || (n.content || '').toLowerCase().includes(q)
+            );
         }
 
-        function logout() {
-            localStorage.clear();
-            location.reload();
+        const countBadge = document.getElementById('notes-count-badge');
+        if (filtered.length > 0) {
+            countBadge.textContent = filtered.length;
+            countBadge.classList.remove('hidden');
+        } else {
+            countBadge.classList.add('hidden');
         }
 
-        async function fetchNotes() {
-            const grid = document.getElementById('notes-grid');
-            renderSkeletonLoaders(grid);
-            const res = await api('/notes?page=1&pageSize=100');
-            if (res) {
-                state.notes = res.data || [];
-                renderNotes();
+        if (filtered.length === 0) {
+            const isFirstVisit = state.notes.length === 0 && !localStorage.getItem('hasSeenWelcome');
+            if (isFirstVisit) localStorage.setItem('hasSeenWelcome', '1');
+
+            if (isFirstVisit) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <span class="empty-state-emoji">📝</span>
+                        <div class="empty-title">Welcome to Notely! 🎉</div>
+                        <p class="empty-desc">Your canvas is blank. Jot down ideas, scan handwritten notes, or just capture what's on your mind.</p>
+                        <button onclick="openModal()" class="btn-cta btn">Start Writing ✍️</button>
+                    </div>`;
+            } else if (state.category !== 'all') {
+                const catEmojis = { personal: '🌿', work: '💼', ideas: '💡' };
+                const catEmoji = catEmojis[state.category] || '📂';
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <span class="empty-state-emoji">${catEmoji}</span>
+                        <div class="empty-title">Nothing here… yet! 🌱</div>
+                        <p class="empty-desc">Add a note tagged with <strong>#${state.category}</strong> and it'll appear here.</p>
+                        <button onclick="openModal()" class="btn-cta btn">New Thought 💭</button>
+                    </div>`;
             } else {
                 grid.innerHTML = `
                     <div class="empty-state">
-                        <span class="empty-state-emoji">😵</span>
-                        <div class="empty-title">Oops! Something went wrong</div>
-                        <p class="empty-desc">We couldn't load your notes. Check your connection and give it another shot!</p>
-                        <button onclick="fetchNotes()" class="btn-cta">
-                            <i class="fa-solid fa-rotate-right"></i> Try Again
-                        </button>
+                        <span class="empty-state-emoji">✨</span>
+                        <div class="empty-title">Ready when you are!</div>
+                        <p class="empty-desc">No notes yet — every great idea starts somewhere. What's on your mind?</p>
+                        <button onclick="openModal()" class="btn-cta btn">Start Writing ✍️</button>
                     </div>`;
             }
+            return;
         }
 
-        function renderSkeletonLoaders(grid) {
-            grid.innerHTML = Array(6).fill(0).map((_, i) => `
-                <div class="skeleton-card" role="status" aria-label="Loading note" style="animation-delay: ${i * 0.04}s">
-                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
-                        <div class="skeleton-line" style="width: 64px; height: 20px;"></div>
-                        <div style="flex: 1;"></div>
-                        <div class="skeleton-line" style="width: 44px; height: 13px;"></div>
-                    </div>
-                    <div class="skeleton-line" style="width: 70%; height: 17px; margin-top: 4px;"></div>
-                    <div class="skeleton-line" style="width: 100%; height: 13px; margin-top: 6px;"></div>
-                    <div class="skeleton-line" style="width: 88%; height: 13px;"></div>
-                    <div class="skeleton-line" style="width: 62%; height: 13px;"></div>
+        filtered.forEach((note, i) => {
+            const el = document.createElement('div');
+            el.className = 'note-card';
+            el.setAttribute('role', 'listitem');
+            el.style.animationDelay = `${i * 0.04}s`;
+
+            let tag = 'Note', tagClass = 'tag-general';
+            if ((note.content || '').includes('#work'))     { tag = 'Work';     tagClass = 'tag-work'; }
+            else if ((note.content || '').includes('#personal')) { tag = 'Personal'; tagClass = 'tag-personal'; }
+            else if ((note.content || '').includes('#idea'))     { tag = 'Ideas';    tagClass = 'tag-ideas'; }
+            else if ((note.title || '').startsWith('✍️'))         { tag = 'Scanned';  tagClass = 'tag-scanned'; }
+
+            const dateStr = relativeTime(note.updatedAt);
+
+            el.innerHTML = `
+                <div class="note-card-top">
+                    <h3 class="note-title">${esc(note.title)}</h3>
+                    <button onclick="deleteNote(event, '${note.id}')" class="btn-delete-note btn" aria-label="Delete: ${esc(note.title)}">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
                 </div>
-            `).join('');
-        }
+                <p class="note-body">${esc(note.content)}</p>
+                <div class="note-card-meta">
+                    <span class="note-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> ${dateStr}</span>
+                    <span class="note-tag ${tagClass}">${tag}</span>
+                </div>`;
 
-        function renderNotes() {
-            const grid = document.getElementById('notes-grid');
-            grid.innerHTML = '';
+            el.onclick = (e) => {
+                if (!e.target.closest('button')) openModal(note);
+            };
+            grid.appendChild(el);
+        });
+    }
 
-            let filtered = state.notes;
-            if (state.category !== 'all') {
-                filtered = filtered.filter(n => (n.content || '').toLowerCase().includes('#' + state.category));
-            }
-
-            const countBadge = document.getElementById('notes-count-badge');
-            if (filtered.length > 0) {
-                countBadge.textContent = filtered.length;
-                countBadge.classList.remove('hidden');
-            } else {
-                countBadge.classList.add('hidden');
-            }
-
-            if (filtered.length === 0) {
-                const isFirstVisit = state.notes.length === 0 && !localStorage.getItem('hasSeenWelcome');
-                if (isFirstVisit) localStorage.setItem('hasSeenWelcome', '1');
-
-                if (isFirstVisit) {
-                    grid.innerHTML = `
-                        <div class="empty-state">
-                            <span class="empty-state-emoji">📝</span>
-                            <div class="empty-title">Welcome to Notely! 🎉</div>
-                            <p class="empty-desc">Your canvas is blank. Time to create something amazing! Jot down ideas, scan handwritten notes, or just capture what's on your mind.</p>
-                            <button onclick="openModal()" class="btn-cta">
-                                Start Writing ✍️
-                            </button>
-                        </div>`;
-                } else if (state.category !== 'all') {
-                    const catEmojis = { personal: '🌿', work: '💼', ideas: '💡' };
-                    const catEmoji = catEmojis[state.category] || '📂';
-                    grid.innerHTML = `
-                        <div class="empty-state">
-                            <span class="empty-state-emoji">${catEmoji}</span>
-                            <div class="empty-title">Nothing here... yet! 🌱</div>
-                            <p class="empty-desc">Your ${state.category} space is wide open. Add a note tagged with <strong>#${state.category}</strong> and it'll appear here.</p>
-                            <button onclick="openModal()" class="btn-cta">
-                                New Thought 💭
-                            </button>
-                        </div>`;
-                } else {
-                    grid.innerHTML = `
-                        <div class="empty-state">
-                            <span class="empty-state-emoji">✨</span>
-                            <div class="empty-title">Ready when you are!</div>
-                            <p class="empty-desc">No notes yet — but every great idea starts somewhere. What's on your mind?</p>
-                            <button onclick="openModal()" class="btn-cta">
-                                Start Writing ✍️
-                            </button>
-                        </div>`;
-                }
-                return;
-            }
-
-            filtered.forEach((note, i) => {
-                const el = document.createElement('div');
-                el.className = 'note-card';
-                el.setAttribute('role', 'listitem');
-                el.style.animationDelay = `${i * 0.04}s`;
-
-                let tag = '';
-                let tagClass = '';
-                if ((note.content || '').includes('#work')) { tag = 'Work'; tagClass = 'tag-work'; }
-                else if ((note.content || '').includes('#personal')) { tag = 'Personal'; tagClass = 'tag-personal'; }
-                else if ((note.content || '').includes('#idea')) { tag = 'Ideas'; tagClass = 'tag-ideas'; }
-                else if ((note.title || '').startsWith('✍️')) { tag = 'Scanned'; tagClass = 'tag-scanned'; }
-                else { tag = 'Note'; tagClass = 'tag-general'; }
-
-                const dateStr = relativeTime(note.updatedAt);
-
-                el.innerHTML = `
-                    <div class="note-card-top">
-                        <span class="note-tag ${tagClass}">${tag}</span>
-                        <span class="note-date">${dateStr}</span>
-                    </div>
-                    <div class="note-title">${esc(note.title)}</div>
-                    <div class="note-body">${esc(note.content)}</div>
-                    <div class="note-card-footer">
-                        <button onclick="deleteNote(event, '${note.id}')" class="btn-icon" aria-label="Delete: ${esc(note.title)}">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-
-                el.onclick = (e) => {
-                    if (!e.target.closest('button')) openModal(note);
-                };
-                grid.appendChild(el);
-            });
-        }
-
-        function filterCat(cat, btn) {
-            state.category = cat;
-            document.querySelectorAll('.nav-btn').forEach(b => {
-                b.classList.remove('active');
-                b.removeAttribute('aria-current');
-            });
+    function filterCat(cat, btn) {
+        state.category = cat;
+        document.querySelectorAll('.nav-btn').forEach(b => {
+            b.classList.remove('active');
+            b.removeAttribute('aria-selected');
+            b.setAttribute('aria-selected', 'false');
+        });
+        if (btn) {
             btn.classList.add('active');
-            btn.setAttribute('aria-current', 'page');
+            btn.setAttribute('aria-selected', 'true');
+        }
+        const titles = { all: 'Your Notes', personal: 'Personal', work: 'Work', ideas: 'Ideas' };
+        document.getElementById('view-title').textContent = titles[cat] || 'Notes';
+        clearSearch();
+        renderNotes();
+        toggleSidebar();
+    }
 
-            const titles = { all: 'All Notes', personal: 'Personal', work: 'Work', ideas: 'Ideas' };
-            document.getElementById('view-title').textContent = titles[cat] || 'Notes';
+    function filterNotes(q) {
+        const lower = q.toLowerCase().trim();
+        const grid = document.getElementById('notes-grid');
+        const cards = document.querySelectorAll('.note-card');
+        let visibleCount = 0;
 
-            clearSearch();
-            renderNotes();
-            if (window.innerWidth <= 768) toggleSidebar();
+        cards.forEach(c => {
+            const visible = c.innerText.toLowerCase().includes(lower);
+            c.style.display = visible ? '' : 'none';
+            if (visible) visibleCount++;
+        });
+
+        const existingMsg = grid.querySelector('[data-search-empty]');
+        if (existingMsg) existingMsg.remove();
+
+        const countEl = document.getElementById('search-count');
+        if (lower) {
+            countEl.textContent = `${visibleCount} result${visibleCount !== 1 ? 's' : ''}`;
+            countEl.classList.remove('hidden');
+        } else {
+            countEl.classList.add('hidden');
         }
 
-        function filterNotes(q) {
-            const lower = q.toLowerCase().trim();
-            const grid = document.getElementById('notes-grid');
-            const cards = document.querySelectorAll('.note-card');
-            let visibleCount = 0;
+        if (lower && visibleCount === 0 && cards.length > 0) {
+            const msg = document.createElement('div');
+            msg.setAttribute('data-search-empty', '1');
+            msg.className = 'empty-state';
+            msg.innerHTML = `
+                <span class="empty-state-emoji">🔮</span>
+                <div class="empty-title">Nothing here...</div>
+                <p class="empty-desc">Couldn't find anything for &ldquo;${esc(q)}&rdquo;. Try a different search?</p>`;
+            grid.appendChild(msg);
+        }
+    }
 
-            cards.forEach(c => {
-                const visible = c.innerText.toLowerCase().includes(lower);
-                c.style.display = visible ? 'flex' : 'none';
-                if (visible) visibleCount++;
-            });
+    function updateSearchClear(val) {
+        document.getElementById('search-clear-btn').classList.toggle('visible', val.length > 0);
+    }
 
-            const existingMsg = grid.querySelector('[data-search-empty]');
-            if (existingMsg) existingMsg.remove();
+    function clearSearch() {
+        const input = document.getElementById('search-input');
+        if (!input.value) return;
+        input.value = '';
+        filterNotes('');
+        updateSearchClear('');
+        document.getElementById('search-count').classList.add('hidden');
+    }
 
-            const countEl = document.getElementById('search-count');
-            if (lower) {
-                countEl.textContent = `${visibleCount} result${visibleCount !== 1 ? 's' : ''}`;
-                countEl.classList.remove('hidden');
-            } else {
-                countEl.classList.add('hidden');
+    function openModal(note = null) {
+        state.editingId = note ? note.id : null;
+        document.getElementById('modal-title-label').textContent = note ? 'Edit Note ✏️' : 'New Thought 💭';
+        document.getElementById('note-title').value = note ? note.title : '';
+        document.getElementById('note-content').value = note ? note.content : '';
+
+        const catSelect = document.getElementById('note-category');
+        catSelect.value = 'general';
+        if (note) {
+            if ((note.content || '').includes('#work'))     catSelect.value = 'work';
+            if ((note.content || '').includes('#personal')) catSelect.value = 'personal';
+            if ((note.content || '').includes('#idea'))     catSelect.value = 'ideas';
+        }
+
+        const saveBtn = document.getElementById('save-note-btn');
+        saveBtn.innerHTML = 'Save ✨';
+        saveBtn.disabled = false;
+
+        document.getElementById('note-modal').classList.add('open');
+        setTimeout(() => document.getElementById('note-title').focus(), 80);
+    }
+
+    function closeModal() {
+        document.getElementById('note-modal').classList.remove('open');
+    }
+
+    async function saveNote() {
+        const title   = document.getElementById('note-title').value.trim();
+        let content   = document.getElementById('note-content').value;
+        const cat     = document.getElementById('note-category').value;
+        const saveBtn = document.getElementById('save-note-btn');
+
+        if (!title) { toast('Don\'t forget a title! 📌', 'warning'); return; }
+        if (cat !== 'general' && !content.includes('#' + cat)) content += `\n\n#${cat}`;
+
+        const method = state.editingId ? 'PUT' : 'POST';
+        const url    = state.editingId ? `/notes/${state.editingId}` : '/notes';
+
+        setButtonLoading(saveBtn, true, 'Saving...');
+        const res = await api(url, method, { title, content });
+        setButtonLoading(saveBtn, false);
+
+        if (res) {
+            closeModal();
+            fetchNotes();
+            toast('Saved! ✨', 'success');
+        } else {
+            toast('Oops! Couldn\'t save that. Try again? 😅', 'error');
+        }
+    }
+
+    function deleteNote(e, id) {
+        e.stopPropagation();
+        const card = e.target.closest('.note-card');
+        showConfirm(async () => {
+            if (card && card.parentElement) {
+                card.classList.add('card-deleting');
+                await new Promise(r => setTimeout(r, 380));
             }
+            await api(`/notes/${id}`, 'DELETE');
+            fetchNotes();
+            toast('Gone forever 💨', 'success');
+        });
+    }
 
-            if (lower && visibleCount === 0 && cards.length > 0) {
-                const msg = document.createElement('div');
-                msg.setAttribute('data-search-empty', '1');
-                msg.className = 'empty-state';
-                msg.innerHTML = `
-                    <span class="empty-state-emoji">🔮</span>
-                    <div class="empty-title">Nothing here...</div>
-                    <p class="empty-desc">Couldn't find anything for &ldquo;${esc(q)}&rdquo;. Try a different spell?</p>
-                `;
-                grid.appendChild(msg);
-            }
+    function showConfirm(callback) {
+        pendingConfirmAction = callback;
+        document.getElementById('confirm-modal').classList.add('open');
+    }
+
+    function cancelConfirm() {
+        pendingConfirmAction = null;
+        document.getElementById('confirm-modal').classList.remove('open');
+    }
+
+    function executeConfirm() {
+        if (pendingConfirmAction) pendingConfirmAction();
+        pendingConfirmAction = null;
+        document.getElementById('confirm-modal').classList.remove('open');
+    }
+
+    function openScanModal() {
+        switchScanStep('input');
+        switchScanTab('draw');
+        pendingUploadFile = null;
+        document.getElementById('upload-drop-area').classList.remove('hidden');
+        document.getElementById('upload-preview-section').classList.add('hidden');
+        document.getElementById('scan-file-input').value = '';
+        document.getElementById('scan-modal').classList.add('open');
+        initDrawingCanvas();
+    }
+
+    function closeScanModal() {
+        document.getElementById('scan-modal').classList.remove('open');
+    }
+
+    function switchScanTab(tab) {
+        document.querySelectorAll('.scan-tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`[data-scan-tab="${tab}"]`).classList.add('active');
+        document.getElementById('scan-tab-draw').classList.toggle('hidden', tab !== 'draw');
+        document.getElementById('scan-tab-upload').classList.toggle('hidden', tab !== 'upload');
+    }
+
+    function switchScanStep(step) {
+        ['input','loading','error','preview'].forEach(s => {
+            document.getElementById(`scan-step-${s}`).classList.toggle('hidden', s !== step);
+        });
+    }
+
+    function handleFileSelected(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        pendingUploadFile = file;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            document.getElementById('upload-preview-img').src = ev.target.result;
+            document.getElementById('upload-drop-area').classList.add('hidden');
+            document.getElementById('upload-preview-section').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    }
+
+    function chooseDifferentImage() {
+        pendingUploadFile = null;
+        document.getElementById('upload-preview-section').classList.add('hidden');
+        document.getElementById('upload-drop-area').classList.remove('hidden');
+        document.getElementById('scan-file-input').click();
+    }
+
+    function processPendingUpload() {
+        if (!pendingUploadFile) return;
+        switchScanStep('loading');
+        const formData = new FormData();
+        formData.append('file', pendingUploadFile);
+        pendingUploadFile = null;
+        processOcrRequest(formData);
+    }
+
+    function initDrawingCanvas() {
+        const canvas = document.getElementById('drawing-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 620;
+        canvas.height = 360;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawingState.canvas = canvas;
+        drawingState.ctx = ctx;
+        drawingState.tool = 'pen';
+        drawingState.penColor = '#000000';
+        drawingState.penSize = 4;
+        updateToolButtons();
+        if (!drawingState.listenersReady) {
+            canvas.addEventListener('mousedown', handleCanvasPointerDown);
+            canvas.addEventListener('mousemove', handleCanvasPointerMove);
+            canvas.addEventListener('mouseup', handleCanvasPointerUp);
+            canvas.addEventListener('mouseleave', handleCanvasPointerUp);
+            canvas.addEventListener('touchstart', function(e) { e.preventDefault(); handleCanvasPointerDown(e.touches[0]); }, { passive: false });
+            canvas.addEventListener('touchmove',  function(e) { e.preventDefault(); handleCanvasPointerMove(e.touches[0]); }, { passive: false });
+            canvas.addEventListener('touchend', handleCanvasPointerUp);
+            drawingState.listenersReady = true;
         }
+    }
 
-        function updateSearchClear(val) {
-            document.getElementById('search-clear-btn').classList.toggle('visible', val.length > 0);
-        }
+    function getCanvasCoordinates(e) {
+        const canvas = drawingState.canvas;
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: (e.clientX - rect.left) * (canvas.width / rect.width),
+            y: (e.clientY - rect.top)  * (canvas.height / rect.height)
+        };
+    }
 
-        function clearSearch() {
-            const input = document.getElementById('search-input');
-            if (!input.value) return;
-            input.value = '';
-            filterNotes('');
-            updateSearchClear('');
-            document.getElementById('search-count').classList.add('hidden');
-        }
+    function handleCanvasPointerDown(e) {
+        drawingState.isDrawing = true;
+        const pos = getCanvasCoordinates(e);
+        drawingState.ctx.beginPath();
+        drawingState.ctx.moveTo(pos.x, pos.y);
+    }
 
-        function openModal(note = null) {
-            state.editingId = note ? note.id : null;
-            document.getElementById('modal-title-label').textContent = note ? 'Edit Note ✏️' : 'New Thought 💭';
-            document.getElementById('note-title').value = note ? note.title : '';
-            document.getElementById('note-content').value = note ? note.content : '';
+    function handleCanvasPointerMove(e) {
+        if (!drawingState.isDrawing) return;
+        const pos = getCanvasCoordinates(e);
+        const ctx = drawingState.ctx;
+        ctx.lineWidth   = drawingState.tool === 'eraser' ? drawingState.penSize * 3 : drawingState.penSize;
+        ctx.lineCap     = 'round';
+        ctx.lineJoin    = 'round';
+        ctx.strokeStyle = drawingState.tool === 'eraser' ? '#ffffff' : drawingState.penColor;
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+    }
 
-            const catSelect = document.getElementById('note-category');
-            catSelect.value = 'general';
-            if (note) {
-                if ((note.content || '').includes('#work')) catSelect.value = 'work';
-                if ((note.content || '').includes('#personal')) catSelect.value = 'personal';
-                if ((note.content || '').includes('#idea')) catSelect.value = 'ideas';
-            }
+    function handleCanvasPointerUp() { drawingState.isDrawing = false; }
 
-            const saveBtn = document.getElementById('save-note-btn');
-            saveBtn.innerHTML = 'Save ✨';
-            saveBtn.disabled = false;
+    function selectDrawingTool(tool) { drawingState.tool = tool; updateToolButtons(); }
+    function selectPenSize(size)     { drawingState.penSize = size; updateToolButtons(); }
+    function selectPenColor(color)   { drawingState.penColor = color; drawingState.tool = 'pen'; updateToolButtons(); }
 
-            document.getElementById('note-modal').classList.add('open');
+    function updateToolButtons() {
+        document.querySelectorAll('.canvas-tool-btn[data-tool]').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tool === drawingState.tool);
+        });
+        document.querySelectorAll('.canvas-size-btn').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.dataset.size) === drawingState.penSize);
+        });
+        document.querySelectorAll('.canvas-color-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.color === drawingState.penColor);
+        });
+    }
 
-            setTimeout(() => document.getElementById('note-title').focus(), 50);
-        }
+    function clearDrawingCanvas() {
+        drawingState.ctx.fillStyle = '#ffffff';
+        drawingState.ctx.fillRect(0, 0, drawingState.canvas.width, drawingState.canvas.height);
+    }
 
-        function closeModal() {
-            document.getElementById('note-modal').classList.remove('open');
-        }
-
-        async function saveNote() {
-            const title = document.getElementById('note-title').value.trim();
-            let content = document.getElementById('note-content').value;
-            const cat = document.getElementById('note-category').value;
-            const saveBtn = document.getElementById('save-note-btn');
-
-            if (!title) { toast('Don\'t forget a title! 📌', 'warning'); return; }
-            if (cat !== 'general' && !content.includes('#' + cat)) content += `\n\n#${cat}`;
-
-            const method = state.editingId ? 'PUT' : 'POST';
-            const url = state.editingId ? `/notes/${state.editingId}` : '/notes';
-
-            setButtonLoading(saveBtn, true, 'Saving...');
-            const res = await api(url, method, { title, content });
-            setButtonLoading(saveBtn, false);
-
-            if (res) {
-                closeModal();
-                fetchNotes();
-                toast('Saved! ✨', 'success');
-            } else {
-                toast('Oops! Couldn\'t save that. Try again? 😅', 'error');
-            }
-        }
-
-        function deleteNote(e, id) {
-            e.stopPropagation();
-            const card = e.target.closest('.note-card');
-            showConfirm(async () => {
-                if (card && card.parentElement) {
-                    card.classList.add('card-deleting');
-                    await new Promise(r => setTimeout(r, 380));
-                }
-                await api(`/notes/${id}`, 'DELETE');
-                fetchNotes();
-                toast('Gone forever 💨', 'success');
-            });
-        }
-
-        function showConfirm(callback) {
-            pendingConfirmAction = callback;
-            document.getElementById('confirm-modal').classList.add('open');
-        }
-
-        function cancelConfirm() {
-            pendingConfirmAction = null;
-            document.getElementById('confirm-modal').classList.remove('open');
-        }
-
-        function executeConfirm() {
-            if (pendingConfirmAction) pendingConfirmAction();
-            pendingConfirmAction = null;
-            document.getElementById('confirm-modal').classList.remove('open');
-        }
-
-        function openScanModal() {
-            switchScanStep('input');
-            switchScanTab('draw');
-            pendingUploadFile = null;
-            document.getElementById('upload-drop-area').classList.remove('hidden');
-            document.getElementById('upload-preview-section').classList.add('hidden');
-            document.getElementById('scan-file-input').value = '';
-            document.getElementById('scan-modal').classList.add('open');
-            initDrawingCanvas();
-        }
-
-        function closeScanModal() {
-            document.getElementById('scan-modal').classList.remove('open');
-        }
-
-        function switchScanTab(tab) {
-            document.querySelectorAll('.scan-tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`[data-scan-tab="${tab}"]`).classList.add('active');
-            document.getElementById('scan-tab-draw').classList.toggle('hidden', tab !== 'draw');
-            document.getElementById('scan-tab-upload').classList.toggle('hidden', tab !== 'upload');
-        }
-
-        function switchScanStep(step) {
-            document.getElementById('scan-step-input').classList.toggle('hidden', step !== 'input');
-            document.getElementById('scan-step-loading').classList.toggle('hidden', step !== 'loading');
-            document.getElementById('scan-step-error').classList.toggle('hidden', step !== 'error');
-            document.getElementById('scan-step-preview').classList.toggle('hidden', step !== 'preview');
-        }
-
-        function handleFileSelected(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            pendingUploadFile = file;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                document.getElementById('upload-preview-img').src = ev.target.result;
-                document.getElementById('upload-drop-area').classList.add('hidden');
-                document.getElementById('upload-preview-section').classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        }
-
-        function chooseDifferentImage() {
-            pendingUploadFile = null;
-            document.getElementById('upload-preview-section').classList.add('hidden');
-            document.getElementById('upload-drop-area').classList.remove('hidden');
-            document.getElementById('scan-file-input').click();
-        }
-
-        function processPendingUpload() {
-            if (!pendingUploadFile) return;
-            switchScanStep('loading');
+    function submitDrawing() {
+        switchScanStep('loading');
+        drawingState.canvas.toBlob(function(blob) {
             const formData = new FormData();
-            formData.append('file', pendingUploadFile);
-            pendingUploadFile = null;
+            formData.append('file', blob, 'drawing.png');
             processOcrRequest(formData);
-        }
+        }, 'image/png');
+    }
 
-        function initDrawingCanvas() {
-            const canvas = document.getElementById('drawing-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 620;
-            canvas.height = 360;
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            drawingState.canvas = canvas;
-            drawingState.ctx = ctx;
-            drawingState.tool = 'pen';
-            drawingState.penColor = '#000000';
-            drawingState.penSize = 4;
-            updateToolButtons();
-            if (!drawingState.listenersReady) {
-                canvas.addEventListener('mousedown', handleCanvasPointerDown);
-                canvas.addEventListener('mousemove', handleCanvasPointerMove);
-                canvas.addEventListener('mouseup', handleCanvasPointerUp);
-                canvas.addEventListener('mouseleave', handleCanvasPointerUp);
-                canvas.addEventListener('touchstart', function(e) { e.preventDefault(); handleCanvasPointerDown(e.touches[0]); }, { passive: false });
-                canvas.addEventListener('touchmove', function(e) { e.preventDefault(); handleCanvasPointerMove(e.touches[0]); }, { passive: false });
-                canvas.addEventListener('touchend', handleCanvasPointerUp);
-                drawingState.listenersReady = true;
-            }
-        }
-
-        function getCanvasCoordinates(e) {
-            const canvas = drawingState.canvas;
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            return {
-                x: (e.clientX - rect.left) * scaleX,
-                y: (e.clientY - rect.top) * scaleY
-            };
-        }
-
-        function handleCanvasPointerDown(e) {
-            drawingState.isDrawing = true;
-            const pos = getCanvasCoordinates(e);
-            drawingState.ctx.beginPath();
-            drawingState.ctx.moveTo(pos.x, pos.y);
-        }
-
-        function handleCanvasPointerMove(e) {
-            if (!drawingState.isDrawing) return;
-            const pos = getCanvasCoordinates(e);
-            const ctx = drawingState.ctx;
-            ctx.lineWidth = drawingState.tool === 'eraser' ? drawingState.penSize * 3 : drawingState.penSize;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.strokeStyle = drawingState.tool === 'eraser' ? '#ffffff' : drawingState.penColor;
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
-        }
-
-        function handleCanvasPointerUp() {
-            drawingState.isDrawing = false;
-        }
-
-        function selectDrawingTool(tool) {
-            drawingState.tool = tool;
-            updateToolButtons();
-        }
-
-        function selectPenSize(size) {
-            drawingState.penSize = size;
-            updateToolButtons();
-        }
-
-        function selectPenColor(color) {
-            drawingState.penColor = color;
-            drawingState.tool = 'pen';
-            updateToolButtons();
-        }
-
-        function updateToolButtons() {
-            document.querySelectorAll('.canvas-tool-btn[data-tool]').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.tool === drawingState.tool);
+    async function processOcrRequest(formData) {
+        try {
+            const response = await fetch(API_URL + '/notes/scan', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${state.token}` },
+                body: formData
             });
-            document.querySelectorAll('.canvas-size-btn').forEach(btn => {
-                btn.classList.toggle('active', parseInt(btn.dataset.size) === drawingState.penSize);
-            });
-            document.querySelectorAll('.canvas-color-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.color === drawingState.penColor);
-            });
-        }
 
-        function clearDrawingCanvas() {
-            const ctx = drawingState.ctx;
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, drawingState.canvas.width, drawingState.canvas.height);
-        }
-
-        function submitDrawing() {
-            switchScanStep('loading');
-            drawingState.canvas.toBlob(function(blob) {
-                const formData = new FormData();
-                formData.append('file', blob, 'drawing.png');
-                processOcrRequest(formData);
-            }, 'image/png');
-        }
-
-        async function processOcrRequest(formData) {
-            try {
-                const response = await fetch(API_URL + '/notes/scan', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${state.token}` },
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    if (response.status === 503) {
-                        showScanError('OCR service is starting up', 'Please wait 30 seconds and try again. The service takes a moment to initialize after being idle.');
-                    } else if (response.status === 413) {
-                        showScanError('Image file too large', 'Please use an image under 10MB and try again.');
-                    } else if (response.status === 415) {
-                        showScanError('Unsupported image format', 'Please use a JPEG, PNG, GIF, WebP, or BMP image file.');
-                    } else if (response.status >= 500) {
-                        showScanError('Scan service error', 'Something went wrong on our end. Please try again in a moment.');
-                    } else {
-                        showScanError('Scan failed', 'Something went wrong processing your image. Please try a different image or try again.');
-                    }
-                    return;
-                }
-
-                const data = await response.json();
-                if (!data.text || !data.text.trim()) {
-                    showScanError('No text found in image', 'Try a clearer photo with better lighting. Make sure the text is legible and fills most of the frame.');
-                    return;
-                }
-                document.getElementById('scan-preview-text').value = data.text || '';
-                switchScanStep('preview');
-            } catch (err) {
-                showScanError('Connection lost', 'Please check your internet connection and try again.');
-            }
-        }
-
-        function showScanError(title, detail) {
-            document.getElementById('scan-error-title').textContent = title;
-            document.getElementById('scan-error-detail').textContent = detail;
-            switchScanStep('error');
-        }
-
-        async function scanSaveAsNote() {
-            const extractedText = document.getElementById('scan-preview-text').value;
-            if (!extractedText.trim()) {
-                toast('Nothing to save yet — edit the text above! 👆', 'warning');
+            if (!response.ok) {
+                if (response.status === 503)      showScanError('OCR service is starting up', 'Please wait 30 seconds and try again.');
+                else if (response.status === 413) showScanError('Image file too large', 'Please use an image under 10MB.');
+                else if (response.status === 415) showScanError('Unsupported image format', 'Please use a JPEG, PNG, GIF, WebP, or BMP image.');
+                else if (response.status >= 500)  showScanError('Scan service error', 'Something went wrong on our end. Please try again in a moment.');
+                else                               showScanError('Scan failed', 'Something went wrong processing your image.');
                 return;
             }
-            const title = '✍️ Scanned — ' + new Date().toLocaleDateString();
-            const result = await api('/notes', 'POST', { title, content: extractedText });
-            if (result) {
-                closeScanModal();
-                closeModal();
-                fetchNotes();
-                toast('Scanned & saved! 📝', 'success');
-            } else {
-                toast('Oops! Couldn\'t save the scan. Try again? 😅', 'error');
+
+            const data = await response.json();
+            if (!data.text || !data.text.trim()) {
+                showScanError('No text found', 'Try a clearer photo with better lighting. Make sure the text is legible.');
+                return;
             }
+            document.getElementById('scan-preview-text').value = data.text || '';
+            switchScanStep('preview');
+        } catch (err) {
+            showScanError('Connection lost', 'Please check your internet connection and try again.');
         }
+    }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
+    function showScanError(title, detail) {
+        document.getElementById('scan-error-title').textContent = title;
+        document.getElementById('scan-error-detail').textContent = detail;
+        switchScanStep('error');
+    }
+
+    async function scanSaveAsNote() {
+        const extractedText = document.getElementById('scan-preview-text').value;
+        if (!extractedText.trim()) { toast('Nothing to save yet — edit the text above! 👆', 'warning'); return; }
+        const title = '✍️ Scanned — ' + new Date().toLocaleDateString();
+        const result = await api('/notes', 'POST', { title, content: extractedText });
+        if (result) {
+            closeScanModal();
+            closeModal();
+            fetchNotes();
+            toast('Scanned & saved! 📝', 'success');
+        } else {
+            toast('Oops! Couldn\'t save the scan. Try again? 😅', 'error');
         }
+    }
 
-        function toast(msg, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const typeIcons = {
-                success: 'fa-circle-check',
-                error: 'fa-circle-xmark',
-                info: 'fa-circle-info',
-                warning: 'fa-triangle-exclamation'
-            };
+    function toast(msg, type = 'info') {
+        const container = document.getElementById('toast-container');
+        const typeIcons = { success: 'fa-circle-check', error: 'fa-circle-xmark', info: 'fa-circle-info', warning: 'fa-triangle-exclamation' };
+        const item = document.createElement('div');
+        item.className = `toast-item toast-${type}`;
+        item.setAttribute('role', 'alert');
+        item.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+        item.innerHTML = `
+            <div class="toast-icon" aria-hidden="true"><i class="fa-solid ${typeIcons[type] || typeIcons.info}"></i></div>
+            <div class="toast-message">${msg}</div>
+            <button class="toast-dismiss-btn btn" onclick="dismissToast(this.parentElement)" aria-label="Dismiss"><i class="fa-solid fa-xmark"></i></button>`;
+        container.appendChild(item);
+        requestAnimationFrame(() => requestAnimationFrame(() => item.classList.add('toast-visible')));
+        const timerId = setTimeout(() => dismissToast(item), 4500);
+        item.dataset.timerId = timerId;
+    }
 
-            const item = document.createElement('div');
-            item.className = `toast-item toast-${type}`;
-            item.setAttribute('role', 'alert');
-            item.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
-            item.innerHTML = `
-                <div class="toast-icon" aria-hidden="true"><i class="fa-solid ${typeIcons[type] || typeIcons.info}"></i></div>
-                <div class="toast-message">${msg}</div>
-                <button class="toast-dismiss-btn btn" onclick="dismissToast(this.parentElement)" aria-label="Dismiss notification"><i class="fa-solid fa-xmark"></i></button>
-            `;
+    function dismissToast(item) {
+        if (!item || !item.parentElement) return;
+        clearTimeout(parseInt(item.dataset.timerId));
+        item.classList.remove('toast-visible');
+        item.classList.add('toast-hiding');
+        setTimeout(() => { if (item.parentElement) item.remove(); }, 320);
+    }
 
-            container.appendChild(item);
+    function esc(str) {
+        if (!str) return '';
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
 
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => item.classList.add('toast-visible'));
-            });
+    function relativeTime(dateStr) {
+        const date = new Date(dateStr);
+        const now  = new Date();
+        const diffMins  = Math.floor((now - date) / 60000);
+        const diffHours = Math.floor((now - date) / 3600000);
+        const diffDays  = Math.floor((now - date) / 86400000);
+        if (diffMins < 1)   return 'Just now';
+        if (diffMins < 60)  return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        if (diffDays === 1) return 'Yesterday';
+        if (diffDays < 7)   return `${diffDays}d ago`;
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
 
-            const timerId = setTimeout(() => dismissToast(item), 4500);
-            item.dataset.timerId = timerId;
+    /* Easter egg */
+    const _kc = [38,38,40,40,37,39,37,39,66,65];
+    let _kp = 0;
+    document.addEventListener('keydown', e => {
+        _kp = (e.keyCode === _kc[_kp]) ? _kp + 1 : 0;
+        if (_kp === _kc.length) { _kp = 0; _launchConfetti(); }
+    });
+    function _launchConfetti() {
+        const colors = ['#FFD60A','#EC4899','#10B981','#3B82F6','#F97316','#8B5CF6'];
+        for (let i = 0; i < 90; i++) {
+            const c = document.createElement('div');
+            const size = Math.random() * 10 + 5;
+            c.style.cssText = `position:fixed;width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random()*colors.length)]};left:${Math.random()*100}vw;top:-30px;border-radius:${Math.random()>0.5?'50%':'3px'};animation:confettiFall ${Math.random()*2+1.5}s ease-in forwards;animation-delay:${Math.random()*0.6}s;z-index:9998;pointer-events:none;`;
+            document.body.appendChild(c);
+            setTimeout(() => c.remove(), 3200);
         }
+        toast('🎉 You found the easter egg!', 'success');
+    }
 
-        function dismissToast(item) {
-            if (!item || !item.parentElement) return;
-            clearTimeout(parseInt(item.dataset.timerId));
-            item.classList.remove('toast-visible');
-            item.classList.add('toast-hiding');
-            setTimeout(() => { if (item.parentElement) item.remove(); }, 320);
-        }
-
-        function esc(str) {
-            if (!str) return '';
-            const d = document.createElement('div');
-            d.textContent = str;
-            return d.innerHTML;
-        }
-
-        function relativeTime(dateStr) {
-            const date = new Date(dateStr);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            if (diffMins < 1) return 'Just now';
-            if (diffMins < 60) return `${diffMins}m ago`;
-            if (diffHours < 24) return `${diffHours}h ago`;
-            if (diffDays === 1) return 'Yesterday';
-            if (diffDays < 7) return `${diffDays}d ago`;
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        }
-
-        const _kc = [38,38,40,40,37,39,37,39,66,65];
-        let _kp = 0;
-        document.addEventListener('keydown', e => {
-            if (e.keyCode === _kc[_kp]) {
-                _kp++;
-                if (_kp === _kc.length) {
-                    _kp = 0;
-                    _launchConfetti();
-                }
-            } else {
-                _kp = 0;
-            }
-        });
-
-        function _launchConfetti() {
-            const colors = ['#8B5CF6','#EC4899','#F59E0B','#10B981','#3B82F6','#F97316'];
-            for (let i = 0; i < 90; i++) {
-                const c = document.createElement('div');
-                const size = Math.random() * 10 + 5;
-                c.style.cssText = `position:fixed;width:${size}px;height:${size}px;background:${colors[Math.floor(Math.random()*colors.length)]};left:${Math.random()*100}vw;top:-30px;border-radius:${Math.random()>0.5?'50%':'3px'};animation:confettiFall ${Math.random()*2+1.5}s ease-in forwards;animation-delay:${Math.random()*0.6}s;z-index:9998;pointer-events:none;`;
-                document.body.appendChild(c);
-                setTimeout(() => c.remove(), 3200);
-            }
-            toast('🎉 You found the easter egg!', 'success');
-        }
-
-        let installPromptEvent = null;
-
-        window.addEventListener('beforeinstallprompt', e => {
-            e.preventDefault();
-            installPromptEvent = e;
-            if (!localStorage.getItem('pwa-install-dismissed')) {
-                document.getElementById('install-prompt').classList.remove('hidden');
-            }
-        });
-
-        window.addEventListener('appinstalled', () => {
+    /* PWA */
+    let installPromptEvent = null;
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        installPromptEvent = e;
+        if (!localStorage.getItem('pwa-install-dismissed'))
+            document.getElementById('install-prompt').classList.remove('hidden');
+    });
+    window.addEventListener('appinstalled', () => {
+        document.getElementById('install-prompt').classList.add('hidden');
+        localStorage.setItem('pwa-install-dismissed', '1');
+    });
+    function installApp() {
+        if (!installPromptEvent) return;
+        installPromptEvent.prompt();
+        installPromptEvent.userChoice.then(choice => {
+            if (choice.outcome === 'accepted') localStorage.setItem('pwa-install-dismissed', '1');
+            installPromptEvent = null;
             document.getElementById('install-prompt').classList.add('hidden');
-            localStorage.setItem('pwa-install-dismissed', '1');
         });
+    }
+    function dismissInstall() {
+        document.getElementById('install-prompt').classList.add('hidden');
+        localStorage.setItem('pwa-install-dismissed', '1');
+    }
 
-        function installApp() {
-            if (!installPromptEvent) return;
-            installPromptEvent.prompt();
-            installPromptEvent.userChoice.then(choice => {
-                if (choice.outcome === 'accepted') {
-                    localStorage.setItem('pwa-install-dismissed', '1');
-                }
-                installPromptEvent = null;
-                document.getElementById('install-prompt').classList.add('hidden');
-            });
-        }
-
-        function dismissInstall() {
-            document.getElementById('install-prompt').classList.add('hidden');
-            localStorage.setItem('pwa-install-dismissed', '1');
-        }
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js');
-            });
-        }
-    </script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
+    }
+</script>
 </body>
 </html>
