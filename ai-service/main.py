@@ -104,34 +104,52 @@ async def extract_text(
         contents = await file.read()
         image = Image.open(io.BytesIO(contents))
 
+        print(f"[OCR] file={file.filename} size={len(contents)}b")
+
         try:
             client = vision.ImageAnnotatorClient()
             vision_image = vision.Image(content=contents)
             image_context = vision.ImageContext(language_hints=["en"])
 
+            # Primary: document_text_detection (best for handwriting / dense text)
             response = client.document_text_detection(
                 image=vision_image,
                 image_context=image_context,
             )
 
             if response.error.message:
-                raise Exception(response.error.message)
+                raise Exception(f"Vision API: {response.error.message}")
 
             text, confidence, words = extract_words_from_response(response)
+            print(f"[OCR] document_text_detection: '{text[:40]}' conf={confidence}%")
 
-            # Retry with broader language hints if confidence is low
-            if 0 < confidence < 60:
-                image_context_retry = vision.ImageContext(
-                    language_hints=["en", "fr", "de", "es"]
+            # If document_text_detection found nothing, try text_detection —
+            # better for sparse/single-word content like canvas drawings
+            if not text.strip():
+                print("[OCR] Empty result, retrying with text_detection...")
+                response2 = client.text_detection(
+                    image=vision_image,
+                    image_context=image_context,
                 )
+                if not response2.error.message and response2.text_annotations:
+                    text = response2.text_annotations[0].description
+                    # text_detection doesn't give word-level confidence
+                    confidence = None
+                    words = []
+                    print(f"[OCR] text_detection: '{text[:40]}'")
+
+            # Low-confidence retry with broader language hints (only when text found)
+            if text.strip() and confidence is not None and 0 < confidence < 60:
+                print(f"[OCR] conf={confidence}% < 60%, retrying with broader hints...")
                 response_retry = client.document_text_detection(
                     image=vision_image,
-                    image_context=image_context_retry,
+                    image_context=vision.ImageContext(language_hints=["en", "fr", "de", "es"]),
                 )
                 if not response_retry.error.message:
-                    text_retry, confidence_retry, words_retry = extract_words_from_response(response_retry)
-                    if confidence_retry > confidence:
-                        text, confidence, words = text_retry, confidence_retry, words_retry
+                    t2, c2, w2 = extract_words_from_response(response_retry)
+                    if c2 > confidence:
+                        text, confidence, words = t2, c2, w2
+                        print(f"[OCR] Retry improved conf to {c2}%")
 
             return {
                 "success": True,
@@ -142,10 +160,12 @@ async def extract_text(
                 "engine": "google_vision",
             }
 
-        except Exception:
+        except Exception as e:
+            print(f"[OCR] Vision API failed ({e}), falling back to Tesseract")
             processed = preprocess_image(image, image_type)
             config = get_tesseract_config(image_type)
             text = pytesseract.image_to_string(processed, lang=lang, config=config)
+            print(f"[OCR] Tesseract: '{text[:40]}'")
 
             return {
                 "success": True,
@@ -157,5 +177,5 @@ async def extract_text(
             }
 
     except Exception as e:
-        print(f"Error: {str(e)}")
+        print(f"[OCR] Critical error: {str(e)}")
         raise HTTPException(status_code=500, detail="OCR processing failed")
