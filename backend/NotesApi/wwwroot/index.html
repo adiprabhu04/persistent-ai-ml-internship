@@ -1188,6 +1188,55 @@
             outline: none;
         }
 
+        .scan-confidence-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .scan-confidence-badge {
+            font-weight: 700;
+            font-size: 14px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: var(--surface-secondary);
+        }
+
+        .scan-low-conf-panel {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+
+        .scan-low-conf-panel p {
+            color: var(--text-secondary);
+            margin: 0 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .low-conf-word {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.18);
+            color: #92400e;
+            border-radius: 4px;
+            padding: 1px 5px;
+            margin: 2px 3px 2px 0;
+            cursor: help;
+            font-size: 12px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .low-conf-word { color: #fcd34d; background: rgba(245, 158, 11, 0.22); }
+        }
+
         .scan-actions {
             display: flex;
             gap: 8px;
@@ -1839,7 +1888,16 @@
 
             <div id="scan-step-preview" class="hidden">
                 <div class="scan-preview-label">Extracted Text</div>
+                <div id="scan-confidence" class="scan-confidence-bar hidden">
+                    <i class="fa-solid fa-chart-simple" style="color: var(--accent);"></i>
+                    Confidence:
+                    <span id="scan-confidence-score" class="scan-confidence-badge"></span>
+                </div>
                 <textarea id="scan-preview-text" class="scan-preview-text" placeholder="No text was extracted..." aria-label="Extracted text — editable before saving"></textarea>
+                <div id="scan-low-conf-panel" class="scan-low-conf-panel hidden">
+                    <p><i class="fa-solid fa-triangle-exclamation" style="color: #f59e0b;"></i> Words to review (low confidence):</p>
+                    <div id="scan-word-list"></div>
+                </div>
                 <p style="font-size: 12px; color: var(--text-tertiary); margin: 10px 0 14px; display: flex; align-items: center; gap: 6px;">
                     <i class="fa-solid fa-pen-to-square" style="color: var(--accent); flex-shrink: 0;"></i>
                     Review and edit the extracted text before saving.
@@ -2539,6 +2597,7 @@
                     return;
                 }
                 document.getElementById('scan-preview-text').value = data.text || '';
+                showConfidenceInfo(data.confidence, data.words);
                 switchScanStep('preview');
             } catch (err) {
                 showScanError('Connection lost', 'Please check your internet connection and try again.');
@@ -2549,6 +2608,35 @@
             document.getElementById('scan-error-title').textContent = title;
             document.getElementById('scan-error-detail').textContent = detail;
             switchScanStep('error');
+        }
+
+        function showConfidenceInfo(confidence, words) {
+            const confBar = document.getElementById('scan-confidence');
+            const scoreEl = document.getElementById('scan-confidence-score');
+            const lowPanel = document.getElementById('scan-low-conf-panel');
+            const wordList = document.getElementById('scan-word-list');
+
+            if (confidence == null || confidence <= 0) {
+                confBar.classList.add('hidden');
+                lowPanel.classList.add('hidden');
+                return;
+            }
+
+            confBar.classList.remove('hidden');
+            const pct = Math.round(confidence);
+            const color = pct >= 80 ? '#16a34a' : pct >= 60 ? '#d97706' : '#dc2626';
+            scoreEl.textContent = pct + '%';
+            scoreEl.style.color = color;
+
+            const lowWords = (words || []).filter(w => w.confidence < 70 && w.text.trim());
+            if (lowWords.length > 0) {
+                lowPanel.classList.remove('hidden');
+                wordList.innerHTML = lowWords.map(w =>
+                    `<span class="low-conf-word" title="Review this word (${Math.round(w.confidence)}% confidence)">${w.text}</span>`
+                ).join('');
+            } else {
+                lowPanel.classList.add('hidden');
+            }
         }
 
         async function scanSaveAsNote() {

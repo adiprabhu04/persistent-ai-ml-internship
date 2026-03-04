@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from google.cloud import vision
 import pytesseract
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageOps
 import io
 
 app = FastAPI(title="Notely OCR Service")
@@ -35,13 +35,20 @@ def preprocess_image(image: Image.Image, image_type: str = "auto") -> Image.Imag
 
     image = image.convert("L")
 
-    enhancer = ImageEnhance.Contrast(image)
-    image = enhancer.enhance(1.2)
+    # Upscale small images for better OCR accuracy
+    w, h = image.size
+    if min(w, h) < 1000:
+        scale = 1000 / min(w, h)
+        image = image.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
 
-    low, high = image.getextrema()
-    if high - low < 100:
-        mid = (low + high) // 2
-        image = image.point(lambda p: 255 if p > mid else 0)
+    # Add padding to help with edge text detection
+    image = ImageOps.expand(image, border=10, fill=255)
+
+    # Adaptive contrast instead of aggressive binary thresholding
+    image = ImageOps.autocontrast(image, cutoff=2)
+
+    enhancer = ImageEnhance.Contrast(image)
+    image = enhancer.enhance(1.3)
 
     return image
 
@@ -49,6 +56,32 @@ def preprocess_image(image: Image.Image, image_type: str = "auto") -> Image.Imag
 def get_tesseract_config(image_type: str = "auto") -> str:
     psm = PSM_MODES.get(image_type, PSM_MODES["auto"])
     return f"--oem 3 --psm {psm}"
+
+
+def extract_words_from_response(response) -> tuple:
+    """Extract text, overall confidence and per-word confidence from Vision response."""
+    full_text = response.full_text_annotation.text
+
+    words_data = []
+    total_confidence = 0.0
+    word_count = 0
+
+    for page in response.full_text_annotation.pages:
+        for block in page.blocks:
+            for paragraph in block.paragraphs:
+                for word in paragraph.words:
+                    word_text = "".join([symbol.text for symbol in word.symbols])
+                    confidence = word.confidence
+                    words_data.append({
+                        "text": word_text,
+                        "confidence": round(confidence * 100, 1),
+                    })
+                    total_confidence += confidence
+                    word_count += 1
+
+    overall_confidence = round((total_confidence / word_count * 100) if word_count > 0 else 0.0, 1)
+
+    return full_text, overall_confidence, words_data
 
 
 @app.get("/")
@@ -74,20 +107,54 @@ async def extract_text(
         try:
             client = vision.ImageAnnotatorClient()
             vision_image = vision.Image(content=contents)
-            response = client.document_text_detection(image=vision_image)
+            image_context = vision.ImageContext(language_hints=["en"])
+
+            response = client.document_text_detection(
+                image=vision_image,
+                image_context=image_context,
+            )
+
             if response.error.message:
                 raise Exception(response.error.message)
-            text = response.full_text_annotation.text
+
+            text, confidence, words = extract_words_from_response(response)
+
+            # Retry with broader language hints if confidence is low
+            if 0 < confidence < 60:
+                image_context_retry = vision.ImageContext(
+                    language_hints=["en", "fr", "de", "es"]
+                )
+                response_retry = client.document_text_detection(
+                    image=vision_image,
+                    image_context=image_context_retry,
+                )
+                if not response_retry.error.message:
+                    text_retry, confidence_retry, words_retry = extract_words_from_response(response_retry)
+                    if confidence_retry > confidence:
+                        text, confidence, words = text_retry, confidence_retry, words_retry
+
+            return {
+                "success": True,
+                "filename": file.filename,
+                "text": text.strip(),
+                "confidence": confidence,
+                "words": words,
+                "engine": "google_vision",
+            }
+
         except Exception:
             processed = preprocess_image(image, image_type)
             config = get_tesseract_config(image_type)
             text = pytesseract.image_to_string(processed, lang=lang, config=config)
 
-        return {
-            "success": True,
-            "filename": file.filename,
-            "text": text.strip(),
-        }
+            return {
+                "success": True,
+                "filename": file.filename,
+                "text": text.strip(),
+                "confidence": None,
+                "words": [],
+                "engine": "tesseract",
+            }
 
     except Exception as e:
         print(f"Error: {str(e)}")
