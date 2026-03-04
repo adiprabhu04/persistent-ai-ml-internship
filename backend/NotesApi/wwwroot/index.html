@@ -2616,9 +2616,13 @@
             const lowPanel = document.getElementById('scan-low-conf-panel');
             const wordList = document.getElementById('scan-word-list');
 
-            if (confidence == null || confidence <= 0) {
+            // Reset state on every call
+            wordList.innerHTML = '';
+            lowPanel.classList.add('hidden');
+
+            // null means no confidence data (Tesseract fallback); hide the bar
+            if (confidence === null || confidence === undefined) {
                 confBar.classList.add('hidden');
-                lowPanel.classList.add('hidden');
                 return;
             }
 
@@ -2634,8 +2638,6 @@
                 wordList.innerHTML = lowWords.map(w =>
                     `<span class="low-conf-word" title="Review this word (${Math.round(w.confidence)}% confidence)">${w.text}</span>`
                 ).join('');
-            } else {
-                lowPanel.classList.add('hidden');
             }
         }
 
