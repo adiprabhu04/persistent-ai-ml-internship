@@ -337,29 +337,12 @@ app.MapPost("/notes/scan", async (
 
             var jsonString = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(jsonString);
-            var root = doc.RootElement;
 
             string extractedText = "";
-            if (root.TryGetProperty("text", out var textElement))
+            if (doc.RootElement.TryGetProperty("text", out var textElement))
                 extractedText = textElement.GetString() ?? "";
 
-            double? confidence = null;
-            if (root.TryGetProperty("confidence", out var confElement) && confElement.ValueKind == JsonValueKind.Number)
-                confidence = confElement.GetDouble();
-
-            var words = new List<object>();
-            if (root.TryGetProperty("words", out var wordsElement) && wordsElement.ValueKind == JsonValueKind.Array)
-            {
-                foreach (var word in wordsElement.EnumerateArray())
-                {
-                    string wText = word.TryGetProperty("text", out var wt) ? wt.GetString() ?? "" : "";
-                    double wConf = word.TryGetProperty("confidence", out var wc) && wc.ValueKind == JsonValueKind.Number
-                        ? wc.GetDouble() : 0;
-                    words.Add(new { text = wText, confidence = wConf });
-                }
-            }
-
-            return Results.Ok(new { text = extractedText, confidence, words });
+            return Results.Ok(new { text = extractedText });
         }
         catch (Exception)
         {
