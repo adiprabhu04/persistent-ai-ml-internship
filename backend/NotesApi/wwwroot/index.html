@@ -2055,7 +2055,7 @@
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
 
-    /* Easter egg */
+    
     const _kc = [38,38,40,40,37,39,37,39,66,65];
     let _kp = 0;
     document.addEventListener('keydown', e => {
@@ -2074,7 +2074,6 @@
         toast('🎉 You found the easter egg!', 'success');
     }
 
-    /* PWA */
     let installPromptEvent = null;
     window.addEventListener('beforeinstallprompt', e => {
         e.preventDefault();
@@ -2103,6 +2102,28 @@
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
     }
+    const startBtn = document.querySelector('.start-writing-btn');
+    if (startBtn) startBtn.addEventListener('click', () => openNoteModal());
+
+    const fabBtn = document.querySelector('.nav-fab');
+    if (fabBtn) fabBtn.addEventListener('click', () => openNoteModal());
+
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const action = this.getAttribute('data-action');
+            if (action === 'search') toggleSearch();
+            else if (action === 'home') filterNotes('all');
+            else if (action === 'scan') openScanModal();
+            else if (action === 'logout') logout();
+        });
+    });
+
+    document.querySelectorAll('.filter-pill').forEach(pill => {
+        pill.addEventListener('click', function() {
+            const category = this.getAttribute('data-category');
+            filterNotes(category);
+        });
+    });
 </script>
 </body>
 </html>
