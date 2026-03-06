@@ -498,10 +498,11 @@
             text-align: center;
             padding: 60px 24px 80px;
         }
-        .empty-state-emoji {
-            font-size: 52px;
-            display: block;
-            margin-bottom: 14px;
+        .empty-state-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
             animation: floatBob 3s ease-in-out infinite;
         }
         .empty-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; letter-spacing: -0.4px; }
@@ -850,7 +851,7 @@
         }
         .upload-area:hover { border-color: var(--accent); background: rgba(255,214,10,0.04); }
 
-        .upload-area-icon { font-size: 32px; margin-bottom: 10px; }
+        .upload-area-icon { display:flex; align-items:center; justify-content:center; margin-bottom: 10px; color: var(--text-tertiary); }
         .upload-area p   { font-size: 14px; color: var(--text-secondary); }
         .upload-area span { font-size: 12px; color: var(--text-tertiary); display: block; margin-top: 4px; }
 
@@ -876,7 +877,7 @@
             vertical-align: middle;
         }
 
-        .scan-error-icon { font-size: 36px; text-align: center; margin-bottom: 8px; }
+        .scan-error-icon { display:flex; align-items:center; justify-content:center; margin-bottom: 8px; color: var(--error); }
 
         .scan-preview-label { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
 
@@ -1050,7 +1051,7 @@
 <div id="auth-page" class="page active">
     <div class="auth-card">
         <div class="auth-logo">
-            <div class="auth-logo-icon">✍️</div>
+            <div class="auth-logo-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></div>
             <h1>Notely</h1>
             <p>Capture every thought, beautifully.</p>
         </div>
@@ -1171,7 +1172,7 @@
     <div class="note-sheet">
         <div class="drag-handle" aria-hidden="true"></div>
         <div class="sheet-header">
-            <span id="modal-title-label" class="sheet-title">New Thought 💭</span>
+            <span id="modal-title-label" class="sheet-title">New Note</span>
             <button onclick="closeModal()" class="btn-close btn" aria-label="Close">
                 <i class="fa-solid fa-xmark"></i>
             </button>
@@ -1186,16 +1187,16 @@
         <div class="sheet-footer">
             <div class="sheet-footer-left">
                 <select id="note-category" class="category-select" aria-label="Category">
-                    <option value="general">📝 General</option>
-                    <option value="work">💼 Work</option>
-                    <option value="personal">🌿 Personal</option>
-                    <option value="ideas">💡 Ideas</option>
+                    <option value="general">General</option>
+                    <option value="work">Work</option>
+                    <option value="personal">Personal</option>
+                    <option value="ideas">Ideas</option>
                 </select>
                 <button onclick="openScanModal()" class="btn-scan-trigger btn" title="Scan handwriting" aria-label="Scan handwriting">
                     <i class="fa-solid fa-camera"></i>
                 </button>
             </div>
-            <button id="save-note-btn" onclick="saveNote()" class="btn-save btn">Save ✨</button>
+            <button id="save-note-btn" onclick="saveNote()" class="btn-save btn">Save</button>
         </div>
     </div>
 </div>
@@ -1204,7 +1205,7 @@
 <div id="scan-modal" class="modal-overlay" style="z-index:150;" role="dialog" aria-modal="true" aria-label="Scan handwriting">
     <div class="scan-modal-card">
         <div class="scan-modal-header">
-            <span class="scan-modal-title">Scan Your Writing ✍️</span>
+            <span class="scan-modal-title">Scan Your Writing</span>
             <button onclick="closeScanModal()" class="btn-close btn" aria-label="Close">
                 <i class="fa-solid fa-xmark"></i>
             </button>
@@ -1260,7 +1261,7 @@
             <div id="scan-tab-upload" class="hidden">
                 <div id="upload-drop-area" class="upload-area" onclick="document.getElementById('scan-file-input').click()"
                      role="button" tabindex="0" aria-label="Click to upload image">
-                    <div class="upload-area-icon">📷</div>
+                    <div class="upload-area-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
                     <p>Tap to choose an image</p>
                     <span>JPEG, PNG, WebP, GIF up to 10MB</span>
                 </div>
@@ -1292,7 +1293,7 @@
         <!-- Step: Error -->
         <div id="scan-step-error" class="hidden">
             <div style="text-align:center;padding:20px 0;">
-                <div class="scan-error-icon">😕</div>
+                <div class="scan-error-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
                 <p id="scan-error-title" style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;"></p>
                 <p id="scan-error-detail" style="font-size:13px;color:var(--text-secondary);margin-bottom:22px;line-height:1.6;max-width:300px;margin-left:auto;margin-right:auto;"></p>
                 <button onclick="switchScanStep('input')" class="btn-save btn">Try Again</button>
@@ -1324,7 +1325,7 @@
 <!-- ── CONFIRM MODAL ──────────────────────────────────────────── -->
 <div id="confirm-modal" class="modal-overlay" style="z-index:200;" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
     <div class="confirm-card">
-        <div style="font-size:36px;">💔</div>
+        <div style="color:var(--error);margin-bottom:4px;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div>
         <h3 id="confirm-title">Delete this note?</h3>
         <p>Once it's gone, it's gone forever. No take-backs!</p>
         <div class="confirm-btns">
@@ -1466,9 +1467,9 @@
                 showPage('dashboard-page');
                 updateUI();
                 fetchNotes();
-                toast('Welcome back! 👋', 'success');
+                toast('Welcome back!', 'success');
             } else {
-                toast('Hmm, that didn\'t work. Double-check your details. 🤔', 'error');
+                toast('Hmm, that didn\'t work. Double-check your details.', 'error');
             }
         } catch (err) {
             setButtonLoading(btn, false);
@@ -1503,7 +1504,7 @@
             const data = await res.json().catch(() => null);
             setButtonLoading(btn, false);
             if (res.ok) {
-                toast('You\'re all set! 🚀 Go ahead and sign in.', 'success');
+                toast('You\'re all set! Go ahead and sign in.', 'success');
                 toggleAuth('login');
             } else {
                 errEl.textContent = (data && data.error) ? data.error : 'Registration failed. Please try again.';
@@ -1549,8 +1550,8 @@
         } else {
             grid.innerHTML = `
                 <div class="empty-state">
-                    <span class="empty-state-emoji">😵</span>
-                    <div class="empty-title">Oops! Something went wrong</div>
+                    <div class="empty-state-icon"><svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+                    <div class="empty-title">Something went wrong</div>
                     <p class="empty-desc">We couldn't load your notes. Check your connection and give it another shot!</p>
                     <button onclick="fetchNotes()" class="btn-cta btn">
                         <i class="fa-solid fa-rotate-right"></i> Try Again
@@ -1608,28 +1609,32 @@
             if (isFirstVisit) {
                 grid.innerHTML = `
                     <div class="empty-state">
-                        <span class="empty-state-emoji">📝</span>
-                        <div class="empty-title">Welcome to Notely! 🎉</div>
+                        <div class="empty-state-icon"><svg width="90" height="90" viewBox="0 0 100 100" fill="none"><rect x="18" y="12" width="52" height="66" rx="4" stroke="#FFD60A" stroke-width="2.5"/><line x1="28" y1="28" x2="62" y2="28" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="40" x2="62" y2="40" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="52" x2="48" y2="52" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="58" y1="62" x2="72" y2="76" stroke="#FFD60A" stroke-width="3" stroke-linecap="round"/><circle cx="74" cy="78" r="3" fill="#FFD60A"/></svg></div>
+                        <div class="empty-title">Welcome to Notely!</div>
                         <p class="empty-desc">Your canvas is blank. Jot down ideas, scan handwritten notes, or just capture what's on your mind.</p>
-                        <button onclick="openModal()" class="btn-cta btn">Start Writing ✍️</button>
+                        <button onclick="openModal()" class="btn-cta btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Start Writing</button>
                     </div>`;
             } else if (state.category !== 'all') {
-                const catEmojis = { personal: '🌿', work: '💼', ideas: '💡' };
-                const catEmoji = catEmojis[state.category] || '📂';
+                const catIcons = {
+                    personal: '<svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+                    work: '<svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>',
+                    ideas: '<svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><path d="M12 6a6 6 0 0 1 6 6c0 2.5-1.5 4.5-3 5.5V20a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-2.5C7.5 16.5 6 14.5 6 12a6 6 0 0 1 6-6z"/><line x1="10" y1="21" x2="14" y2="21"/></svg>'
+                };
+                const catIcon = catIcons[state.category] || '<svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#6B6B6B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
                 grid.innerHTML = `
                     <div class="empty-state">
-                        <span class="empty-state-emoji">${catEmoji}</span>
-                        <div class="empty-title">Nothing here… yet! 🌱</div>
+                        <div class="empty-state-icon">${catIcon}</div>
+                        <div class="empty-title">Nothing here yet</div>
                         <p class="empty-desc">Add a note tagged with <strong>#${state.category}</strong> and it'll appear here.</p>
-                        <button onclick="openModal()" class="btn-cta btn">New Thought 💭</button>
+                        <button onclick="openModal()" class="btn-cta btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> New Note</button>
                     </div>`;
             } else {
                 grid.innerHTML = `
                     <div class="empty-state">
-                        <span class="empty-state-emoji">✨</span>
+                        <div class="empty-state-icon"><svg width="90" height="90" viewBox="0 0 100 100" fill="none"><rect x="18" y="12" width="52" height="66" rx="4" stroke="#FFD60A" stroke-width="2.5"/><line x1="28" y1="28" x2="62" y2="28" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="40" x2="62" y2="40" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="52" x2="48" y2="52" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="58" y1="62" x2="72" y2="76" stroke="#FFD60A" stroke-width="3" stroke-linecap="round"/><circle cx="74" cy="78" r="3" fill="#FFD60A"/></svg></div>
                         <div class="empty-title">Ready when you are!</div>
                         <p class="empty-desc">No notes yet — every great idea starts somewhere. What's on your mind?</p>
-                        <button onclick="openModal()" class="btn-cta btn">Start Writing ✍️</button>
+                        <button onclick="openModal()" class="btn-cta btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Start Writing</button>
                     </div>`;
             }
             return;
@@ -1645,7 +1650,7 @@
             if ((note.content || '').includes('#work'))     { tag = 'Work';     tagClass = 'tag-work'; }
             else if ((note.content || '').includes('#personal')) { tag = 'Personal'; tagClass = 'tag-personal'; }
             else if ((note.content || '').includes('#idea'))     { tag = 'Ideas';    tagClass = 'tag-ideas'; }
-            else if ((note.title || '').startsWith('✍️'))         { tag = 'Scanned';  tagClass = 'tag-scanned'; }
+            else if ((note.title || '').startsWith('Scanned'))     { tag = 'Scanned';  tagClass = 'tag-scanned'; }
 
             const dateStr = relativeTime(note.updatedAt);
 
@@ -1715,8 +1720,8 @@
             msg.setAttribute('data-search-empty', '1');
             msg.className = 'empty-state';
             msg.innerHTML = `
-                <span class="empty-state-emoji">🔮</span>
-                <div class="empty-title">Nothing here...</div>
+                <div class="empty-state-icon"><svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#6B6B6B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+                <div class="empty-title">No results found</div>
                 <p class="empty-desc">Couldn't find anything for &ldquo;${esc(q)}&rdquo;. Try a different search?</p>`;
             grid.appendChild(msg);
         }
@@ -1737,7 +1742,7 @@
 
     function openModal(note = null) {
         state.editingId = note ? note.id : null;
-        document.getElementById('modal-title-label').textContent = note ? 'Edit Note ✏️' : 'New Thought 💭';
+        document.getElementById('modal-title-label').textContent = note ? 'Edit Note' : 'New Note';
         document.getElementById('note-title').value = note ? note.title : '';
         document.getElementById('note-content').value = note ? note.content : '';
 
@@ -1750,7 +1755,7 @@
         }
 
         const saveBtn = document.getElementById('save-note-btn');
-        saveBtn.innerHTML = 'Save ✨';
+        saveBtn.innerHTML = 'Save';
         saveBtn.disabled = false;
 
         document.getElementById('note-modal').classList.add('open');
@@ -1767,7 +1772,7 @@
         const cat     = document.getElementById('note-category').value;
         const saveBtn = document.getElementById('save-note-btn');
 
-        if (!title) { toast('Don\'t forget a title! 📌', 'warning'); return; }
+        if (!title) { toast('Don\'t forget a title!', 'warning'); return; }
         if (cat !== 'general' && !content.includes('#' + cat)) content += `\n\n#${cat}`;
 
         const method = state.editingId ? 'PUT' : 'POST';
@@ -1780,9 +1785,9 @@
         if (res) {
             closeModal();
             fetchNotes();
-            toast('Saved! ✨', 'success');
+            toast('Saved!', 'success');
         } else {
-            toast('Oops! Couldn\'t save that. Try again? 😅', 'error');
+            toast('Oops! Couldn\'t save that. Try again?', 'error');
         }
     }
 
@@ -1796,7 +1801,7 @@
             }
             await api(`/notes/${id}`, 'DELETE');
             fetchNotes();
-            toast('Gone forever 💨', 'success');
+            toast('Note deleted', 'success');
         });
     }
 
@@ -1996,16 +2001,16 @@
 
     async function scanSaveAsNote() {
         const extractedText = document.getElementById('scan-preview-text').value;
-        if (!extractedText.trim()) { toast('Nothing to save yet — edit the text above! 👆', 'warning'); return; }
-        const title = '✍️ Scanned — ' + new Date().toLocaleDateString();
+        if (!extractedText.trim()) { toast('Nothing to save yet — edit the text above!', 'warning'); return; }
+        const title = 'Scanned — ' + new Date().toLocaleDateString();
         const result = await api('/notes', 'POST', { title, content: extractedText });
         if (result) {
             closeScanModal();
             closeModal();
             fetchNotes();
-            toast('Scanned & saved! 📝', 'success');
+            toast('Scanned & saved!', 'success');
         } else {
-            toast('Oops! Couldn\'t save the scan. Try again? 😅', 'error');
+            toast('Oops! Couldn\'t save the scan. Try again?', 'error');
         }
     }
 
@@ -2071,7 +2076,7 @@
             document.body.appendChild(c);
             setTimeout(() => c.remove(), 3200);
         }
-        toast('🎉 You found the easter egg!', 'success');
+        toast('You found the easter egg!', 'success');
     }
 
     let installPromptEvent = null;
