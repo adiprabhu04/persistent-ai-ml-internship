@@ -135,6 +135,13 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Apply migrations automatically
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<NotesDbContext>();
+    db.Database.Migrate();
+}
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -361,6 +368,22 @@ app.MapPost("/notes/scan", async (
 })
 .RequireAuthorization()
 .DisableAntiforgery();
+
+app.MapPatch("/notes/{id}/pin", async (Guid id, NotesDbContext db, HttpContext context) =>
+{
+    var userId = AuthHelpers.GetUserId(context);
+    if (userId == null) return Results.Unauthorized();
+
+    var note = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.UserId == Guid.Parse(userId));
+    if (note == null) return Results.NotFound();
+
+    note.IsPinned = !note.IsPinned;
+    note.UpdatedAt = DateTime.UtcNow;
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new { id = note.Id, isPinned = note.IsPinned });
+})
+.RequireAuthorization();
 
 app.MapPost("/auth/register", async (RegisterRequest request, NotesDbContext db) =>
 {

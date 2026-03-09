@@ -17,47 +17,47 @@
     <style>
         /* ── DESIGN TOKENS ───────────────────────────────────── */
         :root {
-            --bg: #F5F3EF;
-            --surface: #FFFFFF;
-            --surface-secondary: #F0EDE8;
-            --border: #E8E5DE;
-            --border-subtle: rgba(0,0,0,0.06);
-            --text: #1A1A1A;
-            --text-secondary: #6B6B6B;
-            --text-tertiary: #9E9E9E;
+            /* Dark mode (default) */
+            --bg: #0F0F0F;
+            --surface: #1A1A1A;
+            --surface-secondary: #242424;
+            --border: #2A2A2A;
+            --border-subtle: rgba(255,255,255,0.06);
+            --text: #FFFFFF;
+            --text-secondary: #9CA3AF;
+            --text-tertiary: #6E6E73;
             --accent: #FFD60A;
             --accent-hover: #FFC107;
-            --accent-dark: #1A1A1A;
+            --accent-dark: #000000;
             --success: #22C55E;
             --warning: #F59E0B;
             --error: #EF4444;
             --info: #3B82F6;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
-            --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
-            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+            --shadow-md: 0 2px 8px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
             --shadow-fab: 0 4px 16px rgba(255,214,10,0.45);
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
             --radius-xl: 20px;
             --nav-h: 70px;
-            --header-h: 60px;
+            --header-h: 70px;
         }
 
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: #1C1C1E;
-                --surface: #2C2C2E;
-                --surface-secondary: #3A3A3C;
-                --border: #3A3A3C;
-                --border-subtle: rgba(255,255,255,0.06);
-                --text: #F5F5F7;
-                --text-secondary: #AEAEB2;
-                --text-tertiary: #6E6E73;
-                --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
-                --shadow-md: 0 2px 8px rgba(0,0,0,0.4);
-                --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
-            }
+        [data-theme="light"] {
+            --bg: #FFFFFF;
+            --surface: #F9FAFB;
+            --surface-secondary: #F3F4F6;
+            --border: #E5E7EB;
+            --border-subtle: rgba(0,0,0,0.06);
+            --text: #111827;
+            --text-secondary: #6B7280;
+            --text-tertiary: #9CA3AF;
+            --accent-dark: #1A1A1A;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
         }
 
         /* ── RESET ───────────────────────────────────────────── */
@@ -205,14 +205,58 @@
         /* ── APP HEADER ──────────────────────────────────────── */
         .app-header {
             flex-shrink: 0;
-            height: var(--header-h);
+            min-height: var(--header-h);
             display: flex;
             align-items: center;
-            padding: 0 16px;
+            justify-content: space-between;
+            padding: 12px 16px;
             background: var(--bg);
-            gap: 12px;
-            padding-top: env(safe-area-inset-top);
+            padding-top: calc(12px + env(safe-area-inset-top));
         }
+
+        .header-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .app-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.5px;
+        }
+
+        .note-count {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text);
+        }
+        .theme-toggle:hover { background: var(--surface-secondary); transform: scale(1.05); }
+
+        .theme-icon-sun { display: none; }
+        .theme-icon-moon { display: block; }
+        [data-theme="light"] .theme-icon-sun { display: block; }
+        [data-theme="light"] .theme-icon-moon { display: none; }
 
         .btn-header-icon {
             width: 38px;
@@ -224,15 +268,6 @@
         }
         .btn-header-icon:hover { background: var(--surface-secondary); color: var(--text); }
         .btn-header-icon:active { transform: scale(0.9); }
-
-        .app-title {
-            flex: 1;
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: -0.5px;
-            text-align: center;
-        }
 
         .header-avatar {
             width: 38px;
@@ -458,98 +493,119 @@
 
         /* ── NOTE CARDS ──────────────────────────────────────── */
         .note-card {
+            position: relative;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             padding: 16px;
+            padding-top: 20px;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             gap: 8px;
             box-shadow: var(--shadow-sm);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s;
             animation: cardIn 0.25s ease both;
+            overflow: hidden;
         }
-        .note-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .note-card:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(255,214,10,0.4);
+        }
         .note-card:active { transform: scale(0.98); }
 
-        .note-card-top {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
+        /* Colored top accent stripe */
+        .note-card-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         }
 
-        .note-title {
-            flex: 1;
+        /* Pin icon (top-right) */
+        .note-card-pin {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: var(--accent);
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            border-radius: 4px;
+            transition: transform 0.2s, background 0.15s;
+        }
+        .note-card-pin:hover { transform: scale(1.2); background: rgba(255,214,10,0.1); }
+        .note-card-pin-empty { color: var(--text-tertiary); opacity: 0; }
+        .note-card:hover .note-card-pin-empty { opacity: 1; }
+
+        /* Card content */
+        .note-card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 28px;
+        }
+
+        .note-card-title {
             font-size: 16px;
             font-weight: 600;
             color: var(--text);
             line-height: 1.35;
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
             overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             letter-spacing: -0.2px;
         }
 
-        .btn-delete-note {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            color: var(--text-tertiary);
-            font-size: 13px;
-            flex-shrink: 0;
-            margin-top: -2px;
-            transition: all 0.15s;
-        }
-        .btn-delete-note:hover { background: rgba(239,68,68,0.1); color: var(--error); }
-
-        .note-body {
+        .note-card-preview {
             font-size: 14px;
             color: var(--text-secondary);
             line-height: 1.55;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            flex: 1;
         }
 
-        .note-card-meta {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 4px;
-        }
-
-        .note-date {
+        .note-card-date {
             font-size: 12px;
             color: var(--text-tertiary);
+            padding-top: 2px;
+        }
+
+        /* Delete button (shows on hover) */
+        .note-card-delete {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity 0.2s, background 0.15s, color 0.15s;
+            z-index: 10;
             display: flex;
             align-items: center;
-            gap: 4px;
+            justify-content: center;
         }
+        .note-card:hover .note-card-delete { opacity: 1; }
+        .note-card-delete:hover { background: rgba(239,68,68,0.12); color: var(--error); }
 
-        /* Tags */
-        .note-tag {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 3px 9px;
-            border-radius: 50px;
-            letter-spacing: 0.2px;
-        }
-        .tag-work     { background: rgba(59,130,246,0.1);  color: #2563EB; }
-        .tag-personal { background: rgba(16,185,129,0.1);  color: #059669; }
-        .tag-ideas    { background: rgba(245,158,11,0.12); color: #D97706; }
-        .tag-scanned  { background: rgba(236,72,153,0.1);  color: #DB2777; }
-        .tag-general  { background: var(--surface-secondary); color: var(--text-secondary); }
-
-        @media (prefers-color-scheme: dark) {
-            .tag-work     { color: #60A5FA; }
-            .tag-personal { color: #34D399; }
-            .tag-ideas    { color: #FBBF24; }
-            .tag-scanned  { color: #F472B6; }
-        }
+        /* Legacy support */
+        .note-title { font-size: 16px; font-weight: 600; color: var(--text); }
+        .note-body { font-size: 14px; color: var(--text-secondary); line-height: 1.55; }
+        .note-date { font-size: 12px; color: var(--text-tertiary); }
+        .btn-delete-note { display: none; }
 
         /* Deleting animation */
         @keyframes cardSwoop {
@@ -632,8 +688,8 @@
         }
         .nav-item i { font-size: 20px; transition: transform 0.15s; }
         .nav-item:active i { transform: scale(0.85); }
-        .nav-item.active { color: var(--text); }
-        .nav-item.active i { color: var(--text); }
+        .nav-item.active { color: var(--accent); }
+        .nav-item.active i { color: var(--accent); }
 
         .nav-fab {
             width: 56px;
@@ -1183,11 +1239,23 @@
 
     <!-- Header -->
     <header class="app-header">
-        <button class="btn-header-icon btn" onclick="toggleSearch()" aria-label="Search">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
-        <h1 id="view-title" class="app-title">Your Notes</h1>
-        <div class="avatar-wrap">
+        <div class="header-title-group">
+            <h1 id="view-title" class="app-title">Notes</h1>
+            <span class="note-count" id="note-count-display"></span>
+        </div>
+        <div class="header-actions">
+            <button class="theme-toggle btn" onclick="toggleTheme()" aria-label="Toggle theme">
+                <svg class="theme-icon theme-icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+            <div class="avatar-wrap">
             <div class="header-avatar" onclick="toggleUserMenu()" title="Account" aria-label="Open account menu" role="button" tabindex="0">
                 <span id="avatar-txt">U</span>
             </div>
@@ -1222,6 +1290,7 @@
                     <span>Logout</span>
                 </button>
             </div>
+        </div>
         </div>
     </header>
 
@@ -1262,24 +1331,34 @@
 
     <!-- Bottom navigation -->
     <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
-        <button class="nav-item btn" onclick="toggleSearch()" aria-label="Search">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <span>Search</span>
-        </button>
-        <button class="nav-item btn" onclick="filterCat('all', document.querySelector('.filter-tab[data-cat=all]'))" aria-label="All notes">
-            <i class="fa-solid fa-house"></i>
+        <button class="nav-item btn active" id="nav-home" onclick="navTo('home')" aria-label="Home">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
             <span>Home</span>
         </button>
+        <button class="nav-item btn" id="nav-categories" onclick="navTo('categories')" aria-label="Categories">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span>Categories</span>
+        </button>
         <button class="nav-fab btn" onclick="openModal()" aria-label="New note">
-            <i class="fa-solid fa-plus"></i>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
         </button>
-        <button class="nav-item btn" onclick="openScanModal()" aria-label="Scan handwriting">
-            <i class="fa-solid fa-camera"></i>
-            <span>Scan</span>
+        <button class="nav-item btn" id="nav-search" onclick="navTo('search')" aria-label="Search">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <span>Search</span>
         </button>
-        <button class="nav-item btn" onclick="openFilterMenu()" aria-label="Filter notes">
-            <i class="fa-solid fa-sliders"></i>
-            <span>Filter</span>
+        <button class="nav-item btn" id="nav-settings" onclick="navTo('settings')" aria-label="Settings">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            <span>Settings</span>
         </button>
     </nav>
 </div>
@@ -1469,6 +1548,72 @@
 
 <script>
     const API_URL = "";
+
+    // Apply saved theme immediately
+    (function() {
+        const saved = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const current = html.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        toast(next === 'light' ? 'Light mode' : 'Dark mode', 'info');
+    }
+
+    function getCategoryColor(note) {
+        const content = (note.content || '').toLowerCase();
+        const title = (note.title || '').toLowerCase();
+        if (content.includes('#work')) return '#FFD60A';
+        if (content.includes('#personal')) return '#06B6D4';
+        if (content.includes('#idea')) return '#A855F7';
+        if (title.startsWith('scanned')) return '#EF4444';
+        return '#9CA3AF';
+    }
+
+    async function togglePin(noteId) {
+        try {
+            const res = await fetch(API_URL + `/notes/${noteId}/pin`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${state.token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                const note = state.notes.find(n => n.id === noteId);
+                if (note) note.isPinned = data.isPinned;
+                renderNotes();
+                toast(data.isPinned ? 'Pinned' : 'Unpinned', 'success');
+            }
+        } catch (e) {
+            toast('Could not update pin', 'error');
+        }
+    }
+
+    function updateNoteCount(total) {
+        const el = document.getElementById('note-count-display');
+        if (el) el.textContent = `${total} note${total !== 1 ? 's' : ''}`;
+    }
+
+    function navTo(action) {
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        if (action === 'home') {
+            document.getElementById('nav-home').classList.add('active');
+            filterCat('all', document.querySelector('.filter-tab[data-cat=all]'));
+        } else if (action === 'categories') {
+            document.getElementById('nav-categories').classList.add('active');
+            openFilterMenu();
+        } else if (action === 'search') {
+            document.getElementById('nav-search').classList.add('active');
+            toggleSearch();
+        } else if (action === 'settings') {
+            document.getElementById('nav-settings').classList.add('active');
+            toggleUserMenu();
+        }
+    }
+
     let state = {
         token: localStorage.getItem('token'),
         name: localStorage.getItem('name'),
@@ -1703,6 +1848,7 @@
         const res = await api('/notes?page=1&pageSize=100');
         if (res) {
             state.notes = res.data || [];
+            updateNoteCount(state.notes.length);
             renderNotes();
         } else {
             grid.innerHTML = `
@@ -1797,35 +1943,50 @@
             return;
         }
 
+        // Sort: pinned first, then by updated date
+        filtered.sort((a, b) => {
+            if (a.isPinned && !b.isPinned) return -1;
+            if (!a.isPinned && b.isPinned) return 1;
+            return new Date(b.updatedAt) - new Date(a.updatedAt);
+        });
+
+        updateNoteCount(state.notes.length);
+
         filtered.forEach((note, i) => {
             const el = document.createElement('div');
             el.className = 'note-card';
             el.setAttribute('role', 'listitem');
             el.style.animationDelay = `${i * 0.04}s`;
 
-            let tag = 'Note', tagClass = 'tag-general';
-            if ((note.content || '').includes('#work'))     { tag = 'Work';     tagClass = 'tag-work'; }
-            else if ((note.content || '').includes('#personal')) { tag = 'Personal'; tagClass = 'tag-personal'; }
-            else if ((note.content || '').includes('#idea'))     { tag = 'Ideas';    tagClass = 'tag-ideas'; }
-            else if ((note.title || '').startsWith('Scanned'))     { tag = 'Scanned';  tagClass = 'tag-scanned'; }
-
+            const accentColor = getCategoryColor(note);
+            const preview = (note.content || '').replace(/#\w+/g, '').trim();
+            const previewText = preview.length > 100 ? preview.substring(0, 100) + '…' : preview;
             const dateStr = relativeTime(note.updatedAt);
+            const isPinned = note.isPinned || false;
 
             el.innerHTML = `
-                <div class="note-card-top">
-                    <h3 class="note-title">${esc(note.title)}</h3>
-                    <button onclick="deleteNote(event, '${note.id}')" class="btn-delete-note btn" aria-label="Delete: ${esc(note.title)}">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
+                <div class="note-card-accent" style="background-color:${accentColor}"></div>
+                <div class="note-card-pin ${isPinned ? '' : 'note-card-pin-empty'}"
+                     onclick="event.stopPropagation();togglePin('${note.id}')"
+                     title="${isPinned ? 'Unpin' : 'Pin note'}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="${isPinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                        <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/>
+                    </svg>
                 </div>
-                <p class="note-body">${esc(note.content)}</p>
-                <div class="note-card-meta">
-                    <span class="note-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> ${dateStr}</span>
-                    <span class="note-tag ${tagClass}">${tag}</span>
-                </div>`;
+                <div class="note-card-content">
+                    <h3 class="note-card-title">${esc(note.title)}</h3>
+                    <p class="note-card-preview">${esc(previewText)}</p>
+                    <p class="note-card-date">${dateStr}</p>
+                </div>
+                <button class="note-card-delete btn" onclick="deleteNote(event, '${note.id}')" aria-label="Delete note">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                        <path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                    </svg>
+                </button>`;
 
             el.onclick = (e) => {
-                if (!e.target.closest('button')) openModal(note);
+                if (!e.target.closest('button') && !e.target.closest('.note-card-pin')) openModal(note);
             };
             grid.appendChild(el);
         });
@@ -1842,7 +2003,7 @@
             btn.classList.add('active');
             btn.setAttribute('aria-selected', 'true');
         }
-        const titles = { all: 'Your Notes', personal: 'Personal', work: 'Work', ideas: 'Ideas' };
+        const titles = { all: 'Notes', personal: 'Personal', work: 'Work', ideas: 'Ideas' };
         document.getElementById('view-title').textContent = titles[cat] || 'Notes';
         clearSearch();
         renderNotes();
