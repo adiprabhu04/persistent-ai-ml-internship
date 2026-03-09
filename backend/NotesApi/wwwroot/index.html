@@ -2032,6 +2032,7 @@
         switchScanStep('loading');
         const formData = new FormData();
         formData.append('file', pendingUploadFile);
+        formData.append('source', 'upload');
         pendingUploadFile = null;
         processOcrRequest(formData);
     }
@@ -2117,6 +2118,7 @@
         drawingState.canvas.toBlob(function(blob) {
             const formData = new FormData();
             formData.append('file', blob, 'drawing.png');
+            formData.append('source', 'canvas');
             processOcrRequest(formData);
         }, 'image/png');
     }

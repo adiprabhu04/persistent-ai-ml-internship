@@ -301,9 +301,11 @@ app.MapPost("/notes/scan", async (
     if (!allowedTypes.Contains(file.ContentType.ToLower()))
         return Results.BadRequest(new { error = "Only image files are allowed" });
 
+    var source = context.Request.Form.TryGetValue("source", out var sourceVal) ? sourceVal.ToString() : "upload";
+
     var aiServiceBase = Environment.GetEnvironmentVariable("AI_SERVICE_URL")
         ?? "http://localhost:8000";
-    var aiServiceUrl = aiServiceBase.TrimEnd('/') + "/extract-text";
+    var aiServiceUrl = aiServiceBase.TrimEnd('/') + $"/extract-text?source={Uri.EscapeDataString(source)}";
 
     using var memoryStream = new MemoryStream();
     await file.OpenReadStream().CopyToAsync(memoryStream);
