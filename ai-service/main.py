@@ -1,8 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from google.cloud import vision
-from transformers import TrOCRProcessor, VisionEncoderDecoderModel
-import torch
 import pytesseract
 from PIL import Image, ImageEnhance
 import io
@@ -21,12 +19,6 @@ app.add_middleware(
 # Check if Google credentials are available
 GOOGLE_CREDENTIALS_PRESENT = bool(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
 
-# Load TrOCR model at startup (once)
-print("Loading TrOCR model...")
-trocr_processor = TrOCRProcessor.from_pretrained('microsoft/trocr-small-handwritten')
-trocr_model = VisionEncoderDecoderModel.from_pretrained('microsoft/trocr-small-handwritten')
-print("TrOCR model loaded successfully")
-
 PSM_MODES = {
     "auto": 3,
     "document": 6,
@@ -34,28 +26,6 @@ PSM_MODES = {
     "photo": 11,
     "sparse": 11,
 }
-
-
-def extract_text_with_trocr(image: Image.Image) -> dict:
-    """Extract text using Microsoft TrOCR (optimized for handwriting)."""
-    try:
-        if image.mode != 'RGB':
-            image = image.convert('RGB')
-
-        pixel_values = trocr_processor(images=image, return_tensors="pt").pixel_values
-        generated_ids = trocr_model.generate(pixel_values)
-        text = trocr_processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-
-        confidence = 0.85 if len(text.strip()) > 0 else 0.0
-
-        return {
-            "text": text.strip(),
-            "confidence": confidence,
-            "engine": "trocr"
-        }
-    except Exception as e:
-        print(f"TrOCR error: {str(e)}")
-        return None
 
 
 def preprocess_image(image: Image.Image, image_type: str = "auto") -> Image.Image:
@@ -82,7 +52,7 @@ def get_tesseract_config(image_type: str = "auto") -> str:
 
 @app.get("/")
 def health_check():
-    return {"status": "healthy", "model": "TrOCR + Google Cloud Vision OCR"}
+    return {"status": "healthy", "model": "Google Cloud Vision OCR"}
 
 
 @app.get("/health")
@@ -95,7 +65,7 @@ async def extract_text(
     file: UploadFile = File(...),
     image_type: str = Query(default="auto"),
     lang: str = Query(default="eng"),
-    source: str = Query(default="upload"),  # "canvas" or "upload"
+    source: str = Query(default="upload"),
 ):
     try:
         contents = await file.read()
@@ -111,19 +81,8 @@ async def extract_text(
 
         result = None
 
-        if source == "canvas":
-            print("Using TrOCR for canvas drawing (handwriting)")
-            result = extract_text_with_trocr(image)
-        else:
-            print("Trying TrOCR for uploaded image")
-            result = extract_text_with_trocr(image)
-
-            if result and len(result.get("text", "").strip()) < 3:
-                print("TrOCR result too short, trying Google Vision")
-                result = None
-
-        # Fallback to Google Vision API
-        if not result and GOOGLE_CREDENTIALS_PRESENT:
+        # Use Google Vision API as primary
+        if GOOGLE_CREDENTIALS_PRESENT:
             print("Using Google Vision API")
             try:
                 vision_client = vision.ImageAnnotatorClient()
@@ -142,13 +101,13 @@ async def extract_text(
                     text = response.text_annotations[0].description
                     result = {
                         "text": text.strip(),
-                        "confidence": 0.80,
+                        "confidence": 0.85,
                         "engine": "google_vision"
                     }
             except Exception as e:
                 print(f"Google Vision error: {str(e)}")
 
-        # Final fallback to Tesseract
+        # Fallback to Tesseract
         if not result:
             print("Using Tesseract fallback")
             processed = preprocess_image(image, image_type)
