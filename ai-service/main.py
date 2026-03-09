@@ -23,8 +23,8 @@ GOOGLE_CREDENTIALS_PRESENT = bool(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS
 
 # Load TrOCR model at startup (once)
 print("Loading TrOCR model...")
-trocr_processor = TrOCRProcessor.from_pretrained('microsoft/trocr-base-handwritten')
-trocr_model = VisionEncoderDecoderModel.from_pretrained('microsoft/trocr-base-handwritten')
+trocr_processor = TrOCRProcessor.from_pretrained('microsoft/trocr-small-handwritten')
+trocr_model = VisionEncoderDecoderModel.from_pretrained('microsoft/trocr-small-handwritten')
 print("TrOCR model loaded successfully")
 
 PSM_MODES = {

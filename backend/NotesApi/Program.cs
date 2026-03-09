@@ -295,7 +295,7 @@ app.MapPost("/notes/scan", async (
     HttpContext context) =>
 {
     var userId = AuthHelpers.GetUserId(context);
-    if (userId == null) return Results.Unauthorized();
+    if (userId == Guid.Empty) return Results.Unauthorized();
 
     if (file == null || file.Length == 0)
         return Results.BadRequest(new { error = "No file uploaded" });
@@ -372,9 +372,9 @@ app.MapPost("/notes/scan", async (
 app.MapPatch("/notes/{id}/pin", async (Guid id, NotesDbContext db, HttpContext context) =>
 {
     var userId = AuthHelpers.GetUserId(context);
-    if (userId == null) return Results.Unauthorized();
+    if (userId == Guid.Empty) return Results.Unauthorized();
 
-    var note = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.UserId == Guid.Parse(userId));
+    var note = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
     if (note == null) return Results.NotFound();
 
     note.IsPinned = !note.IsPinned;
