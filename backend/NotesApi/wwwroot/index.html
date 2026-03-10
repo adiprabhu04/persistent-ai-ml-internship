@@ -525,26 +525,6 @@
             border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         }
 
-        /* Pin icon (top-right) */
-        .note-card-pin {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: var(--accent);
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-            border-radius: 4px;
-            transition: transform 0.2s, background 0.15s;
-        }
-        .note-card-pin:hover { transform: scale(1.2); background: rgba(255,214,10,0.1); }
-        .note-card-pin-empty { color: var(--text-tertiary); opacity: 0; }
-        .note-card:hover .note-card-pin-empty { opacity: 1; }
-
         /* Card content */
         .note-card-content {
             display: flex;
@@ -1574,23 +1554,6 @@
         return '#9CA3AF';
     }
 
-    async function togglePin(noteId) {
-        try {
-            const res = await fetch(API_URL + `/notes/${noteId}/pin`, {
-                method: 'PATCH',
-                headers: { 'Authorization': `Bearer ${state.token}` }
-            });
-            if (res.ok) {
-                const data = await res.json();
-                const note = state.notes.find(n => n.id === noteId);
-                if (note) note.isPinned = data.isPinned;
-                renderNotes();
-                toast(data.isPinned ? 'Pinned' : 'Unpinned', 'success');
-            }
-        } catch (e) {
-            toast('Could not update pin', 'error');
-        }
-    }
 
     function updateNoteCount(total) {
         const el = document.getElementById('note-count-display');
@@ -1943,12 +1906,7 @@
             return;
         }
 
-        // Sort: pinned first, then by updated date
-        filtered.sort((a, b) => {
-            if (a.isPinned && !b.isPinned) return -1;
-            if (!a.isPinned && b.isPinned) return 1;
-            return new Date(b.updatedAt) - new Date(a.updatedAt);
-        });
+        filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
         updateNoteCount(state.notes.length);
 
@@ -1962,17 +1920,9 @@
             const preview = (note.content || '').replace(/#\w+/g, '').trim();
             const previewText = preview.length > 100 ? preview.substring(0, 100) + '…' : preview;
             const dateStr = relativeTime(note.updatedAt);
-            const isPinned = note.isPinned || false;
 
             el.innerHTML = `
                 <div class="note-card-accent" style="background-color:${accentColor}"></div>
-                <div class="note-card-pin ${isPinned ? '' : 'note-card-pin-empty'}"
-                     onclick="event.stopPropagation();togglePin('${note.id}')"
-                     title="${isPinned ? 'Unpin' : 'Pin note'}">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="${isPinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-                        <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/>
-                    </svg>
-                </div>
                 <div class="note-card-content">
                     <h3 class="note-card-title">${esc(note.title)}</h3>
                     <p class="note-card-preview">${esc(previewText)}</p>
@@ -1986,7 +1936,7 @@
                 </button>`;
 
             el.onclick = (e) => {
-                if (!e.target.closest('button') && !e.target.closest('.note-card-pin')) openModal(note);
+                if (!e.target.closest('button')) openModal(note);
             };
             grid.appendChild(el);
         });

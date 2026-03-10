@@ -369,21 +369,6 @@ app.MapPost("/notes/scan", async (
 .RequireAuthorization()
 .DisableAntiforgery();
 
-app.MapPatch("/notes/{id}/pin", async (Guid id, NotesDbContext db, HttpContext context) =>
-{
-    var userId = AuthHelpers.GetUserId(context);
-    if (userId == Guid.Empty) return Results.Unauthorized();
-
-    var note = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
-    if (note == null) return Results.NotFound();
-
-    note.IsPinned = !note.IsPinned;
-    note.UpdatedAt = DateTime.UtcNow;
-    await db.SaveChangesAsync();
-
-    return Results.Ok(new { id = note.Id, isPinned = note.IsPinned });
-})
-.RequireAuthorization();
 
 app.MapPost("/auth/register", async (RegisterRequest request, NotesDbContext db) =>
 {
