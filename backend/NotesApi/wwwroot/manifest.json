@@ -1,11 +1,11 @@
 {
-  "name": "Notely - AI Notes App",
-  "short_name": "Notely",
-  "description": "AI-powered notes with OCR scanning",
+  "name": "Jot It",
+  "short_name": "Jot It",
+  "description": "Quick note-taking with handwriting OCR",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1A1A1A",
-  "theme_color": "#8B5CF6",
+  "background_color": "#0F0F0F",
+  "theme_color": "#FFD60A",
   "orientation": "portrait",
   "icons": [
     {

@@ -8,7 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icon-192.png">
-    <title>Notely</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230B0B0B'/><path d='M340 120 C300 120 290 150 290 180 L290 330 C290 370 260 400 220 400 C190 400 170 385 160 360' fill='none' stroke='%23FFD60A' stroke-width='28' stroke-linecap='round' stroke-linejoin='round'/><path d='M160 360 C150 335 160 310 190 300' fill='none' stroke='%23FFD60A' stroke-width='28' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <title>Jot It</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1163,6 +1164,117 @@
 
         /* ── HIDDEN ELEMENTS ─────────────────────────────────── */
         #user-display { display: none; }
+
+        /* ── SIDE PANELS (settings / help) ─────────────────── */
+        .side-panel {
+            background: var(--surface);
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            border-radius: var(--radius-xl);
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.2s ease;
+            overflow: hidden;
+        }
+        .side-panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .side-panel-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        .side-panel-body {
+            overflow-y: auto;
+            padding: 8px 20px 24px;
+        }
+        .settings-section {
+            padding: 20px 0 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .settings-section h3, .help-section h3 {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: 12px;
+        }
+        .setting-item { margin-bottom: 14px; }
+        .setting-item label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .setting-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--surface-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .btn-secondary-sm {
+            background: var(--surface-secondary);
+            color: var(--text);
+            padding: 9px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .btn-secondary-sm:hover { background: var(--border); }
+        .help-section {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .help-section p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .help-section ul {
+            list-style: none;
+            margin-top: 8px;
+        }
+        .help-section ul li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 3px 0 3px 14px;
+            position: relative;
+        }
+        .help-section ul li::before {
+            content: '·';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+        .help-section code {
+            background: var(--surface-secondary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-size: 13px;
+        }
+        .help-section kbd {
+            background: var(--surface-secondary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 12px;
+            font-family: inherit;
+        }
     </style>
 </head>
 <body>
@@ -1172,7 +1284,7 @@
     <div class="auth-card">
         <div class="auth-logo">
             <div class="auth-logo-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></div>
-            <h1>Notely</h1>
+            <h1>Jot It</h1>
             <p>Capture every thought, beautifully.</p>
         </div>
 
@@ -1334,11 +1446,11 @@
             </svg>
             <span>Search</span>
         </button>
-        <button class="nav-item btn" id="nav-settings" onclick="navTo('settings')" aria-label="Settings">
+        <button class="nav-item btn" id="nav-recent" onclick="navTo('recent')" aria-label="Recent">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
             </svg>
-            <span>Settings</span>
+            <span>Recent</span>
         </button>
     </nav>
 </div>
@@ -1511,9 +1623,103 @@
     </div>
 </div>
 
+<!-- ── SETTINGS MODAL ────────────────────────────────────────── -->
+<div id="settings-modal" class="modal-overlay" role="dialog" aria-modal="true" onclick="closeSettingsModal(event)">
+    <div class="side-panel settings-panel" onclick="event.stopPropagation()">
+        <div class="side-panel-header">
+            <h2>Settings</h2>
+            <button onclick="closeSettingsModal()" class="btn-close btn" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-panel-body">
+            <div class="settings-section">
+                <h3>Account</h3>
+                <div class="setting-item">
+                    <label>Name</label>
+                    <input type="text" id="settings-name" class="setting-input" readonly>
+                </div>
+                <div class="setting-item">
+                    <label>Email</label>
+                    <input type="email" id="settings-email" class="setting-input" readonly>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3>Appearance</h3>
+                <div class="setting-item">
+                    <label>Theme</label>
+                    <select class="setting-input" onchange="applyTheme(this.value)">
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3>Data</h3>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button class="btn-secondary-sm btn" onclick="exportNotes()">Export Notes</button>
+                </div>
+            </div>
+            <div class="settings-section" style="border-bottom:none;">
+                <h3>About</h3>
+                <p style="color:var(--text-secondary);font-size:14px;">Jot It v1.0</p>
+                <p style="color:var(--text-tertiary);font-size:13px;margin-top:4px;">Quick note-taking with handwriting OCR</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── HELP MODAL ────────────────────────────────────────────── -->
+<div id="help-modal" class="modal-overlay" role="dialog" aria-modal="true" onclick="closeHelpModal(event)">
+    <div class="side-panel help-panel" onclick="event.stopPropagation()">
+        <div class="side-panel-header">
+            <h2>How to Use Jot It</h2>
+            <button onclick="closeHelpModal()" class="btn-close btn" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="side-panel-body">
+            <div class="help-section">
+                <h3>Creating Notes</h3>
+                <p>Tap the yellow + button to create a note. Type your content or use the Scan tab for handwriting.</p>
+            </div>
+            <div class="help-section">
+                <h3>Handwriting Recognition</h3>
+                <p>Use the Scan tab to draw or upload handwritten notes. OCR converts your handwriting to text.</p>
+                <ul>
+                    <li>Write clearly for best results</li>
+                    <li>Use dark ink on light background</li>
+                    <li>Avoid crossed-out text</li>
+                </ul>
+            </div>
+            <div class="help-section">
+                <h3>Drawing Tips</h3>
+                <ul>
+                    <li>Select pen size (small / medium / large)</li>
+                    <li>Choose black for best OCR accuracy</li>
+                    <li>Use eraser to fix mistakes</li>
+                    <li>Clear resets the canvas</li>
+                </ul>
+            </div>
+            <div class="help-section">
+                <h3>Organizing Notes</h3>
+                <p>Use category tabs — Personal, Work, Ideas — or add hashtags like <code>#work</code> in content.</p>
+            </div>
+            <div class="help-section">
+                <h3>Search</h3>
+                <p>Tap the Search icon in the bottom nav to search by title or content.</p>
+            </div>
+            <div class="help-section" style="border-bottom:none;">
+                <h3>Keyboard Shortcuts</h3>
+                <ul>
+                    <li><kbd>Ctrl</kbd> + <kbd>N</kbd> — New note</li>
+                    <li><kbd>Ctrl</kbd> + <kbd>F</kbd> — Search</li>
+                    <li><kbd>Esc</kbd> — Close modal</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ── INSTALL PROMPT ─────────────────────────────────────────── -->
 <div id="install-prompt" class="install-prompt hidden">
-    <span class="install-prompt-text">Add Notely to your home screen</span>
+    <span class="install-prompt-text">Add Jot It to your home screen</span>
     <button onclick="installApp()" class="install-btn btn">Install</button>
     <button onclick="dismissInstall()" class="install-dismiss btn" aria-label="Dismiss">
         <i class="fa-solid fa-xmark"></i>
@@ -1562,6 +1768,7 @@
 
     function navTo(action) {
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        state.recentOnly = false;
         if (action === 'home') {
             document.getElementById('nav-home').classList.add('active');
             filterCat('all', document.querySelector('.filter-tab[data-cat=all]'));
@@ -1571,9 +1778,16 @@
         } else if (action === 'search') {
             document.getElementById('nav-search').classList.add('active');
             toggleSearch();
-        } else if (action === 'settings') {
-            document.getElementById('nav-settings').classList.add('active');
-            toggleUserMenu();
+        } else if (action === 'recent') {
+            document.getElementById('nav-recent').classList.add('active');
+            state.recentOnly = true;
+            renderNotes();
+            const count = state.notes.filter(n => {
+                const ago = new Date();
+                ago.setDate(ago.getDate() - 7);
+                return new Date(n.updatedAt) >= ago;
+            }).length;
+            toast(count > 0 ? `${count} note${count !== 1 ? 's' : ''} from the last 7 days` : 'No notes in the last 7 days', count > 0 ? 'success' : 'info');
         }
     }
 
@@ -1583,7 +1797,8 @@
         email: localStorage.getItem('email') || '',
         notes: [],
         editingId: null,
-        category: 'all'
+        category: 'all',
+        recentOnly: false
     };
     let drawingState = {
         isDrawing: false,
@@ -1771,10 +1986,45 @@
 
     function menuAction(action) {
         document.getElementById('user-menu').classList.add('hidden');
-        if (action === 'settings') toast('Settings coming soon!', 'info');
+        if (action === 'settings') openSettingsModal();
         else if (action === 'language') toast('Language selection coming soon!', 'info');
-        else if (action === 'help') window.open('mailto:support@notely.app?subject=Help', '_blank');
-        else if (action === 'learn') toast('Learn more coming soon!', 'info');
+        else if (action === 'help') openHelpModal();
+        else if (action === 'learn') openHelpModal();
+    }
+
+    function openSettingsModal() {
+        const modal = document.getElementById('settings-modal');
+        document.getElementById('settings-name').value = state.name || '';
+        document.getElementById('settings-email').value = state.email || '';
+        const themeSelect = modal.querySelector('select');
+        themeSelect.value = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+        modal.classList.add('open');
+    }
+
+    function closeSettingsModal(e) {
+        if (e && e.target !== document.getElementById('settings-modal')) return;
+        document.getElementById('settings-modal').classList.remove('open');
+    }
+
+    function openHelpModal() {
+        document.getElementById('help-modal').classList.add('open');
+    }
+
+    function closeHelpModal(e) {
+        if (e && e.target !== document.getElementById('help-modal')) return;
+        document.getElementById('help-modal').classList.remove('open');
+    }
+
+    function exportNotes() {
+        const data = JSON.stringify(state.notes, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'jotit-notes.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        toast('Notes exported!', 'success');
     }
 
     function openFilterMenu() {
@@ -1849,7 +2099,11 @@
         grid.innerHTML = '';
 
         let filtered = state.notes;
-        if (state.category !== 'all') {
+        if (state.recentOnly) {
+            const ago = new Date();
+            ago.setDate(ago.getDate() - 7);
+            filtered = filtered.filter(n => new Date(n.updatedAt) >= ago);
+        } else if (state.category !== 'all') {
             filtered = filtered.filter(n => (n.content || '').toLowerCase().includes('#' + state.category));
         }
 
@@ -1876,7 +2130,7 @@
                 grid.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon"><svg width="90" height="90" viewBox="0 0 100 100" fill="none"><rect x="18" y="12" width="52" height="66" rx="4" stroke="#FFD60A" stroke-width="2.5"/><line x1="28" y1="28" x2="62" y2="28" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="40" x2="62" y2="40" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="52" x2="48" y2="52" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="58" y1="62" x2="72" y2="76" stroke="#FFD60A" stroke-width="3" stroke-linecap="round"/><circle cx="74" cy="78" r="3" fill="#FFD60A"/></svg></div>
-                        <div class="empty-title">Welcome to Notely!</div>
+                        <div class="empty-title">Welcome to Jot It!</div>
                         <p class="empty-desc">Your canvas is blank. Jot down ideas, scan handwritten notes, or just capture what's on your mind.</p>
                         <button onclick="openModal()" class="btn-cta btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Start Writing</button>
                     </div>`;
@@ -2336,6 +2590,15 @@
     document.addEventListener('keydown', e => {
         _kp = (e.keyCode === _kc[_kp]) ? _kp + 1 : 0;
         if (_kp === _kc.length) { _kp = 0; _launchConfetti(); }
+        if (e.key === 'Escape') {
+            closeModal();
+            closeScanModal();
+            cancelConfirm();
+            document.getElementById('settings-modal').classList.remove('open');
+            document.getElementById('help-modal').classList.remove('open');
+        }
+        if (e.ctrlKey && e.key === 'n') { e.preventDefault(); openModal(); }
+        if (e.ctrlKey && e.key === 'f') { e.preventDefault(); navTo('search'); }
     });
     function _launchConfetti() {
         const colors = ['#FFD60A','#EC4899','#10B981','#3B82F6','#F97316','#8B5CF6'];
