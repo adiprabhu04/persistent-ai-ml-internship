@@ -211,3 +211,4 @@ obj/
 *.db
 *.sqlite
 .vs/
+.aider*
