@@ -10,12 +10,17 @@ namespace NotesApi.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "IsPinned",
-                table: "Notes",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
+            migrationBuilder.Sql(@"
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT 1 FROM information_schema.columns
+                        WHERE table_name = 'Notes' AND column_name = 'IsPinned'
+                    ) THEN
+                        ALTER TABLE ""Notes"" ADD ""IsPinned"" boolean NOT NULL DEFAULT FALSE;
+                    END IF;
+                END $$;
+            ");
         }
 
         /// <inheritdoc />

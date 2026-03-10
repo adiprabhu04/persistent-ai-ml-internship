@@ -10,12 +10,17 @@ namespace NotesApi.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Name",
-                table: "Users",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
+            migrationBuilder.Sql(@"
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT 1 FROM information_schema.columns
+                        WHERE table_name = 'Users' AND column_name = 'Name'
+                    ) THEN
+                        ALTER TABLE ""Users"" ADD ""Name"" text NOT NULL DEFAULT '';
+                    END IF;
+                END $$;
+            ");
         }
 
         /// <inheritdoc />
