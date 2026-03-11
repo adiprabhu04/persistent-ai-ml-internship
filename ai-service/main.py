@@ -2,7 +2,8 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from google.cloud import vision
 import pytesseract
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageFilter
+import numpy as np
 import io
 import os
 
@@ -28,19 +29,50 @@ PSM_MODES = {
 }
 
 
-def preprocess_image(image: Image.Image, image_type: str = "auto") -> Image.Image:
-    if image.mode in ("RGBA", "P", "LA"):
-        background = Image.new("RGB", image.size, (255, 255, 255))
-        rgba = image.convert("RGBA")
-        background.paste(rgba, mask=rgba.split()[3])
+def preprocess_image(image: Image.Image, source: str = "upload") -> Image.Image:
+    """Enhanced preprocessing for better OCR accuracy"""
+
+    # 1. Handle transparency (composite on white)
+    if image.mode in ('RGBA', 'LA', 'P'):
+        background = Image.new('RGB', image.size, (255, 255, 255))
+        if image.mode == 'P':
+            image = image.convert('RGBA')
+        background.paste(image, mask=image.split()[-1] if image.mode in ('RGBA', 'LA') else None)
         image = background
-    elif image.mode != "RGB":
-        image = image.convert("RGB")
 
-    image = image.convert("L")
+    # 2. Convert to grayscale
+    if image.mode != 'L':
+        image = image.convert('L')
 
+    # 3. Upscale canvas images 4x for better detail
+    if source == "canvas":
+        new_size = (image.width * 4, image.height * 4)
+        image = image.resize(new_size, Image.Resampling.LANCZOS)
+
+    # 4. Denoise (reduce pencil texture, paper grain)
+    image = image.filter(ImageFilter.MedianFilter(size=3))
+
+    # 5. Strong contrast boost
     enhancer = ImageEnhance.Contrast(image)
-    image = enhancer.enhance(1.2)
+    image = enhancer.enhance(2.0)
+
+    # 6. Sharpen edges
+    image = image.filter(ImageFilter.UnsharpMask(radius=2, percent=150, threshold=3))
+
+    # 7. Normalize brightness
+    enhancer = ImageEnhance.Brightness(image)
+    image = enhancer.enhance(1.1)
+
+    # 8. Adaptive thresholding for canvas drawings
+    if source == "canvas":
+        try:
+            from scipy.ndimage import gaussian_filter
+            img_array = np.array(image, dtype=np.float64)
+            blurred = gaussian_filter(img_array, sigma=20)
+            binary = img_array > (blurred - 10)
+            image = Image.fromarray((binary * 255).astype(np.uint8))
+        except ImportError:
+            pass  # scipy not available, skip adaptive threshold
 
     return image
 
@@ -71,13 +103,8 @@ async def extract_text(
         contents = await file.read()
         image = Image.open(io.BytesIO(contents))
 
-        # Flatten transparency to white background
-        if image.mode in ('RGBA', 'LA', 'P'):
-            background = Image.new('RGB', image.size, (255, 255, 255))
-            if image.mode == 'P':
-                image = image.convert('RGBA')
-            background.paste(image, mask=image.split()[-1] if image.mode in ('RGBA', 'LA') else None)
-            image = background
+        # Apply enhanced preprocessing
+        processed = preprocess_image(image, source)
 
         result = None
 
@@ -88,7 +115,7 @@ async def extract_text(
                 vision_client = vision.ImageAnnotatorClient()
 
                 img_byte_arr = io.BytesIO()
-                image.save(img_byte_arr, format='PNG')
+                processed.save(img_byte_arr, format='PNG')
                 content = img_byte_arr.getvalue()
 
                 vision_image = vision.Image(content=content)
@@ -98,10 +125,26 @@ async def extract_text(
                 )
 
                 if response.text_annotations:
-                    text = response.text_annotations[0].description
+                    full_text = response.text_annotations[0].description
+
+                    # Extract word-level confidence
+                    words = []
+                    for page in response.full_text_annotation.pages:
+                        for block in page.blocks:
+                            for paragraph in block.paragraphs:
+                                for word in paragraph.words:
+                                    word_text = ''.join([symbol.text for symbol in word.symbols])
+                                    word_conf = word.confidence if hasattr(word, 'confidence') and word.confidence else 0.9
+                                    words.append({
+                                        "text": word_text,
+                                        "confidence": round(word_conf * 100, 1)
+                                    })
+
+                    avg_confidence = sum(w["confidence"] for w in words) / len(words) if words else 85.0
                     result = {
-                        "text": text.strip(),
-                        "confidence": 0.85,
+                        "text": full_text.strip(),
+                        "confidence": round(avg_confidence, 1),
+                        "words": words,
                         "engine": "google_vision"
                     }
             except Exception as e:
@@ -110,12 +153,12 @@ async def extract_text(
         # Fallback to Tesseract
         if not result:
             print("Using Tesseract fallback")
-            processed = preprocess_image(image, image_type)
             config = get_tesseract_config(image_type)
             text = pytesseract.image_to_string(processed, lang=lang, config=config)
             result = {
                 "text": text.strip(),
                 "confidence": None,
+                "words": [],
                 "engine": "tesseract"
             }
 
@@ -125,6 +168,7 @@ async def extract_text(
             "text": result["text"],
             "engine": result.get("engine"),
             "confidence": result.get("confidence"),
+            "words": result.get("words", []),
         }
 
     except Exception as e:

@@ -351,7 +351,22 @@ app.MapPost("/notes/scan", async (
             if (doc.RootElement.TryGetProperty("text", out var textElement))
                 extractedText = textElement.GetString() ?? "";
 
-            return Results.Ok(new { text = extractedText });
+            double? confidence = null;
+            if (doc.RootElement.TryGetProperty("confidence", out var confElement) && confElement.ValueKind == JsonValueKind.Number)
+                confidence = confElement.GetDouble();
+
+            var words = new List<object>();
+            if (doc.RootElement.TryGetProperty("words", out var wordsElement) && wordsElement.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var w in wordsElement.EnumerateArray())
+                {
+                    var wText = w.TryGetProperty("text", out var t) ? t.GetString() ?? "" : "";
+                    var wConf = w.TryGetProperty("confidence", out var c) && c.ValueKind == JsonValueKind.Number ? c.GetDouble() : 0.0;
+                    words.Add(new { text = wText, confidence = wConf });
+                }
+            }
+
+            return Results.Ok(new { text = extractedText, confidence, words });
         }
         catch (Exception)
         {
@@ -368,7 +383,6 @@ app.MapPost("/notes/scan", async (
 })
 .RequireAuthorization()
 .DisableAntiforgery();
-
 
 app.MapGet("/auth/me", async (HttpContext context, NotesDbContext db) =>
 {

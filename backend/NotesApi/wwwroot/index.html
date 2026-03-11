@@ -582,12 +582,6 @@
         .note-card:hover .note-card-delete { opacity: 1; }
         .note-card-delete:hover { background: rgba(239,68,68,0.12); color: var(--error); }
 
-        /* Legacy support */
-        .note-title { font-size: 16px; font-weight: 600; color: var(--text); }
-        .note-body { font-size: 14px; color: var(--text-secondary); line-height: 1.55; }
-        .note-date { font-size: 12px; color: var(--text-tertiary); }
-        .btn-delete-note { display: none; }
-
         /* Deleting animation */
         @keyframes cardSwoop {
             to { transform: translateX(110%); opacity: 0; }
@@ -1047,6 +1041,66 @@
             transition: all 0.15s;
         }
         .btn-scan-submit:hover { background: var(--accent-hover); }
+
+        .scan-preview-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 12px;
+            background: var(--surface-secondary);
+            border-radius: var(--radius-md);
+            max-height: 180px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        .word-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 10px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+        .word-chip:hover { background: var(--surface-secondary); box-shadow: var(--shadow-sm); }
+        .word-chip.low-confidence { border-color: #F59E0B; background: rgba(245,158,11,0.08); }
+        .word-chip.editing { padding: 3px 6px; cursor: default; }
+        .word-chip input {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 13px;
+            min-width: 30px;
+            outline: none;
+            font-family: inherit;
+        }
+        .word-confidence { font-size: 10px; color: var(--text-tertiary); }
+        .scan-confidence-bar { margin-bottom: 10px; }
+        .scan-confidence-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .confidence-meter {
+            width: 100%;
+            height: 5px;
+            background: var(--surface-secondary);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #EF4444 0%, #F59E0B 50%, #10B981 100%);
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
 
         /* ── CONFIRM MODAL ───────────────────────────────────── */
         #confirm-modal { align-items: center; }
@@ -1590,6 +1644,14 @@
 
         <!-- Step: Preview -->
         <div id="scan-step-preview" class="hidden">
+            <div id="scan-words-container" class="scan-preview-words" style="display:none;"></div>
+            <div id="scan-confidence-section" class="scan-confidence-bar" style="display:none;">
+                <div class="scan-confidence-bar-header">
+                    <span><i class="fa-solid fa-circle-info" style="color:var(--accent);margin-right:4px;"></i>Click any word to edit it</span>
+                    <span id="scan-confidence-label"></span>
+                </div>
+                <div class="confidence-meter"><div class="confidence-fill" id="scan-confidence-fill"></div></div>
+            </div>
             <div class="scan-preview-label">Extracted Text</div>
             <textarea id="scan-preview-text" class="scan-preview-text"
                       placeholder="No text was extracted…"
@@ -1760,7 +1822,6 @@
         return '#9CA3AF';
     }
 
-
     function updateNoteCount(total) {
         const el = document.getElementById('note-count-display');
         if (el) el.textContent = `${total} note${total !== 1 ? 's' : ''}`;
@@ -1811,6 +1872,8 @@
     };
     let pendingUploadFile = null;
     let pendingConfirmAction = null;
+    let currentOcrWords = [];
+    let currentScanStep = 'input';
 
     document.addEventListener('click', (e) => {
         const menu = document.getElementById('user-menu');
@@ -1818,6 +1881,15 @@
             const wrap = document.querySelector('.avatar-wrap');
             if (wrap && !wrap.contains(e.target)) {
                 menu.classList.add('hidden');
+            }
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (currentScanStep === 'preview') {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                scanSaveAsNote();
             }
         }
     });
@@ -2358,6 +2430,7 @@
     function openScanModal() {
         switchScanStep('input');
         switchScanTab('draw');
+        currentOcrWords = [];
         pendingUploadFile = null;
         document.getElementById('upload-drop-area').classList.remove('hidden');
         document.getElementById('upload-preview-section').classList.add('hidden');
@@ -2378,6 +2451,7 @@
     }
 
     function switchScanStep(step) {
+        currentScanStep = step;
         ['input','loading','error','preview'].forEach(s => {
             document.getElementById(`scan-step-${s}`).classList.toggle('hidden', s !== step);
         });
@@ -2522,11 +2596,98 @@
                 showScanError('No text found', 'Try a clearer photo with better lighting. Make sure the text is legible.');
                 return;
             }
+
             document.getElementById('scan-preview-text').value = data.text || '';
+            currentOcrWords = data.words || [];
+            if (currentOcrWords.length > 0) {
+                renderEditableWords(currentOcrWords, data.confidence || 85);
+            } else {
+                document.getElementById('scan-words-container').style.display = 'none';
+                document.getElementById('scan-confidence-section').style.display = 'none';
+            }
             switchScanStep('preview');
         } catch (err) {
             showScanError('Connection lost', 'Please check your internet connection and try again.');
         }
+    }
+
+    function escapeHtml(text) {
+        return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function renderEditableWords(words, confidence) {
+        const container = document.getElementById('scan-words-container');
+        container.innerHTML = '';
+
+        words.forEach((word, index) => {
+            const chip = document.createElement('div');
+            chip.className = 'word-chip' + (word.confidence < 70 ? ' low-confidence' : '');
+
+            const span = document.createElement('span');
+            span.className = 'word-text';
+            span.dataset.index = index;
+            span.textContent = word.text;
+
+            const conf = document.createElement('span');
+            conf.className = 'word-confidence';
+            conf.textContent = word.confidence + '%';
+
+            chip.appendChild(span);
+            chip.appendChild(conf);
+            chip.addEventListener('click', () => editWord(chip, index, currentOcrWords[index].text));
+            container.appendChild(chip);
+        });
+
+        document.getElementById('scan-confidence-fill').style.width = confidence + '%';
+        document.getElementById('scan-confidence-label').textContent = 'Overall: ' + Math.round(confidence) + '%';
+        container.style.display = 'flex';
+        document.getElementById('scan-confidence-section').style.display = 'block';
+    }
+
+    function editWord(chip, index, currentText) {
+        if (chip.classList.contains('editing')) return;
+        chip.classList.add('editing');
+
+        const span = chip.querySelector('.word-text');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentText;
+        input.style.width = Math.max(currentText.length + 1, 3) + 'ch';
+        span.replaceWith(input);
+        input.focus();
+        input.select();
+
+        function saveEdit() {
+            const newText = input.value.trim() || currentText;
+            currentOcrWords[index].text = newText;
+            const newSpan = document.createElement('span');
+            newSpan.className = 'word-text';
+            newSpan.dataset.index = index;
+            newSpan.textContent = newText;
+            input.replaceWith(newSpan);
+            chip.classList.remove('editing');
+            updateFullTextFromWords();
+        }
+
+        input.addEventListener('blur', saveEdit);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); saveEdit(); }
+            else if (e.key === 'Escape') { input.value = currentText; saveEdit(); }
+            else if (e.key === 'Tab') {
+                e.preventDefault();
+                saveEdit();
+                const chips = Array.from(document.querySelectorAll('#scan-words-container .word-chip'));
+                const next = chips[chips.indexOf(chip) + 1];
+                if (next) next.click();
+            }
+        });
+        input.addEventListener('input', () => {
+            input.style.width = Math.max(input.value.length + 1, 3) + 'ch';
+        });
+    }
+
+    function updateFullTextFromWords() {
+        document.getElementById('scan-preview-text').value = currentOcrWords.map(w => w.text).join(' ');
     }
 
     function showScanError(title, detail) {
@@ -2596,7 +2757,6 @@
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
 
-    
     const _kc = [38,38,40,40,37,39,37,39,66,65];
     let _kp = 0;
     document.addEventListener('keydown', e => {
