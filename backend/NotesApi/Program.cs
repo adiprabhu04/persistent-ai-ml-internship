@@ -370,6 +370,22 @@ app.MapPost("/notes/scan", async (
 .DisableAntiforgery();
 
 
+app.MapGet("/auth/me", async (HttpContext context, NotesDbContext db) =>
+{
+    var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    if (userId == null) return Results.Unauthorized();
+
+    var user = await db.Users.FindAsync(Guid.Parse(userId));
+    if (user == null) return Results.NotFound();
+
+    return Results.Ok(new
+    {
+        id = user.Id,
+        email = user.Email,
+        name = user.Name
+    });
+}).RequireAuthorization();
+
 app.MapPost("/auth/register", async (RegisterRequest request, NotesDbContext db) =>
 {
     if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))

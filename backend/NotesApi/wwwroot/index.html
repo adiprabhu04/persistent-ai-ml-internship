@@ -1992,13 +1992,25 @@
         else if (action === 'learn') openHelpModal();
     }
 
-    function openSettingsModal() {
+    async function openSettingsModal() {
         const modal = document.getElementById('settings-modal');
         document.getElementById('settings-name').value = state.name || '';
         document.getElementById('settings-email').value = state.email || '';
         const themeSelect = modal.querySelector('select');
         themeSelect.value = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
         modal.classList.add('open');
+        try {
+            const res = await api('/auth/me');
+            if (res.ok) {
+                const user = await res.json();
+                state.name = user.name || state.name;
+                state.email = user.email || state.email;
+                localStorage.setItem('name', state.name);
+                localStorage.setItem('email', state.email);
+                document.getElementById('settings-name').value = state.name;
+                document.getElementById('settings-email').value = state.email;
+            }
+        } catch (e) { /* use cached state */ }
     }
 
     function closeSettingsModal(e) {
