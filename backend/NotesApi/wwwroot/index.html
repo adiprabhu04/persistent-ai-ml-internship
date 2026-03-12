@@ -1330,6 +1330,13 @@
             font-family: inherit;
         }
 
+        /* ── KEYBOARD NAVIGATION ────────────────────────────────── */
+        .note-card.keyboard-selected {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+            box-shadow: 0 0 0 4px rgba(255,214,10,0.12);
+        }
+
         /* ── COMMAND PALETTE ─────────────────────────────────────── */
         .command-palette-wrap {
             position: fixed;
@@ -1950,11 +1957,25 @@
                 <h3>Note Editing</h3>
                 <div class="shortcut-row"><span>Save note</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>S</kbd></span></div>
                 <div class="shortcut-row"><span>Save &amp; close</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>Enter</kbd></span></div>
+                <div class="shortcut-row"><span>Duplicate note</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>D</kbd></span></div>
+                <div class="shortcut-row"><span>Copy content</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></span></div>
+                <div class="shortcut-row"><span>Toggle theme</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd></span></div>
                 <div class="shortcut-row"><span>Close without saving</span><span class="shortcut-keys"><kbd>Esc</kbd></span></div>
+            </div>
+            <div class="shortcuts-section">
+                <h3>Browse (Vim-style)</h3>
+                <div class="shortcut-row"><span>Next note</span><span class="shortcut-keys"><kbd>J</kbd></span></div>
+                <div class="shortcut-row"><span>Previous note</span><span class="shortcut-keys"><kbd>K</kbd></span></div>
+                <div class="shortcut-row"><span>Open selected</span><span class="shortcut-keys"><kbd>Enter</kbd></span></div>
+                <div class="shortcut-row"><span>Scroll to top</span><span class="shortcut-keys"><kbd>G</kbd> <kbd>G</kbd></span></div>
+                <div class="shortcut-row"><span>Scroll to bottom</span><span class="shortcut-keys"><kbd>Shift</kbd>+<kbd>G</kbd></span></div>
             </div>
             <div class="shortcuts-section">
                 <h3>Scanning</h3>
                 <div class="shortcut-row"><span>Save scanned text</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>S</kbd></span></div>
+                <div class="shortcut-row"><span>Draw tab</span><span class="shortcut-keys"><kbd>Alt</kbd>+<kbd>D</kbd></span></div>
+                <div class="shortcut-row"><span>Upload tab</span><span class="shortcut-keys"><kbd>Alt</kbd>+<kbd>U</kbd></span></div>
+                <div class="shortcut-row"><span>Retry scan</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>R</kbd></span></div>
             </div>
         </div>
     </div>
@@ -2352,6 +2373,7 @@
     }
 
     function renderNotes() {
+        _selNoteIdx = -1;
         const grid = document.getElementById('notes-grid');
         grid.innerHTML = '';
 
@@ -2425,6 +2447,7 @@
             const el = document.createElement('div');
             el.className = 'note-card';
             el.setAttribute('role', 'listitem');
+            el.dataset.id = note.id;
             el.style.animationDelay = `${i * 0.04}s`;
 
             const accentColor = getCategoryColor(note);
@@ -2932,14 +2955,16 @@
 
     // ── COMMAND PALETTE ──────────────────────────────────────────
     const commands = [
-        { id: 'new-note',  title: 'New Note',            icon: '📝', shortcut: 'Ctrl+N', action: () => openModal() },
-        { id: 'scan',      title: 'Scan Handwriting',    icon: '📷', shortcut: '',       action: () => openScanModal() },
-        { id: 'search',    title: 'Search Notes',        icon: '🔍', shortcut: 'Ctrl+F', action: () => focusSearch() },
-        { id: 'settings',  title: 'Settings',            icon: '⚙️', shortcut: 'Ctrl+,', action: () => openSettingsModal() },
-        { id: 'export',    title: 'Export Notes',        icon: '📥', shortcut: '',       action: () => exportNotes() },
-        { id: 'theme',     title: 'Toggle Theme',        icon: '🌓', shortcut: '',       action: () => toggleTheme() },
-        { id: 'recent',    title: 'Recent Notes',        icon: '🕐', shortcut: 'Alt+R',  action: () => navTo('recent') },
-        { id: 'help',      title: 'Keyboard Shortcuts',  icon: '⌨️', shortcut: '?',      action: () => showKeyboardHelp() },
+        { id: 'new-note',   title: 'New Note',           icon: '📝', shortcut: 'Ctrl+N',       action: () => openModal() },
+        { id: 'scan',       title: 'Scan Handwriting',   icon: '📷', shortcut: '',             action: () => openScanModal() },
+        { id: 'search',     title: 'Search Notes',       icon: '🔍', shortcut: 'Ctrl+F',       action: () => focusSearch() },
+        { id: 'duplicate',  title: 'Duplicate Note',     icon: '📋', shortcut: 'Ctrl+D',       action: () => duplicateCurrentNote() },
+        { id: 'copy',       title: 'Copy Note Content',  icon: '📄', shortcut: 'Ctrl+Shift+C', action: () => copyNoteContent() },
+        { id: 'settings',   title: 'Settings',           icon: '⚙️', shortcut: 'Ctrl+,',       action: () => openSettingsModal() },
+        { id: 'export',     title: 'Export Notes',       icon: '📥', shortcut: '',             action: () => exportNotes() },
+        { id: 'theme',      title: 'Toggle Theme',       icon: '🌓', shortcut: 'Ctrl+Shift+D', action: () => toggleTheme() },
+        { id: 'recent',     title: 'Recent Notes',       icon: '🕐', shortcut: 'Alt+R',        action: () => navTo('recent') },
+        { id: 'help',       title: 'Keyboard Shortcuts', icon: '⌨️', shortcut: '?',            action: () => showKeyboardHelp() },
     ];
     let _cmdList = commands;
     let _cmdIdx  = -1;
@@ -3046,6 +3071,63 @@
         }
     }
 
+    // ── VIM-STYLE NOTE NAVIGATION ─────────────────────────────────
+    let _selNoteIdx = -1;
+
+    function navigateNotes(direction) {
+        const cards = [...document.querySelectorAll('#notes-grid .note-card')];
+        if (!cards.length) return;
+        cards.forEach(c => c.classList.remove('keyboard-selected'));
+        if (direction === 'down') _selNoteIdx = Math.min(_selNoteIdx + 1, cards.length - 1);
+        else                      _selNoteIdx = Math.max(_selNoteIdx - 1, 0);
+        const sel = cards[_selNoteIdx];
+        sel.classList.add('keyboard-selected');
+        sel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function openSelectedNote() {
+        const sel = document.querySelector('#notes-grid .note-card.keyboard-selected');
+        if (sel) sel.click();
+    }
+
+    // ── DUPLICATE / COPY ──────────────────────────────────────────
+    function _resolveActiveNote() {
+        // Prefer the note currently open in the editor
+        if (state.editingId) return state.notes.find(n => n.id === state.editingId) || null;
+        // Fall back to keyboard-selected card
+        const sel = document.querySelector('#notes-grid .note-card.keyboard-selected');
+        if (sel) {
+            const id = parseInt(sel.dataset.id, 10);
+            return state.notes.find(n => n.id === id) || null;
+        }
+        return null;
+    }
+
+    async function duplicateCurrentNote() {
+        const note = _resolveActiveNote();
+        if (!note) { toast('Select a note first', 'info'); return; }
+        const res = await api('/notes', 'POST', {
+            title:   note.title + ' (Copy)',
+            content: note.content,
+        });
+        if (res) { fetchNotes(); toast('Note duplicated', 'success'); }
+    }
+
+    function copyNoteContent() {
+        const note = _resolveActiveNote();
+        if (!note) { toast('Select a note first', 'info'); return; }
+        navigator.clipboard.writeText(note.content || '').then(() => {
+            toast('Content copied', 'success');
+        });
+    }
+
+    // ── GG / SHIFT+G SCROLL ───────────────────────────────────────
+    let _lastG = 0;
+
+    function _notesArea() {
+        return document.querySelector('.notes-area');
+    }
+
     // ── GLOBAL KEYBOARD SHORTCUTS ─────────────────────────────────
     const _kc = [38,38,40,40,37,39,37,39,66,65];
     let _kp = 0;
@@ -3069,8 +3151,9 @@
         // Ctrl+N – New note
         if (mod && e.key === 'n') {
             e.preventDefault();
-            openModal();
-            setTimeout(() => document.getElementById('note-title')?.focus(), 100);
+            e.stopPropagation();
+            closeAllModals();
+            setTimeout(() => { openModal(); }, 50);
             return;
         }
 
@@ -3093,6 +3176,15 @@
             return;
         }
 
+        // Ctrl+D – Duplicate note
+        if (mod && e.key === 'd') { e.preventDefault(); duplicateCurrentNote(); return; }
+
+        // Ctrl+Shift+C – Copy note content
+        if (mod && e.shiftKey && e.key === 'C') { e.preventDefault(); copyNoteContent(); return; }
+
+        // Ctrl+Shift+D – Toggle theme
+        if (mod && e.shiftKey && e.key === 'D') { e.preventDefault(); toggleTheme(); return; }
+
         // ? – Keyboard help (not when typing)
         if (e.key === '?' && !isTyping) { e.preventDefault(); showKeyboardHelp(); return; }
 
@@ -3109,6 +3201,37 @@
 
         // Alt+H – Home
         if (e.altKey && e.key === 'h') { e.preventDefault(); navTo('home'); return; }
+
+        // J/K – Vim-style note navigation (not when typing, not when modal open)
+        const anyModalOpen = document.querySelector('.modal-overlay.open');
+        if (!isTyping && !anyModalOpen) {
+            if (e.key === 'j') { e.preventDefault(); navigateNotes('down'); return; }
+            if (e.key === 'k') { e.preventDefault(); navigateNotes('up'); return; }
+            if (e.key === 'Enter') { e.preventDefault(); openSelectedNote(); return; }
+
+            // Shift+G – scroll to bottom
+            if (e.shiftKey && e.key === 'G') {
+                e.preventDefault();
+                const a = _notesArea(); if (a) a.scrollTop = a.scrollHeight;
+                return;
+            }
+
+            // G G – scroll to top
+            if (e.key === 'g') {
+                const now = Date.now();
+                if (now - _lastG < 400) { const a = _notesArea(); if (a) a.scrollTop = 0; _lastG = 0; }
+                else { _lastG = now; }
+                return;
+            }
+        }
+
+        // Scan modal shortcuts
+        const scanModal = document.getElementById('scan-modal');
+        if (scanModal?.classList.contains('open')) {
+            if (e.altKey && e.key === 'd') { e.preventDefault(); switchScanTab('draw');   return; }
+            if (e.altKey && e.key === 'u') { e.preventDefault(); switchScanTab('upload'); return; }
+            if (mod && e.key === 'r')      { e.preventDefault(); switchScanStep('input'); return; }
+        }
     });
     function _launchConfetti() {
         const colors = ['#FFD60A','#EC4899','#10B981','#3B82F6','#F97316','#8B5CF6'];
