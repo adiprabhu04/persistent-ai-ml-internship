@@ -1329,6 +1329,132 @@
             font-size: 12px;
             font-family: inherit;
         }
+
+        /* ── COMMAND PALETTE ─────────────────────────────────────── */
+        .command-palette-wrap {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        #command-search {
+            width: 100%;
+            padding: 18px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            font-size: 17px;
+            color: var(--text);
+            outline: none;
+            font-family: inherit;
+        }
+
+        #command-search::placeholder { color: var(--text-tertiary); }
+
+        .command-results { max-height: 380px; overflow-y: auto; }
+
+        .command-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.12s;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .command-item:last-child { border-bottom: none; }
+
+        .command-item:hover,
+        .command-item.selected { background: var(--surface-secondary); }
+
+        .command-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+
+        .command-title { flex: 1; font-size: 14px; color: var(--text); }
+
+        .command-shortcut {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-family: monospace;
+            background: var(--surface-secondary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        /* ── KEYBOARD SHORTCUTS HELP ─────────────────────────────── */
+        .kb-help-wrap {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            max-width: 540px;
+            width: 92%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .kb-help-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--surface);
+            z-index: 1;
+        }
+
+        .kb-help-header h2 { font-size: 18px; font-weight: 700; }
+
+        .kb-help-body { padding: 20px 24px; }
+
+        .shortcuts-section { margin-bottom: 22px; }
+        .shortcuts-section:last-child { margin-bottom: 0; }
+
+        .shortcuts-section h3 {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.9px;
+        }
+
+        .shortcut-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .shortcut-row:last-child { border-bottom: none; }
+
+        .shortcut-keys { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+
+        kbd {
+            display: inline-block;
+            padding: 3px 7px;
+            background: var(--surface-secondary);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--text);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+            margin: 0 1px;
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
@@ -1770,10 +1896,65 @@
             <div class="help-section" style="border-bottom:none;">
                 <h3>Keyboard Shortcuts</h3>
                 <ul>
+                    <li><kbd>Ctrl</kbd> + <kbd>K</kbd> — Command palette</li>
                     <li><kbd>Ctrl</kbd> + <kbd>N</kbd> — New note</li>
-                    <li><kbd>Ctrl</kbd> + <kbd>F</kbd> — Search</li>
+                    <li><kbd>Ctrl</kbd> + <kbd>F</kbd> or <kbd>/</kbd> — Search</li>
+                    <li><kbd>Ctrl</kbd> + <kbd>S</kbd> — Save</li>
                     <li><kbd>Esc</kbd> — Close modal</li>
+                    <li><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> — Switch category</li>
+                    <li><kbd>?</kbd> — Full shortcuts reference</li>
                 </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── COMMAND PALETTE ─────────────────────────────────────────── -->
+<div id="command-palette" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Command palette" onclick="closeCommandPalette()">
+    <div class="command-palette-wrap" onclick="event.stopPropagation()">
+        <input type="text" id="command-search" placeholder="Type a command or search…"
+               autocomplete="off" oninput="filterCommands(this.value)"
+               onkeydown="handleCommandPaletteKey(event)" />
+        <div id="command-results" class="command-results"></div>
+    </div>
+</div>
+
+<!-- ── KEYBOARD SHORTCUTS HELP ────────────────────────────────── -->
+<div id="keyboard-help-modal" class="modal-overlay" role="dialog" aria-modal="true" onclick="closeKeyboardHelp()">
+    <div class="kb-help-wrap" onclick="event.stopPropagation()">
+        <div class="kb-help-header">
+            <h2>Keyboard Shortcuts</h2>
+            <button onclick="closeKeyboardHelp()" class="btn-close btn" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="kb-help-body">
+            <div class="shortcuts-section">
+                <h3>General</h3>
+                <div class="shortcut-row"><span>Command palette</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>K</kbd></span></div>
+                <div class="shortcut-row"><span>New note</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>N</kbd></span></div>
+                <div class="shortcut-row"><span>Search</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>F</kbd> or <kbd>/</kbd></span></div>
+                <div class="shortcut-row"><span>Settings</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>,</kbd></span></div>
+                <div class="shortcut-row"><span>Save</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>S</kbd></span></div>
+                <div class="shortcut-row"><span>Close modals</span><span class="shortcut-keys"><kbd>Esc</kbd></span></div>
+                <div class="shortcut-row"><span>Show this help</span><span class="shortcut-keys"><kbd>?</kbd></span></div>
+            </div>
+            <div class="shortcuts-section">
+                <h3>Navigation</h3>
+                <div class="shortcut-row"><span>All notes</span><span class="shortcut-keys"><kbd>1</kbd></span></div>
+                <div class="shortcut-row"><span>Personal</span><span class="shortcut-keys"><kbd>2</kbd></span></div>
+                <div class="shortcut-row"><span>Work</span><span class="shortcut-keys"><kbd>3</kbd></span></div>
+                <div class="shortcut-row"><span>Ideas</span><span class="shortcut-keys"><kbd>4</kbd></span></div>
+                <div class="shortcut-row"><span>Recent</span><span class="shortcut-keys"><kbd>Alt</kbd>+<kbd>R</kbd></span></div>
+                <div class="shortcut-row"><span>Home</span><span class="shortcut-keys"><kbd>Alt</kbd>+<kbd>H</kbd></span></div>
+            </div>
+            <div class="shortcuts-section">
+                <h3>Note Editing</h3>
+                <div class="shortcut-row"><span>Save note</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>S</kbd></span></div>
+                <div class="shortcut-row"><span>Save &amp; close</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>Enter</kbd></span></div>
+                <div class="shortcut-row"><span>Close without saving</span><span class="shortcut-keys"><kbd>Esc</kbd></span></div>
+            </div>
+            <div class="shortcuts-section">
+                <h3>Scanning</h3>
+                <div class="shortcut-row"><span>Save scanned text</span><span class="shortcut-keys"><kbd>Ctrl</kbd>+<kbd>S</kbd></span></div>
             </div>
         </div>
     </div>
@@ -1885,14 +2066,6 @@
         }
     });
 
-    document.addEventListener('keydown', (e) => {
-        if (currentScanStep === 'preview') {
-            if (e.ctrlKey && e.key === 's') {
-                e.preventDefault();
-                scanSaveAsNote();
-            }
-        }
-    });
 
     document.addEventListener('DOMContentLoaded', () => {
         if (state.token) {
@@ -2757,20 +2930,185 @@
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
 
+    // ── COMMAND PALETTE ──────────────────────────────────────────
+    const commands = [
+        { id: 'new-note',  title: 'New Note',            icon: '📝', shortcut: 'Ctrl+N', action: () => openModal() },
+        { id: 'scan',      title: 'Scan Handwriting',    icon: '📷', shortcut: '',       action: () => openScanModal() },
+        { id: 'search',    title: 'Search Notes',        icon: '🔍', shortcut: 'Ctrl+F', action: () => focusSearch() },
+        { id: 'settings',  title: 'Settings',            icon: '⚙️', shortcut: 'Ctrl+,', action: () => openSettingsModal() },
+        { id: 'export',    title: 'Export Notes',        icon: '📥', shortcut: '',       action: () => exportNotes() },
+        { id: 'theme',     title: 'Toggle Theme',        icon: '🌓', shortcut: '',       action: () => toggleTheme() },
+        { id: 'recent',    title: 'Recent Notes',        icon: '🕐', shortcut: 'Alt+R',  action: () => navTo('recent') },
+        { id: 'help',      title: 'Keyboard Shortcuts',  icon: '⌨️', shortcut: '?',      action: () => showKeyboardHelp() },
+    ];
+    let _cmdList = commands;
+    let _cmdIdx  = -1;
+
+    function openCommandPalette() {
+        const modal = document.getElementById('command-palette');
+        if (!modal) return;
+        _cmdIdx  = -1;
+        _cmdList = commands;
+        renderCommands(commands);
+        modal.classList.add('open');
+        setTimeout(() => {
+            const inp = document.getElementById('command-search');
+            if (inp) { inp.focus(); inp.value = ''; }
+        }, 50);
+    }
+
+    function closeCommandPalette() {
+        document.getElementById('command-palette')?.classList.remove('open');
+    }
+
+    function renderCommands(list) {
+        const results = document.getElementById('command-results');
+        if (!results) return;
+        results.innerHTML = list.map((cmd, i) => `
+            <div class="command-item${i === _cmdIdx ? ' selected' : ''}" onclick="executeCommand('${cmd.id}')">
+                <span class="command-icon">${cmd.icon}</span>
+                <span class="command-title">${esc(cmd.title)}</span>
+                ${cmd.shortcut ? `<span class="command-shortcut">${esc(cmd.shortcut)}</span>` : ''}
+            </div>
+        `).join('');
+    }
+
+    function executeCommand(id) {
+        const cmd = commands.find(c => c.id === id);
+        if (cmd) { closeCommandPalette(); setTimeout(() => cmd.action(), 50); }
+    }
+
+    function filterCommands(query) {
+        _cmdIdx  = -1;
+        const q  = query.toLowerCase();
+        _cmdList = q ? commands.filter(c => c.title.toLowerCase().includes(q)) : commands;
+        renderCommands(_cmdList);
+    }
+
+    function handleCommandPaletteKey(e) {
+        const items = document.querySelectorAll('#command-results .command-item');
+        if (!items.length) return;
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            _cmdIdx = Math.min(_cmdIdx + 1, items.length - 1);
+            items.forEach((el, i) => el.classList.toggle('selected', i === _cmdIdx));
+            items[_cmdIdx]?.scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            _cmdIdx = Math.max(_cmdIdx - 1, 0);
+            items.forEach((el, i) => el.classList.toggle('selected', i === _cmdIdx));
+            items[_cmdIdx]?.scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (_cmdIdx >= 0 && items[_cmdIdx]) items[_cmdIdx].click();
+            else if (_cmdList.length > 0) executeCommand(_cmdList[0].id);
+        }
+    }
+
+    // ── KEYBOARD HELP ─────────────────────────────────────────────
+    function showKeyboardHelp() {
+        document.getElementById('keyboard-help-modal')?.classList.add('open');
+    }
+
+    function closeKeyboardHelp() {
+        document.getElementById('keyboard-help-modal')?.classList.remove('open');
+    }
+
+    // ── SHORTCUT HELPERS ──────────────────────────────────────────
+    function closeAllModals() {
+        closeModal();
+        closeScanModal();
+        cancelConfirm();
+        document.getElementById('settings-modal').classList.remove('open');
+        document.getElementById('help-modal').classList.remove('open');
+        closeCommandPalette();
+        closeKeyboardHelp();
+    }
+
+    function focusSearch() {
+        const bar = document.getElementById('search-bar');
+        if (bar && bar.classList.contains('hidden')) bar.classList.remove('hidden');
+        setTimeout(() => {
+            const inp = document.getElementById('search-input');
+            if (inp) { inp.focus(); inp.select(); }
+        }, 50);
+    }
+
+    function handleSaveShortcut() {
+        const noteModal = document.getElementById('note-modal');
+        const scanModal = document.getElementById('scan-modal');
+        if (noteModal?.classList.contains('open')) {
+            saveNote();
+        } else if (scanModal?.classList.contains('open') && currentScanStep === 'preview') {
+            scanSaveAsNote();
+        } else {
+            toast('Nothing to save', 'info');
+        }
+    }
+
+    // ── GLOBAL KEYBOARD SHORTCUTS ─────────────────────────────────
     const _kc = [38,38,40,40,37,39,37,39,66,65];
     let _kp = 0;
     document.addEventListener('keydown', e => {
+        // Konami code
         _kp = (e.keyCode === _kc[_kp]) ? _kp + 1 : 0;
         if (_kp === _kc.length) { _kp = 0; _launchConfetti(); }
-        if (e.key === 'Escape') {
-            closeModal();
-            closeScanModal();
-            cancelConfirm();
-            document.getElementById('settings-modal').classList.remove('open');
-            document.getElementById('help-modal').classList.remove('open');
+
+        const isTyping = ['INPUT', 'TEXTAREA'].includes(e.target.tagName);
+        const mod = e.ctrlKey || e.metaKey;
+
+        // Escape – close everything
+        if (e.key === 'Escape') { e.preventDefault(); closeAllModals(); return; }
+
+        // Skip non-modifier shortcuts while typing
+        if (isTyping && !mod && !e.altKey) return;
+
+        // Ctrl+K – Command palette
+        if (mod && e.key === 'k') { e.preventDefault(); openCommandPalette(); return; }
+
+        // Ctrl+N – New note
+        if (mod && e.key === 'n') {
+            e.preventDefault();
+            openModal();
+            setTimeout(() => document.getElementById('note-title')?.focus(), 100);
+            return;
         }
-        if (e.ctrlKey && e.key === 'n') { e.preventDefault(); openModal(); }
-        if (e.ctrlKey && e.key === 'f') { e.preventDefault(); navTo('search'); }
+
+        // Ctrl+F – Search
+        if (mod && e.key === 'f') { e.preventDefault(); focusSearch(); return; }
+
+        // / – Focus search (not when typing)
+        if (e.key === '/' && !isTyping) { e.preventDefault(); focusSearch(); return; }
+
+        // Ctrl+, – Settings
+        if (mod && e.key === ',') { e.preventDefault(); openSettingsModal(); return; }
+
+        // Ctrl+S – Context-aware save
+        if (mod && e.key === 's') { e.preventDefault(); handleSaveShortcut(); return; }
+
+        // Ctrl+Enter – Save and close note
+        if (mod && e.key === 'Enter') {
+            e.preventDefault();
+            if (document.getElementById('note-modal')?.classList.contains('open')) saveNote();
+            return;
+        }
+
+        // ? – Keyboard help (not when typing)
+        if (e.key === '?' && !isTyping) { e.preventDefault(); showKeyboardHelp(); return; }
+
+        // 1-4 – Category navigation (not when typing)
+        if (!isTyping && ['1','2','3','4'].includes(e.key)) {
+            const cats = ['all','personal','work','ideas'];
+            const cat  = cats[parseInt(e.key) - 1];
+            filterCat(cat, document.querySelector(`.filter-tab[data-cat="${cat}"]`));
+            return;
+        }
+
+        // Alt+R – Recent
+        if (e.altKey && e.key === 'r') { e.preventDefault(); navTo('recent'); return; }
+
+        // Alt+H – Home
+        if (e.altKey && e.key === 'h') { e.preventDefault(); navTo('home'); return; }
     });
     function _launchConfetti() {
         const colors = ['#FFD60A','#EC4899','#10B981','#3B82F6','#F97316','#8B5CF6'];
