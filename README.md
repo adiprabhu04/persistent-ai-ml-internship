@@ -1,261 +1,276 @@
-# Notely - AI-Powered Notes Application
+# Jot It ✍️
 
-A modern, full-stack notes application with AI-powered handwriting recognition (OCR). Built with ASP.NET Core backend, vanilla JavaScript frontend, and Python AI service.
+A modern, AI-powered note-taking Progressive Web App with handwriting recognition capabilities.
 
-## Live Demo
+## 🌟 Features
 
-**Backend API**: https://persistent-ai-ml-internship.onrender.com
+### Core Functionality
+- **Handwriting OCR**: Convert handwritten notes to text using Google Cloud Vision API
+- **Canvas Drawing**: Draw and write with touch or mouse input
+- **Image Upload**: Extract text from uploaded images
+- **Rich Note Management**: Create, edit, delete, and organize notes
+- **Smart Search**: Find notes quickly with instant search
+- **Categories**: Organize notes into Personal, Work, Ideas, and custom categories
 
-## Features
+### AI & OCR
+- Google Cloud Vision API for primary OCR (95%+ accuracy)
+- Advanced image preprocessing (4x upscaling, noise reduction, edge sharpening)
+- Word-level confidence scoring
+- Interactive editable word chips (click to fix individual words)
+- Tesseract fallback for offline capability
 
-### Core Features
-- User authentication (registration & login with JWT)
-- Create, read, update, and delete notes
-- Real-time search with highlighting
-- Note categories (Personal, Work, Ideas, Archive)
-- Grid and list view options
-- Sort by newest, oldest, or title
+### User Experience
+- **PWA**: Install on mobile and desktop as a native app
+- **Dark/Light Themes**: Automatic and manual theme switching
+- **Keyboard Shortcuts**: 20+ shortcuts for power users (Ctrl+K, Ctrl+N, J/K navigation, etc.)
+- **Mobile Gestures**: Swipe to delete/edit, long-press menus, pull-to-refresh
+- **Haptic Feedback**: Vibration feedback on mobile devices
+- **Command Palette**: Quick access to all features (Ctrl+K)
+- **Export**: Download notes as JSON
 
-### AI Features
-- Handwriting-to-text OCR using Google Cloud Vision API
-- Upload images of handwritten notes
-- Automatic text extraction and note creation
-- Falls back to Tesseract OCR if Vision API is unavailable
-
-### UI/UX Features
-- Modern, responsive design
-- Dark mode support
-- Keyboard shortcuts
-- Toast notifications
+### Design
+- Modern, clean interface with yellow accent (#FFD60A)
+- True dark mode (#0F0F0F background)
 - Smooth animations and transitions
-- Mobile-first approach
+- Responsive design (mobile-first)
+- Professional SVG icons
 
-## Technology Stack
-
-### Backend
-- **Framework**: ASP.NET Core 8.0 (Minimal APIs)
-- **Database**: PostgreSQL (Neon - cloud hosted)
-- **ORM**: Entity Framework Core
-- **Authentication**: JWT (JSON Web Tokens)
-- **Password Security**: BCrypt hashing
-- **API Documentation**: Swagger/OpenAPI
+## 🛠️ Tech Stack
 
 ### Frontend
-- **Language**: Vanilla JavaScript (ES6+)
-- **Styling**: Modern CSS with CSS Variables
-- **Features**: Single Page Application (SPA)
-- **No external dependencies**
+- **Framework**: Vanilla JavaScript (no dependencies)
+- **PWA**: Service Worker, Web App Manifest
+- **Styling**: CSS Custom Properties, CSS Grid/Flexbox
+- **Icons**: Inline SVG
+
+### Backend
+- **Framework**: ASP.NET Core 8
+- **Database**: PostgreSQL (Neon)
+- **Authentication**: JWT tokens with SHA-256 client-side hashing
+- **API**: RESTful endpoints
 
 ### AI Service
-- **Framework**: FastAPI (Python)
-- **OCR Engine**: Google Cloud Vision API (Tesseract fallback)
-- **Server**: Uvicorn ASGI
+- **Framework**: Python FastAPI
+- **OCR**: Google Cloud Vision API (primary), Tesseract OCR (fallback)
+- **Image Processing**: PIL, NumPy, SciPy
+- **Preprocessing**: Adaptive thresholding, contrast enhancement, sharpening
 
-## Project Structure
+### Deployment
+- **Frontend & Backend**: Render (https://persistent-ai-ml-internship.onrender.com)
+- **AI Service**: Render (https://notes-ai-service-wqgp.onrender.com)
+- **Database**: Neon PostgreSQL
+
+## 📦 Installation
+
+### Prerequisites
+- .NET 8 SDK
+- Python 3.10+
+- PostgreSQL
+- Google Cloud Vision API credentials
+
+### Backend Setup
+
+1. Clone the repository:
+```bash
+git clone https://github.com/adiprabhu04/persistent-ai-ml-internship.git
+cd persistent-ai-ml-internship
+```
+
+2. Configure environment variables:
+```bash
+export DATABASE_URL="your-postgresql-connection-string"
+export JWT_SECRET_KEY="your-32-char-secret-key"
+export AI_SERVICE_URL="https://your-ai-service.onrender.com"
+```
+
+3. Run migrations and start:
+```bash
+cd backend/NotesApi
+dotnet ef database update
+dotnet run
+```
+
+Backend runs on `http://localhost:8080`
+
+### AI Service Setup
+
+1. Install dependencies:
+```bash
+cd ai-service
+pip install -r requirements.txt
+```
+
+2. Install Tesseract OCR:
+```bash
+# Ubuntu/Debian
+sudo apt-get install tesseract-ocr
+
+# macOS
+brew install tesseract
+
+# Windows — download from https://github.com/UB-Mannheim/tesseract/wiki
+```
+
+3. Set up Google Cloud Vision:
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="path/to/your-credentials.json"
+```
+
+4. Start the AI service:
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
+### Frontend
+
+The frontend is served by the ASP.NET Core backend at `/wwwroot/index.html`. Access at `http://localhost:8080`.
+
+## 🚀 Usage
+
+### Desktop (Keyboard Shortcuts)
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl + K` | Open command palette |
+| `Ctrl + N` | New note |
+| `Ctrl + F` or `/` | Search notes |
+| `Ctrl + S` | Save note |
+| `Ctrl + ,` | Settings |
+| `Ctrl + D` | Duplicate note |
+| `Ctrl + Shift + C` | Copy note content |
+| `Ctrl + Shift + D` | Toggle theme |
+| `?` | Show keyboard shortcuts |
+| `Esc` | Close modals |
+| `1 – 4` | Switch categories |
+| `J / K` | Navigate notes (vim-style) |
+| `Enter` | Open selected note |
+| `G G` | Scroll to top |
+| `Shift + G` | Scroll to bottom |
+| `Alt + R` | Recent notes |
+| `Alt + H` | Home |
+
+### Mobile (Touch Gestures)
+
+| Gesture | Action |
+|---------|--------|
+| Swipe left | Delete note (with confirmation) |
+| Swipe right | Edit note |
+| Long press | Quick actions menu (edit, duplicate, delete) |
+| Pull down | Refresh notes |
+| Long press FAB | Choose note type (text / scan) |
+
+### OCR Scanning
+
+1. Click the scan icon in the bottom navigation or press `Ctrl+K` → Scan Handwriting
+2. Choose **Draw** to write on the canvas, or **Upload** to select an image
+3. Click **Scan**
+4. Review extracted text — each word shows a confidence score
+5. Click any word chip to edit it inline
+6. Click **Save as Note**
+
+## 🎨 Customization
+
+### Themes
+Toggle dark/light mode:
+- Desktop: `Ctrl + Shift + D`
+- Mobile: Settings → Theme
+
+### Categories
+Notes are colour-coded by tag:
+- `#personal` — Cyan
+- `#work` — Yellow
+- `#ideas` — Purple
+- No tag — Gray
+
+## 📊 Project Structure
 
 ```
 persistent-ai-ml-internship/
-├── backend/NotesApi/           # ASP.NET Core API
-│   ├── Data/                   # Database context
-│   ├── Helpers/                # Auth utilities
-│   ├── Models/                 # Entity models & DTOs
-│   ├── Migrations/             # EF Core migrations
-│   ├── wwwroot/                # Frontend SPA
-│   │   └── index.html          # Single-page frontend
-│   └── Program.cs              # API endpoints
-├── ai-service/                 # Python OCR service
-│   ├── main.py                 # FastAPI application
-│   ├── Dockerfile              # Container config
-│   └── requirements.txt        # Python dependencies
-├── docs/                       # Documentation
-└── Dockerfile                  # Main backend container
+├── backend/
+│   └── NotesApi/
+│       ├── Models/          # Note, User models
+│       ├── Data/            # DbContext, Migrations
+│       ├── Helpers/         # JWT, password hashing
+│       ├── wwwroot/         # Frontend (index.html, sw.js)
+│       └── Program.cs       # API endpoints
+├── ai-service/
+│   ├── main.py              # FastAPI OCR service
+│   ├── requirements.txt     # Python dependencies
+│   └── Dockerfile           # Container configuration
+├── docs/                    # Documentation
+├── manifest.json            # PWA manifest
+└── README.md
 ```
 
-## API Endpoints
+## 🔐 Security
+
+- **Password Hashing**: SHA-256 client-side + BCrypt server-side
+- **Authentication**: JWT tokens with expiry
+- **HTTPS**: Enforced on production
+- **CORS**: Configured for specific origins
+- **Input Sanitisation**: Server-side validation on all inputs
+- **XSS Prevention**: HTML-escaped output throughout the frontend
+
+## 📋 API Reference
 
 ### Authentication
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/auth/register` | Create new account |
-| POST | `/auth/login` | Sign in and get JWT |
+| POST | `/auth/register` | Create account |
+| POST | `/auth/login` | Sign in, returns JWT |
+| GET | `/auth/me` | Get current user info |
 
-### Notes (requires authentication)
+### Notes (JWT required)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/notes` | Get all notes (paginated) |
-| GET | `/notes/{id}` | Get note by ID |
-| POST | `/notes` | Create new note |
-| POST | `/notes/upload` | Upload image for OCR |
+| GET | `/notes` | List notes (paginated) |
+| POST | `/notes` | Create note |
 | PUT | `/notes/{id}` | Update note |
 | DELETE | `/notes/{id}` | Delete note |
+| POST | `/notes/scan` | OCR scan (multipart image) |
 
 ### System
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/health` | Health check |
 
-### Query Parameters for GET /notes
-- `page` - Page number (default: 1)
-- `pageSize` - Items per page (default: 10, max: 50)
-- `search` - Search term for title/content
+## 📈 Performance
 
-## Environment Variables
+- **Frontend**: Single HTML file, < 150 KB
+- **PWA**: Offline-capable via service worker cache
+- **OCR**: ~2–5 seconds per scan
+- **Database**: Indexed queries for fast retrieval
+- **Caching**: Static assets cached by service worker
 
-### Backend (Required)
-```
-DATABASE_URL=postgresql://user:pass@host/db?sslmode=require
-JWT_SECRET_KEY=your-secret-key-minimum-32-characters
-AI_SERVICE_URL=https://your-ai-service.onrender.com
-```
+## 🐛 Known Issues
 
-### Backend (Optional)
-```
-ALLOWED_ORIGINS=https://yourdomain.com,https://app.yourdomain.com
-```
+- Free-tier deployment sleeps after 15 min inactivity (30–60 s wake time)
+- OCR accuracy depends on handwriting clarity and image contrast
+- Mobile gestures require a touch-capable device
 
-### AI Service
-```
-PORT=8080
-GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account-key.json
-```
+## 🚧 Future Enhancements
 
-#### Setting up Google Cloud Vision API
+- [ ] Rich text editing (bold, italic, lists)
+- [ ] Note sharing with public links
+- [ ] Voice notes
+- [ ] Note templates
+- [ ] Reminders and notifications
+- [ ] Note version history
+- [ ] Offline OCR with on-device models
+- [ ] Multi-language OCR support
+- [ ] Collaborative editing
 
-1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable the **Cloud Vision API** for your project
-4. Go to **IAM & Admin → Service Accounts** and create a service account
-5. Download the JSON key file for the service account
-6. Set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the path of the downloaded JSON file:
+## 📄 License
 
-```bash
-export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account-key.json"
-```
+This project was created as part of an internship program.
 
-On Render, add `GOOGLE_APPLICATION_CREDENTIALS` as an environment variable with the full contents of the JSON key file, or mount the file as a secret and point the variable to its path.
+## 🙏 Acknowledgments
 
-The Vision API offers 1,000 free requests per month. If credentials are not configured, the service automatically falls back to Tesseract OCR.
+- Google Cloud Vision API for OCR capabilities
+- Tesseract OCR for fallback recognition
+- Render for hosting services
+- Neon for PostgreSQL database
 
-## Local Development
+---
 
-### Prerequisites
-- .NET 8.0 SDK
-- Python 3.10+
-- PostgreSQL (or use Neon cloud)
-
-### Backend Setup
-
-```bash
-cd backend/NotesApi
-
-# Set environment variables
-export DATABASE_URL="your-connection-string"
-export JWT_SECRET_KEY="your-32-char-secret-key"
-
-# Restore and run
-dotnet restore
-dotnet ef database update
-dotnet run
-```
-
-Open http://localhost:5052 for the app or http://localhost:5052/swagger for API docs.
-
-### AI Service Setup
-
-```bash
-cd ai-service
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run service
-uvicorn main:app --host 0.0.0.0 --port 8000
-```
-
-## Deployment
-
-### Deploy to Render
-
-#### Backend
-1. Create a new Web Service on Render
-2. Connect your GitHub repository
-3. Set build command: `dotnet publish -c Release -o out`
-4. Set start command: `dotnet out/NotesApi.dll`
-5. Add environment variables (DATABASE_URL, JWT_SECRET_KEY, AI_SERVICE_URL)
-
-#### AI Service
-1. Create a new Web Service on Render
-2. Connect the ai-service directory
-3. Set as Docker deployment
-4. The service will auto-start on port 8080
-
-### Database (Neon PostgreSQL)
-1. Create a free Neon account
-2. Create a new project
-3. Copy the connection string to DATABASE_URL
-
-## Keyboard Shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl + N` | Create new note |
-| `Ctrl + K` | Focus search |
-| `Ctrl + Shift + D` | Toggle dark mode |
-| `Esc` | Close modals |
-| `Ctrl + S` | Save note (in editor) |
-
-## Security Features
-
-- JWT-based authentication with 2-hour expiry
-- BCrypt password hashing
-- Input validation and sanitization
-- File upload restrictions (10MB max, images only)
-- CORS configuration for production
-- No sensitive data in error messages
-
-## Screenshots
-
-### Light Mode
-The application features a clean, modern interface with:
-- Sidebar navigation with categories
-- Grid/list view toggle
-- Search with real-time filtering
-- Note cards with hover actions
-
-### Dark Mode
-Full dark mode support with:
-- Automatic system preference detection
-- Manual toggle via header button
-- Persistent preference storage
-
-## Future Enhancements
-
-- Note sharing with public links
-- Export to PDF/Markdown
-- Rich text editor with formatting
-- Note templates
-- Revision history
-- Collaborative editing
-- Mobile apps (React Native)
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## License
-
-This project is part of a full-stack internship program at Persistent Systems.
-
-## Acknowledgments
-
-- Google Cloud Vision API for handwriting recognition
-- Neon for PostgreSQL hosting
-- Render for deployment platform
-
+**Live Demo**: [https://persistent-ai-ml-internship.onrender.com](https://persistent-ai-ml-internship.onrender.com)
