@@ -482,7 +482,7 @@
         .notes-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 12px;
+            gap: 20px;
         }
 
         @media (min-width: 540px) {
@@ -492,29 +492,36 @@
             .notes-grid { grid-template-columns: repeat(3, 1fr); }
         }
 
+        @media (max-width: 539px) {
+            .notes-grid { gap: 16px; }
+            .note-card { min-height: 160px; }
+        }
+
         /* ── NOTE CARDS ──────────────────────────────────────── */
         .note-card {
             position: relative;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 16px;
-            padding-top: 20px;
+            padding: 20px;
+            padding-top: 28px;
             cursor: pointer;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
+            min-height: 180px;
             box-shadow: var(--shadow-sm);
-            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s, background 0.3s;
             animation: cardIn 0.25s ease both;
             overflow: hidden;
         }
         .note-card:hover {
-            transform: translateY(-2px) scale(1.01);
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px var(--border);
             border-color: rgba(255,214,10,0.4);
+            background: linear-gradient(135deg, var(--surface) 0%, var(--surface-secondary) 100%);
         }
-        .note-card:active { transform: scale(0.98); }
+        .note-card:active { transform: translateY(-2px); }
 
         /* Colored top accent stripe */
         .note-card-accent {
@@ -522,7 +529,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 8px;
             border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         }
 
@@ -531,41 +538,75 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            padding-right: 28px;
+            flex: 1;
         }
 
         .note-card-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             color: var(--text);
-            line-height: 1.35;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
             letter-spacing: -0.2px;
         }
 
         .note-card-preview {
             font-size: 14px;
             color: var(--text-secondary);
-            line-height: 1.55;
+            line-height: 1.6;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 4;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        .note-card-date {
+        .note-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             font-size: 12px;
-            color: var(--text-tertiary);
-            padding-top: 2px;
+            color: var(--text-secondary);
+            margin-top: auto;
         }
+
+        .note-card-time {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0.7;
+        }
+
+        .note-card-time svg {
+            width: 14px;
+            height: 14px;
+            opacity: 0.6;
+            flex-shrink: 0;
+        }
+
+        .note-card-category {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            background: var(--surface-secondary);
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+        .note-card-category.cat-personal { color: #06B6D4; background: rgba(6, 182, 212, 0.12); }
+        .note-card-category.cat-work     { color: #FFD60A; background: rgba(255, 214, 10, 0.12); }
+        .note-card-category.cat-ideas    { color: #A855F7; background: rgba(168, 85, 247, 0.12); }
+        .note-card-category.cat-scanned  { color: #EF4444; background: rgba(239, 68, 68, 0.12); }
+        .note-card-category.cat-general  { color: #9CA3AF; background: rgba(107, 114, 128, 0.12); }
 
         /* Delete button (shows on hover) */
         .note-card-delete {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
+            top: 14px;
+            right: 12px;
             background: none;
             border: none;
             color: var(--text-secondary);
@@ -593,14 +634,21 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 16px;
+            padding: 20px;
+            padding-top: 28px;
+            min-height: 180px;
             animation: cardIn 0.25s ease both;
         }
         .skeleton-line {
-            background: var(--surface-secondary);
+            background: linear-gradient(90deg, var(--surface-secondary) 25%, var(--border) 50%, var(--surface-secondary) 75%);
+            background-size: 200% 100%;
             border-radius: 6px;
             margin-bottom: 8px;
-            animation: shimmer 1.4s ease infinite;
+            animation: skeletonLoad 1.5s infinite;
+        }
+        @keyframes skeletonLoad {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
         @keyframes shimmer {
             0%, 100% { opacity: 1; }
@@ -2210,6 +2258,16 @@
         return '#9CA3AF';
     }
 
+    function getCategoryInfo(note) {
+        const content = (note.content || '').toLowerCase();
+        const title = (note.title || '').toLowerCase();
+        if (title.startsWith('scanned')) return { gradient: 'linear-gradient(90deg, #EF4444 0%, #DC2626 100%)', name: 'Scanned', cls: 'cat-scanned' };
+        if (content.includes('#work'))     return { gradient: 'linear-gradient(90deg, #FFD60A 0%, #F59E0B 100%)', name: 'Work', cls: 'cat-work' };
+        if (content.includes('#personal')) return { gradient: 'linear-gradient(90deg, #06B6D4 0%, #0891B2 100%)', name: 'Personal', cls: 'cat-personal' };
+        if (content.includes('#idea'))     return { gradient: 'linear-gradient(90deg, #A855F7 0%, #9333EA 100%)', name: 'Ideas', cls: 'cat-ideas' };
+        return { gradient: 'linear-gradient(90deg, #6B7280 0%, #4B5563 100%)', name: 'General', cls: 'cat-general' };
+    }
+
     function updateNoteCount(total) {
         const el = document.getElementById('note-count-display');
         if (el) el.textContent = `${total} note${total !== 1 ? 's' : ''}`;
@@ -2639,17 +2697,25 @@
             el.dataset.id = note.id;
             el.style.animationDelay = `${i * 0.04}s`;
 
-            const accentColor = getCategoryColor(note);
+            const catInfo = getCategoryInfo(note);
             const preview = (note.content || '').replace(/#\w+/g, '').trim();
-            const previewText = preview.length > 100 ? preview.substring(0, 100) + '…' : preview;
+            const previewText = preview.length > 150 ? preview.substring(0, 150) + '…' : preview;
             const dateStr = relativeTime(note.updatedAt);
 
             el.innerHTML = `
-                <div class="note-card-accent" style="background-color:${accentColor}"></div>
+                <div class="note-card-accent" style="background:${catInfo.gradient}"></div>
                 <div class="note-card-content">
                     <h3 class="note-card-title">${esc(note.title)}</h3>
                     <p class="note-card-preview">${esc(previewText)}</p>
-                    <p class="note-card-date">${dateStr}</p>
+                </div>
+                <div class="note-card-footer">
+                    <div class="note-card-time">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+                        </svg>
+                        <span>${dateStr}</span>
+                    </div>
+                    <span class="note-card-category ${catInfo.cls}">${catInfo.name}</span>
                 </div>
                 <button class="note-card-delete btn" onclick="deleteNote(event, '${note.id}')" aria-label="Delete note">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
