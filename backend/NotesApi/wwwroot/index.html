@@ -184,11 +184,13 @@
 
         .auth-tabs {
             display: flex;
-            background: var(--surface-secondary);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-md);
             padding: 3px;
             margin-bottom: 24px;
         }
+        [data-theme="light"] .auth-tabs { background: rgba(0, 0, 0, 0.06); }
 
         .auth-tab {
             flex: 1;
@@ -200,10 +202,11 @@
             transition: all 0.2s ease;
         }
         .auth-tab.active {
-            background: var(--surface);
+            background: rgba(255, 255, 255, 0.12);
             color: var(--text);
             box-shadow: var(--shadow-sm);
         }
+        [data-theme="light"] .auth-tab.active { background: rgba(255, 255, 255, 0.8); }
 
         .input-group { margin-bottom: 14px; }
         .input-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -211,16 +214,31 @@
         .form-input {
             width: 100%;
             padding: 11px 14px;
-            border: 1.5px solid var(--border);
+            border: 1.5px solid var(--glass-border);
             border-radius: var(--radius-sm);
-            background: var(--surface-secondary);
+            background: rgba(255, 255, 255, 0.08);
             color: var(--text);
-            font-size: 15px;
+            font-size: 16px; /* 16px prevents iOS auto-zoom */
             font-family: inherit;
-            transition: border-color 0.15s;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            /* Mobile Safari fixes */
+            -webkit-appearance: none;
+            appearance: none;
+            display: block;
+            box-sizing: border-box;
+            opacity: 1;
+            visibility: visible;
+            min-height: 44px;
         }
-        .form-input:focus { border-color: var(--accent); background: var(--surface); }
-        .form-input::placeholder { color: var(--text-tertiary); }
+        [data-theme="light"] .form-input { background: rgba(255, 255, 255, 0.7); }
+        .form-input:focus {
+            border-color: rgba(var(--accent-rgb), 0.6);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
+            outline: none;
+        }
+        [data-theme="light"] .form-input:focus { background: rgba(255, 255, 255, 0.9); }
+        .form-input::placeholder { color: var(--text-tertiary); opacity: 1; }
 
         .btn-primary {
             width: 100%;
