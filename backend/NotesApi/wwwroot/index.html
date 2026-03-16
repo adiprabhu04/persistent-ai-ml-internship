@@ -16,6 +16,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* CRITICAL: Mobile auth input override */
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border: 2px solid #FFD60A !important;
+            color: #ffffff !important;
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            min-height: 44px !important;
+            padding: 12px !important;
+            font-size: 16px !important;
+            margin: 8px 0 !important;
+            -webkit-appearance: none !important;
+            appearance: none !important;
+        }
+
         /* ── DESIGN TOKENS ───────────────────────────────────── */
         :root {
             /* Dark mode (default) */
