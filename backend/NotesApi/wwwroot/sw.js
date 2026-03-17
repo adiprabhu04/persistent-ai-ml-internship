@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jotit-v4';
+const CACHE_NAME = 'jotit-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

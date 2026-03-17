@@ -17,13 +17,22 @@
 
     <style>
         /* Mobile Safari auth input fix */
-        input[type="email"],
-        input[type="password"],
-        input[type="text"] {
+        [data-theme="dark"] input[type="email"],
+        [data-theme="dark"] input[type="password"],
+        [data-theme="dark"] input[type="text"] {
           -webkit-text-fill-color: #ffffff !important;
           color: #ffffff !important;
           opacity: 1 !important;
-          -webkit-opacity: 1 !important;
+          -webkit-transform: translateZ(0);
+          transform: translateZ(0);
+        }
+
+        [data-theme="light"] input[type="email"],
+        [data-theme="light"] input[type="password"],
+        [data-theme="light"] input[type="text"] {
+          -webkit-text-fill-color: #1a1a2e !important;
+          color: #1a1a2e !important;
+          opacity: 1 !important;
           -webkit-transform: translateZ(0);
           transform: translateZ(0);
         }
@@ -222,6 +231,10 @@
 
         .input-group { margin-bottom: 14px; }
         .input-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        [data-theme="light"] .input-group label {
+          color: #1a1a2e !important;
+          -webkit-text-fill-color: #1a1a2e !important;
+        }
 
         .form-input {
             width: 100%;
@@ -252,7 +265,16 @@
             outline: none;
         }
         [data-theme="light"] .form-input:focus { background: rgba(255, 255, 255, 0.9); }
-        .form-input::placeholder { color: var(--text-tertiary); opacity: 1; -webkit-text-fill-color: var(--text-tertiary); }
+        [data-theme="dark"] .form-input::placeholder {
+          -webkit-text-fill-color: rgba(255,255,255,0.4) !important;
+          color: rgba(255,255,255,0.4) !important;
+          opacity: 1 !important;
+        }
+        [data-theme="light"] .form-input::placeholder {
+          -webkit-text-fill-color: rgba(30,30,46,0.4) !important;
+          color: rgba(30,30,46,0.4) !important;
+          opacity: 1 !important;
+        }
         input:-webkit-autofill,
         input:-webkit-autofill:hover,
         input:-webkit-autofill:focus {
