@@ -57,9 +57,11 @@ export default function AuthScreen({ onAuthSuccess }) {
     setLoading(true);
     try {
       console.log('Register request:', JSON.stringify({ url: '/auth/register', body: { name: name.trim(), email: email.trim() } }));
-      const res = await register(name.trim(), email.trim(), password);
-      await AsyncStorage.setItem('token', res.data.token);
-      await AsyncStorage.setItem('user', JSON.stringify(res.data.user));
+      await register(name.trim(), email.trim(), password);
+      console.log('Login request (post-register):', JSON.stringify({ url: '/auth/login', body: { email: email.trim() } }));
+      const loginRes = await login(email.trim(), password);
+      await AsyncStorage.setItem('token', loginRes.data.token);
+      await AsyncStorage.setItem('user', JSON.stringify(loginRes.data.user));
       onAuthSuccess();
     } catch (err) {
       console.log('Register error:', JSON.stringify({
