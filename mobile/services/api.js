@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BASE_URL = 'https://persistent-ai-ml-internship.onrender.com/api';
+const BASE_URL = 'https://persistent-ai-ml-internship.onrender.com';
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -43,7 +43,7 @@ export const scanImage = async (imageUri) => {
     type,
   });
 
-  return api.post('/ocr/scan', formData, {
+  return api.post('/notes/scan', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 };
