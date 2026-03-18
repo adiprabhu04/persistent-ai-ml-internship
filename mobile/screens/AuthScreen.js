@@ -32,7 +32,7 @@ export default function AuthScreen({ onAuthSuccess }) {
       console.log('Login request:', JSON.stringify({ url: '/auth/login', body: { email: email.trim() } }));
       const res = await login(email.trim(), password);
       await AsyncStorage.setItem('token', res.data.token);
-      await AsyncStorage.setItem('user', JSON.stringify({ id: res.data.user.id, email: res.data.user.email, name: res.data.name }));
+      await AsyncStorage.setItem('user', JSON.stringify({ id: res.data.user.id, email: res.data.user.email, name: res.data.name || res.data.user?.name || '' }));
       onAuthSuccess();
     } catch (err) {
       console.log('Login error:', JSON.stringify({
@@ -61,7 +61,7 @@ export default function AuthScreen({ onAuthSuccess }) {
       console.log('Login request (post-register):', JSON.stringify({ url: '/auth/login', body: { email: email.trim() } }));
       const loginRes = await login(email.trim(), password);
       await AsyncStorage.setItem('token', loginRes.data.token);
-      await AsyncStorage.setItem('user', JSON.stringify({ id: loginRes.data.user.id, email: loginRes.data.user.email, name: loginRes.data.name }));
+      await AsyncStorage.setItem('user', JSON.stringify({ id: loginRes.data.user.id, email: loginRes.data.user.email, name: loginRes.data.name || loginRes.data.user?.name || '' }));
       onAuthSuccess();
     } catch (err) {
       console.log('Register error:', JSON.stringify({

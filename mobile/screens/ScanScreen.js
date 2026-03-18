@@ -177,6 +177,7 @@ const styles = StyleSheet.create({
   },
   scroll: {
     padding: 16,
+    paddingTop: 50,
     paddingBottom: 40,
   },
   title: {

@@ -45,7 +45,7 @@ export default function SettingsScreen({ onLogout }) {
           </Text>
         </View>
         <View style={styles.profileInfo}>
-          <Text style={styles.profileName}>{user?.name || 'Unknown'}</Text>
+          <Text style={styles.profileName}>{user?.name || user?.email || 'User'}</Text>
           <Text style={styles.profileEmail}>{user?.email || ''}</Text>
         </View>
       </View>
@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0f0f1a',
     padding: 16,
+    paddingTop: 50,
   },
   pageTitle: {
     fontSize: 26,
