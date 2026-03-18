@@ -9,6 +9,7 @@ import {
   Alert,
   Animated,
   PanResponder,
+  TextInput,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { getNotes, deleteNote } from '../services/api';
@@ -16,10 +17,10 @@ import { getNotes, deleteNote } from '../services/api';
 const CATEGORIES = ['All', 'Personal', 'Work', 'Ideas'];
 
 const CATEGORY_COLORS = {
-  Personal: '#a78bfa',
-  Work: '#60a5fa',
-  Ideas: '#34d399',
-  General: '#f87171',
+  Personal: '#60a5fa',
+  Work: '#fb923c',
+  Ideas: '#a78bfa',
+  General: '#94a3b8',
 };
 
 function NoteCard({ note, onPress, onDelete }) {
@@ -68,8 +69,8 @@ function NoteCard({ note, onPress, onDelete }) {
             </Text>
           </View>
         </View>
-        <Text style={styles.cardContent} numberOfLines={2}>
-          {note.content || ''}
+        <Text style={styles.cardContent} numberOfLines={1}>
+          {(note.content || '').slice(0, 80)}
         </Text>
         <Text style={styles.cardDate}>{dateStr}</Text>
       </TouchableOpacity>
@@ -84,6 +85,7 @@ export default function HomeScreen({ navigation }) {
   const [notes, setNotes] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [search, setSearch] = useState('');
 
   const fetchNotes = useCallback(async () => {
     try {
@@ -115,12 +117,17 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
-  const filtered =
-    activeCategory === 'All'
-      ? notes
-      : notes.filter(
-          (n) => (n.category || 'General').toLowerCase() === activeCategory.toLowerCase()
-        );
+  const filtered = notes
+    .filter((n) =>
+      activeCategory === 'All'
+        ? true
+        : (n.category || 'General').toLowerCase() === activeCategory.toLowerCase()
+    )
+    .filter((n) => {
+      if (!search.trim()) return true;
+      const q = search.toLowerCase();
+      return (n.title || '').toLowerCase().includes(q) || (n.content || '').toLowerCase().includes(q);
+    });
 
   return (
     <View style={styles.container}>
@@ -130,6 +137,15 @@ export default function HomeScreen({ navigation }) {
           <Ionicons name="settings-outline" size={24} color="#ffffff" />
         </TouchableOpacity>
       </View>
+
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search notes..."
+        placeholderTextColor="rgba(255,255,255,0.35)"
+        value={search}
+        onChangeText={setSearch}
+        returnKeyType="search"
+      />
 
       <View style={styles.filterRow}>
         {CATEGORIES.map((cat) => (
@@ -190,8 +206,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 50,
     paddingBottom: 12,
+  },
+  searchBar: {
+    marginHorizontal: 16,
+    marginBottom: 12,
+    backgroundColor: '#1a1a2e',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: '#ffffff',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
   },
   headerTitle: {
     fontSize: 28,
