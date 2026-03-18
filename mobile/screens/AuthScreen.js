@@ -29,11 +29,19 @@ export default function AuthScreen({ onAuthSuccess }) {
     }
     setLoading(true);
     try {
+      console.log('Login request:', JSON.stringify({ url: '/auth/login', body: { email: email.trim() } }));
       const res = await login(email.trim(), password);
       await AsyncStorage.setItem('token', res.data.token);
       await AsyncStorage.setItem('user', JSON.stringify(res.data.user));
       onAuthSuccess();
     } catch (err) {
+      console.log('Login error:', JSON.stringify({
+        message: err.message,
+        status: err.response?.status,
+        data: err.response?.data,
+        url: err.config?.url,
+        baseURL: err.config?.baseURL,
+      }));
       const msg = err.response?.data?.message || 'Invalid email or password.';
       Alert.alert('Sign In Failed', msg);
     } finally {
@@ -48,11 +56,19 @@ export default function AuthScreen({ onAuthSuccess }) {
     }
     setLoading(true);
     try {
+      console.log('Register request:', JSON.stringify({ url: '/auth/register', body: { name: name.trim(), email: email.trim() } }));
       const res = await register(name.trim(), email.trim(), password);
       await AsyncStorage.setItem('token', res.data.token);
       await AsyncStorage.setItem('user', JSON.stringify(res.data.user));
       onAuthSuccess();
     } catch (err) {
+      console.log('Register error:', JSON.stringify({
+        message: err.message,
+        status: err.response?.status,
+        data: err.response?.data,
+        url: err.config?.url,
+        baseURL: err.config?.baseURL,
+      }));
       const msg = err.response?.data?.message || 'Registration failed.';
       Alert.alert('Registration Failed', msg);
     } finally {
