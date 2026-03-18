@@ -12,7 +12,7 @@ import {
   TextInput,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getNotes, deleteNote } from '../services/api';
+import api, { deleteNote } from '../services/api';
 
 const CATEGORIES = ['All', 'Personal', 'Work', 'Ideas'];
 
@@ -89,8 +89,8 @@ export default function HomeScreen({ navigation }) {
 
   const fetchNotes = useCallback(async () => {
     try {
-      const res = await getNotes();
-      setNotes(res.data);
+      const res = await api.get('/notes', { params: { page: 1, pageSize: 50 } });
+      setNotes(res.data.data || res.data);
     } catch (err) {
       Alert.alert('Error', 'Failed to load notes.');
     }
