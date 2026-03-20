@@ -17,10 +17,17 @@ import api, { deleteNote } from '../services/api';
 const CATEGORIES = ['All', 'Personal', 'Work', 'Ideas'];
 
 const CATEGORY_COLORS = {
-  Personal: '#60a5fa',
-  Work: '#fb923c',
-  Ideas: '#a78bfa',
-  General: '#94a3b8',
+  Personal: '#818CF8',
+  Work: '#4ADE80',
+  Ideas: '#C084FC',
+  General: '#888888',
+};
+
+const CATEGORY_BADGE = {
+  Personal: { bg: '#13143A', text: '#818CF8' },
+  Work:     { bg: '#0D2A1A', text: '#4ADE80' },
+  Ideas:    { bg: '#1E0D2E', text: '#C084FC' },
+  General:  { bg: '#1A1A1A', text: '#888888' },
 };
 
 function NoteCard({ note, onPress, onDelete }) {
@@ -49,12 +56,13 @@ function NoteCard({ note, onPress, onDelete }) {
   const dateStr = note.createdAt
     ? new Date(note.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     : '';
-  const catColor = CATEGORY_COLORS[note.category] || '#FFD60A';
+  const catColor = CATEGORY_COLORS[note.category] || '#888888';
+  const badge = CATEGORY_BADGE[note.category] || CATEGORY_BADGE.General;
 
   return (
     <Animated.View style={[styles.cardWrapper, { transform: [{ translateX }] }]}>
       <TouchableOpacity
-        style={styles.card}
+        style={[styles.card, { borderLeftWidth: 3, borderLeftColor: catColor }]}
         onPress={() => onPress(note)}
         activeOpacity={0.8}
         {...panResponder.panHandlers}
@@ -63,8 +71,8 @@ function NoteCard({ note, onPress, onDelete }) {
           <Text style={styles.cardTitle} numberOfLines={1}>
             {note.title || 'Untitled'}
           </Text>
-          <View style={[styles.categoryBadge, { backgroundColor: catColor + '22', borderColor: catColor }]}>
-            <Text style={[styles.categoryText, { color: catColor }]}>
+          <View style={[styles.categoryBadge, { backgroundColor: badge.bg }]}>
+            <Text style={[styles.categoryText, { color: badge.text }]}>
               {note.category || 'General'}
             </Text>
           </View>
@@ -141,7 +149,8 @@ export default function HomeScreen({ navigation }) {
       <TextInput
         style={styles.searchBar}
         placeholder="Search notes..."
-        placeholderTextColor="rgba(255,255,255,0.35)"
+        placeholderTextColor="#444444"
+        color="#F0F0F0"
         value={search}
         onChangeText={setSearch}
         returnKeyType="search"
@@ -176,8 +185,8 @@ export default function HomeScreen({ navigation }) {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#FFD60A"
-            colors={['#FFD60A']}
+            tintColor="#5B6EF5"
+            colors={['#5B6EF5']}
           />
         }
         ListEmptyComponent={
@@ -190,7 +199,7 @@ export default function HomeScreen({ navigation }) {
       />
 
       <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('NewNote')}>
-        <Ionicons name="add" size={30} color="#0f0f1a" />
+        <Ionicons name="add" size={30} color="#ffffff" />
       </TouchableOpacity>
     </View>
   );
@@ -199,7 +208,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f0f1a',
+    backgroundColor: '#080808',
   },
   header: {
     flexDirection: 'row',
@@ -212,19 +221,19 @@ const styles = StyleSheet.create({
   searchBar: {
     marginHorizontal: 16,
     marginBottom: 12,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#111111',
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 14,
-    color: '#ffffff',
+    color: '#F0F0F0',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: '#1E1E1E',
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#FFD60A',
+    color: '#5B6EF5',
   },
   filterRow: {
     flexDirection: 'row',
@@ -236,18 +245,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderRadius: 20,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#111111',
+    borderWidth: 1,
+    borderColor: '#1E1E1E',
   },
   filterTabActive: {
-    backgroundColor: '#FFD60A',
+    backgroundColor: '#5B6EF5',
+    borderColor: '#5B6EF5',
   },
   filterText: {
-    color: 'rgba(255,255,255,0.6)',
+    color: '#555555',
     fontSize: 13,
     fontWeight: '600',
   },
   filterTextActive: {
-    color: '#0f0f1a',
+    color: '#ffffff',
   },
   list: {
     paddingHorizontal: 16,
@@ -258,11 +270,11 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   card: {
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#0F0F0F',
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: '#1A1A1A',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
@@ -282,31 +294,31 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#F0F0F0',
     flex: 1,
     marginRight: 8,
+    letterSpacing: -0.2,
   },
   categoryBadge: {
     paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-    borderWidth: 1,
+    paddingVertical: 3,
+    borderRadius: 20,
   },
   categoryText: {
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   cardContent: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.55)',
-    lineHeight: 20,
+    fontSize: 12,
+    color: '#444444',
+    lineHeight: 18,
     marginBottom: 8,
   },
   cardDate: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.3)',
+    fontSize: 11,
+    color: '#333333',
   },
   empty: {
     alignItems: 'center',
@@ -314,13 +326,13 @@ const styles = StyleSheet.create({
     paddingTop: 80,
   },
   emptyText: {
-    color: 'rgba(255,255,255,0.4)',
+    color: '#444444',
     fontSize: 18,
     fontWeight: '600',
     marginTop: 16,
   },
   emptySubText: {
-    color: 'rgba(255,255,255,0.25)',
+    color: '#333333',
     fontSize: 14,
     marginTop: 6,
   },
@@ -330,14 +342,14 @@ const styles = StyleSheet.create({
     right: 24,
     width: 56,
     height: 56,
-    borderRadius: 28,
-    backgroundColor: '#FFD60A',
+    borderRadius: 12,
+    backgroundColor: '#5B6EF5',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#FFD60A',
+    shadowColor: '#5B6EF5',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
-    shadowRadius: 8,
+    shadowRadius: 16,
     elevation: 8,
   },
 });

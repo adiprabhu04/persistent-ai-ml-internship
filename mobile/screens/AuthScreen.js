@@ -92,7 +92,7 @@ export default function AuthScreen({ onAuthSuccess }) {
         contentContainerStyle={styles.scroll}
         keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.logo}>Jot It</Text>
+        <Text style={styles.logo}>Jot It<Text style={{ color: '#5B6EF5' }}>.</Text></Text>
         <Text style={styles.tagline}>Your thoughts, captured.</Text>
 
         <View style={styles.tabRow}>
@@ -118,8 +118,8 @@ export default function AuthScreen({ onAuthSuccess }) {
           <TextInput
             style={inputStyle('name')}
             placeholder="Name"
-            placeholderTextColor="rgba(255,255,255,0.4)"
-            color="#ffffff"
+            placeholderTextColor="#444444"
+            color="#F0F0F0"
             value={name}
             onChangeText={setName}
             autoCapitalize="words"
@@ -131,8 +131,8 @@ export default function AuthScreen({ onAuthSuccess }) {
         <TextInput
           style={inputStyle('email')}
           placeholder="Email"
-          placeholderTextColor="rgba(255,255,255,0.4)"
-          color="#ffffff"
+          placeholderTextColor="#444444"
+          color="#F0F0F0"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -144,8 +144,8 @@ export default function AuthScreen({ onAuthSuccess }) {
         <TextInput
           style={inputStyle('password')}
           placeholder="Password"
-          placeholderTextColor="rgba(255,255,255,0.4)"
-          color="#ffffff"
+          placeholderTextColor="#444444"
+          color="#F0F0F0"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -159,7 +159,7 @@ export default function AuthScreen({ onAuthSuccess }) {
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color="#0f0f1a" />
+            <ActivityIndicator color="#ffffff" />
           ) : (
             <Text style={styles.buttonText}>
               {activeTab === 'signin' ? 'Sign In' : 'Create Account'}
@@ -174,7 +174,7 @@ export default function AuthScreen({ onAuthSuccess }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f0f1a',
+    backgroundColor: '#080808',
   },
   scroll: {
     flexGrow: 1,
@@ -184,22 +184,24 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 42,
     fontWeight: '800',
-    color: '#FFD60A',
+    color: '#F0F0F0',
     textAlign: 'center',
     marginBottom: 8,
   },
   tagline: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.5)',
+    color: '#444444',
     textAlign: 'center',
     marginBottom: 40,
   },
   tabRow: {
     flexDirection: 'row',
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#111111',
     borderRadius: 12,
     padding: 4,
     marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#1E1E1E',
   },
   tab: {
     flex: 1,
@@ -208,32 +210,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabActive: {
-    backgroundColor: '#FFD60A',
+    backgroundColor: '#5B6EF5',
   },
   tabText: {
-    color: 'rgba(255,255,255,0.6)',
+    color: '#555555',
     fontWeight: '600',
     fontSize: 14,
   },
   tabTextActive: {
-    color: '#0f0f1a',
+    color: '#ffffff',
   },
   input: {
-    backgroundColor: '#1e1e3a',
+    backgroundColor: '#111111',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: '#ffffff',
+    color: '#F0F0F0',
     marginBottom: 14,
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: '#1E1E1E',
   },
   inputFocused: {
-    borderColor: '#FFD60A',
+    borderColor: '#5B6EF5',
   },
   button: {
-    backgroundColor: '#FFD60A',
+    backgroundColor: '#5B6EF5',
     borderRadius: 12,
     paddingVertical: 15,
     alignItems: 'center',
@@ -243,7 +245,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: '#0f0f1a',
+    color: '#ffffff',
     fontSize: 16,
     fontWeight: '700',
   },

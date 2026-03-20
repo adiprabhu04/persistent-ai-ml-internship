@@ -23,13 +23,13 @@ function MainTabs({ onLogout }) {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#1a1a2e',
-          borderTopColor: 'rgba(255,255,255,0.08)',
+          backgroundColor: '#0F0F0F',
+          borderTopColor: '#1A1A1A',
           height: 60,
           paddingBottom: 8,
         },
-        tabBarActiveTintColor: '#FFD60A',
-        tabBarInactiveTintColor: 'rgba(255,255,255,0.4)',
+        tabBarActiveTintColor: '#5B6EF5',
+        tabBarInactiveTintColor: '#444444',
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         tabBarIcon: ({ color, size, focused }) => {
           let iconName;
@@ -83,15 +83,15 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#0f0f1a', alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator size="large" color="#FFD60A" />
+      <View style={{ flex: 1, backgroundColor: '#080808', alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" color="#5B6EF5" />
       </View>
     );
   }
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle="light-content" backgroundColor="#0f0f1a" />
+      <StatusBar barStyle="light-content" backgroundColor="#080808" />
       <NavigationContainer>
         {isLoggedIn ? (
           <MainApp onLogout={() => setIsLoggedIn(false)} />

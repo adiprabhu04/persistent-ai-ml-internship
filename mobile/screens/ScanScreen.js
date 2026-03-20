@@ -119,7 +119,7 @@ export default function ScanScreen({ navigation }) {
         <View style={styles.optionRow}>
           <TouchableOpacity style={styles.optionCard} onPress={handleCamera}>
             <View style={styles.optionIcon}>
-              <Ionicons name="camera" size={32} color="#FFD60A" />
+              <Ionicons name="camera" size={32} color="#5B6EF5" />
             </View>
             <Text style={styles.optionTitle}>Camera</Text>
             <Text style={styles.optionDesc}>Take a photo</Text>
@@ -127,7 +127,7 @@ export default function ScanScreen({ navigation }) {
 
           <TouchableOpacity style={styles.optionCard} onPress={handleGallery}>
             <View style={styles.optionIcon}>
-              <Ionicons name="image" size={32} color="#FFD60A" />
+              <Ionicons name="image" size={32} color="#5B6EF5" />
             </View>
             <Text style={styles.optionTitle}>Gallery</Text>
             <Text style={styles.optionDesc}>Upload from photos</Text>
@@ -136,7 +136,7 @@ export default function ScanScreen({ navigation }) {
 
         {scanning && (
           <View style={styles.scanningBox}>
-            <ActivityIndicator size="large" color="#FFD60A" />
+            <ActivityIndicator size="large" color="#5B6EF5" />
             <Text style={styles.scanningText}>Scanning image...</Text>
           </View>
         )}
@@ -144,7 +144,7 @@ export default function ScanScreen({ navigation }) {
         {!scanning && extractedText !== '' && (
           <View style={styles.resultBox}>
             <View style={styles.resultHeader}>
-              <Ionicons name="text" size={18} color="#FFD60A" />
+              <Ionicons name="text" size={18} color="#5B6EF5" />
               <Text style={styles.resultLabel}>Extracted Text</Text>
             </View>
             <TextInput
@@ -154,13 +154,13 @@ export default function ScanScreen({ navigation }) {
               multiline
               textAlignVertical="top"
               color="#ffffff"
-              placeholderTextColor="rgba(255,255,255,0.4)"
+              placeholderTextColor="#444444"
               placeholder="No text found..."
               onFocus={() => setTextFocused(true)}
               onBlur={() => setTextFocused(false)}
             />
             <TouchableOpacity style={styles.saveBtn} onPress={handleSaveAsNote}>
-              <Ionicons name="save-outline" size={18} color="#0f0f1a" />
+              <Ionicons name="save-outline" size={18} color="#ffffff" />
               <Text style={styles.saveBtnText}>Save as Note</Text>
             </TouchableOpacity>
           </View>
@@ -173,7 +173,7 @@ export default function ScanScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f0f1a',
+    backgroundColor: '#080808',
   },
   scroll: {
     padding: 16,
@@ -183,13 +183,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#FFD60A',
+    color: '#5B6EF5',
     marginBottom: 6,
     marginTop: 8,
   },
   subtitle: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.5)',
+    color: '#444444',
     marginBottom: 28,
   },
   optionRow: {
@@ -199,51 +199,51 @@ const styles = StyleSheet.create({
   },
   optionCard: {
     flex: 1,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#0F0F0F',
     borderRadius: 16,
     padding: 20,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: '#1A1A1A',
   },
   optionIcon: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(255,214,10,0.1)',
+    backgroundColor: 'rgba(91,110,245,0.1)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
   },
   optionTitle: {
-    color: '#ffffff',
+    color: '#F0F0F0',
     fontSize: 15,
     fontWeight: '700',
     marginBottom: 4,
   },
   optionDesc: {
-    color: 'rgba(255,255,255,0.4)',
+    color: '#444444',
     fontSize: 12,
     textAlign: 'center',
   },
   scanningBox: {
     alignItems: 'center',
     paddingVertical: 40,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#0F0F0F',
     borderRadius: 16,
     marginBottom: 20,
   },
   scanningText: {
-    color: 'rgba(255,255,255,0.6)',
+    color: '#444444',
     marginTop: 16,
     fontSize: 15,
   },
   resultBox: {
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#0F0F0F',
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: '#1A1A1A',
   },
   resultHeader: {
     flexDirection: 'row',
@@ -252,28 +252,28 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   resultLabel: {
-    color: '#FFD60A',
+    color: '#5B6EF5',
     fontWeight: '700',
     fontSize: 15,
   },
   resultInput: {
-    backgroundColor: '#0f0f1a',
+    backgroundColor: '#080808',
     borderRadius: 12,
     padding: 14,
-    color: '#ffffff',
+    color: '#F0F0F0',
     fontSize: 14,
     lineHeight: 22,
     minHeight: 140,
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: '#1E1E1E',
     marginBottom: 14,
     textAlignVertical: 'top',
   },
   resultInputFocused: {
-    borderColor: '#FFD60A',
+    borderColor: '#5B6EF5',
   },
   saveBtn: {
-    backgroundColor: '#FFD60A',
+    backgroundColor: '#5B6EF5',
     borderRadius: 12,
     paddingVertical: 13,
     flexDirection: 'row',
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   saveBtnText: {
-    color: '#0f0f1a',
+    color: '#ffffff',
     fontWeight: '700',
     fontSize: 15,
   },

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#FFD60A">
+    <meta name="theme-color" content="#5B6EF5">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icon-192.png">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230B0B0B'/><path d='M340 120 C300 120 290 150 290 180 L290 330 C290 370 260 400 220 400 C190 400 170 385 160 360' fill='none' stroke='%23FFD60A' stroke-width='28' stroke-linecap='round' stroke-linejoin='round'/><path d='M160 360 C150 335 160 310 190 300' fill='none' stroke='%23FFD60A' stroke-width='28' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'><rect width='512' height='512' fill='%23080808'/><path d='M340 120 C300 120 290 150 290 180 L290 330 C290 370 260 400 220 400 C190 400 170 385 160 360' fill='none' stroke='%235B6EF5' stroke-width='28' stroke-linecap='round' stroke-linejoin='round'/><path d='M160 360 C150 335 160 310 190 300' fill='none' stroke='%235B6EF5' stroke-width='28' stroke-linecap='round' stroke-linejoin='round'/></svg>">
     <title>Jot It</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,8 +30,8 @@
         [data-theme="light"] input[type="email"],
         [data-theme="light"] input[type="password"],
         [data-theme="light"] input[type="text"] {
-          -webkit-text-fill-color: #1a1a2e !important;
-          color: #1a1a2e !important;
+          -webkit-text-fill-color: #0A0A0A !important;
+          color: #0A0A0A !important;
           opacity: 1 !important;
           -webkit-transform: translateZ(0);
           transform: translateZ(0);
@@ -40,33 +40,32 @@
         /* ── DESIGN TOKENS ───────────────────────────────────── */
         :root {
             /* Dark mode (default) */
-            --bg: #0a0a0a;
-            --background-gradient: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 50%, #0a1a1a 100%);
-            --surface: rgba(255, 255, 255, 0.05);
-            --surface-secondary: rgba(255, 255, 255, 0.08);
-            --border: rgba(255, 255, 255, 0.1);
-            --border-subtle: rgba(255, 255, 255, 0.06);
-            --text: #FFFFFF;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --text-tertiary: rgba(255, 255, 255, 0.4);
-            --accent: #FFD60A;
-            --accent-rgb: 255, 214, 10;
-            --accent-hover: #FFC107;
-            --accent-dark: #000000;
+            --bg: #080808;
+            --surface: #0F0F0F;
+            --surface-secondary: #111111;
+            --border: #1A1A1A;
+            --border-subtle: #1E1E1E;
+            --text: #F0F0F0;
+            --text-secondary: #444444;
+            --text-tertiary: #333333;
+            --accent: #5B6EF5;
+            --accent-rgb: 91, 110, 245;
+            --accent-hover: #4A5DE4;
+            --accent-dark: #ffffff;
             --cyan: #06B6D4;
             --purple: #A855F7;
             --success: #22C55E;
             --warning: #F59E0B;
             --error: #EF4444;
             --info: #3B82F6;
-            /* Glass variables */
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            /* Card / glass variables */
+            --glass-bg: #0F0F0F;
+            --glass-border: #1A1A1A;
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
             --shadow-md: 0 2px 8px rgba(0,0,0,0.4);
             --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
-            --shadow-fab: 0 8px 32px rgba(255,214,10,0.5), 0 0 40px rgba(255,214,10,0.4);
+            --shadow-fab: 0 4px 16px rgba(91,110,245,0.4);
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
@@ -76,22 +75,22 @@
         }
 
         [data-theme="light"] {
-            --bg: #f0f0f0;
-            --background-gradient: linear-gradient(135deg, #f0f0f0 0%, #e8e0f0 50%, #e0f0f0 100%);
-            --surface: rgba(255, 255, 255, 0.6);
-            --surface-secondary: rgba(255, 255, 255, 0.8);
-            --border: rgba(0, 0, 0, 0.1);
-            --border-subtle: rgba(0, 0, 0, 0.06);
-            --text: #000000;
-            --text-secondary: rgba(0, 0, 0, 0.6);
-            --text-tertiary: rgba(0, 0, 0, 0.4);
-            --accent-dark: #1A1A1A;
-            --glass-bg: rgba(255, 255, 255, 0.6);
-            --glass-border: rgba(0, 0, 0, 0.1);
+            --bg: #F2F2F7;
+            --surface: #FFFFFF;
+            --surface-secondary: #FFFFFF;
+            --border: #EEEEEE;
+            --border-subtle: #E5E5E5;
+            --text: #0A0A0A;
+            --text-secondary: #AAAAAA;
+            --text-tertiary: #CCCCCC;
+            --accent-dark: #ffffff;
+            --glass-bg: #FFFFFF;
+            --glass-border: #EEEEEE;
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
             --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
             --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --shadow-fab: 0 4px 16px rgba(91,110,245,0.3);
         }
 
         /* ── RESET ───────────────────────────────────────────── */
@@ -107,8 +106,7 @@
 
         body {
             font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-            background: var(--background-gradient);
-            background-attachment: fixed;
+            background: var(--bg);
             color: var(--text);
             height: 100vh;
             overflow: hidden;
@@ -232,8 +230,8 @@
         .input-group { margin-bottom: 14px; }
         .input-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
         [data-theme="light"] .input-group label {
-          color: #1a1a2e !important;
-          -webkit-text-fill-color: #1a1a2e !important;
+          color: #0A0A0A !important;
+          -webkit-text-fill-color: #0A0A0A !important;
         }
 
         .form-input {
@@ -256,8 +254,8 @@
             visibility: visible;
             min-height: 44px;
         }
-        [data-theme="light"] .form-input { background: rgba(255, 255, 255, 0.92); }
-        [data-theme="light"] .form-input { color: #1a1a2e; -webkit-text-fill-color: #1a1a2e; }
+        [data-theme="light"] .form-input { background: #FFFFFF; }
+        [data-theme="light"] .form-input { color: #0A0A0A; -webkit-text-fill-color: #0A0A0A; }
         .form-input:focus {
             border-color: rgba(var(--accent-rgb), 0.6);
             background: rgba(255, 255, 255, 0.12);
@@ -284,8 +282,8 @@
         }
         [data-theme="light"] input:-webkit-autofill,
         [data-theme="light"] input:-webkit-autofill:focus {
-          -webkit-text-fill-color: #1a1a2e !important;
-          -webkit-box-shadow: 0 0 0px 1000px rgba(255,255,255,0.95) inset !important;
+          -webkit-text-fill-color: #0A0A0A !important;
+          -webkit-box-shadow: 0 0 0px 1000px #FFFFFF inset !important;
         }
 
         .btn-primary {
@@ -344,11 +342,12 @@
         }
 
         .app-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: var(--text);
             letter-spacing: -0.5px;
         }
+        .app-title-logo { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
 
         .note-count {
             font-size: 13px;
@@ -513,11 +512,9 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1.5px solid var(--glass-border);
-            border-radius: 50px;
+            background: var(--surface-secondary);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: 12px;
             padding: 0 14px;
             height: 42px;
             transition: all 0.3s;
@@ -575,14 +572,12 @@
 
         .filter-tab {
             padding: 7px 16px;
-            border-radius: 50px;
+            border-radius: 20px;
             font-size: 14px;
             font-weight: 500;
             color: var(--text-secondary);
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1.5px solid var(--glass-border);
+            background: var(--surface-secondary);
+            border: 1.5px solid var(--border-subtle);
             white-space: nowrap;
             transition: all 0.3s ease;
             display: inline-flex;
@@ -591,11 +586,11 @@
         }
         .filter-tab:active { transform: scale(0.96); }
         .filter-tab.active {
-            background: linear-gradient(135deg, var(--accent), #F59E0B);
-            color: var(--accent-dark);
-            border-color: var(--accent);
+            background: #5B6EF5;
+            color: #ffffff;
+            border-color: #5B6EF5;
             font-weight: 600;
-            box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.4);
+            box-shadow: 0 4px 20px rgba(91, 110, 245, 0.4);
         }
 
         .tab-count {
@@ -638,68 +633,34 @@
         .note-card {
             position: relative;
             background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            padding: 20px;
-            padding-top: 28px;
+            border-radius: 14px;
+            padding: 16px;
             cursor: pointer;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            min-height: 180px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s;
+            min-height: 160px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
             animation: cardIn 0.25s ease both;
             overflow: hidden;
         }
-        .note-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: var(--radius-xl);
-            padding: 1px;
-            background: linear-gradient(135deg,
-                rgba(var(--accent-rgb), 0.3) 0%,
-                rgba(6, 182, 212, 0.2) 50%,
-                rgba(168, 85, 247, 0.3) 100%
-            );
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.4s;
-            pointer-events: none;
-        }
-        .note-card:hover::before { opacity: 1; }
         .note-card:hover {
-            transform: translateY(-8px);
-            box-shadow:
-                0 12px 48px rgba(0, 0, 0, 0.4),
-                0 0 40px rgba(var(--accent-rgb), 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
             border-color: rgba(var(--accent-rgb), 0.3);
         }
-        .note-card[data-category="personal"]:hover {
-            box-shadow: 0 12px 48px rgba(0,0,0,0.4), 0 0 40px rgba(6,182,212,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-        .note-card[data-category="work"]:hover {
-            box-shadow: 0 12px 48px rgba(0,0,0,0.4), 0 0 40px rgba(255,214,10,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-        .note-card[data-category="ideas"]:hover {
-            box-shadow: 0 12px 48px rgba(0,0,0,0.4), 0 0 40px rgba(168,85,247,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-        .note-card:active { transform: translateY(-4px); }
+        .note-card:active { transform: translateY(-1px); }
 
-        /* Colored top accent stripe */
+        /* Colored left accent stripe */
         .note-card-accent {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            height: 8px;
-            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            bottom: 0;
+            width: 3px;
+            border-radius: 14px 0 0 14px;
         }
 
         /* Card content */
@@ -711,7 +672,7 @@
         }
 
         .note-card-title {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text);
             line-height: 1.4;
@@ -723,11 +684,11 @@
         }
 
         .note-card-preview {
-            font-size: 14px;
+            font-size: 12px;
             color: var(--text-secondary);
             line-height: 1.6;
             display: -webkit-box;
-            -webkit-line-clamp: 4;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -736,8 +697,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-secondary);
+            font-size: 11px;
+            color: var(--text-tertiary);
             margin-top: auto;
         }
 
@@ -760,16 +721,22 @@
             align-items: center;
             padding: 3px 10px;
             background: var(--surface-secondary);
-            border-radius: 12px;
+            border-radius: 20px;
             font-size: 11px;
             font-weight: 500;
             text-transform: capitalize;
         }
-        .note-card-category.cat-personal { color: #06B6D4; background: rgba(6, 182, 212, 0.12); }
-        .note-card-category.cat-work     { color: #FFD60A; background: rgba(255, 214, 10, 0.12); }
-        .note-card-category.cat-ideas    { color: #A855F7; background: rgba(168, 85, 247, 0.12); }
+        /* Dark mode badge colors */
+        .note-card-category.cat-personal { color: #818CF8; background: #13143A; }
+        .note-card-category.cat-work     { color: #4ADE80; background: #0D2A1A; }
+        .note-card-category.cat-ideas    { color: #C084FC; background: #1E0D2E; }
         .note-card-category.cat-scanned  { color: #EF4444; background: rgba(239, 68, 68, 0.12); }
-        .note-card-category.cat-general  { color: #9CA3AF; background: rgba(107, 114, 128, 0.12); }
+        .note-card-category.cat-general  { color: #888888; background: #1A1A1A; }
+        /* Light mode badge colors */
+        [data-theme="light"] .note-card-category.cat-personal { color: #5B6EF5; background: #EEF0FF; }
+        [data-theme="light"] .note-card-category.cat-work     { color: #16A34A; background: #EDFAF3; }
+        [data-theme="light"] .note-card-category.cat-ideas    { color: #9333EA; background: #F5EEFF; }
+        [data-theme="light"] .note-card-category.cat-general  { color: #888888; background: #F5F5F5; }
 
         /* Delete button (shows on hover) */
         .note-card-delete {
@@ -802,10 +769,9 @@
         .skeleton-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            padding-top: 28px;
-            min-height: 180px;
+            border-radius: 14px;
+            padding: 16px;
+            min-height: 160px;
             animation: cardIn 0.25s ease both;
         }
         .skeleton-line {
@@ -888,9 +854,9 @@
         .nav-fab {
             width: 56px;
             height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #F59E0B);
-            color: var(--accent-dark);
+            border-radius: 12px;
+            background: #5B6EF5;
+            color: #ffffff;
             font-size: 24px;
             font-weight: 300;
             flex-shrink: 0;
@@ -899,7 +865,7 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
         }
-        .nav-fab:hover  { transform: translateY(-18px) scale(1.05); box-shadow: 0 12px 48px rgba(0,0,0,0.5), 0 0 60px rgba(var(--accent-rgb), 0.7); }
+        .nav-fab:hover  { transform: translateY(-18px) scale(1.05); box-shadow: 0 8px 32px rgba(91,110,245,0.6); }
         .nav-fab:active { transform: translateY(-14px) scale(0.93); }
 
         /* ── MODAL SHARED ────────────────────────────────────── */
@@ -1193,7 +1159,7 @@
             transition: all 0.15s;
             margin-bottom: 12px;
         }
-        .upload-area:hover { border-color: var(--accent); background: rgba(255,214,10,0.04); }
+        .upload-area:hover { border-color: var(--accent); background: rgba(var(--accent-rgb),0.04); }
 
         .upload-area-icon { display:flex; align-items:center; justify-content:center; margin-bottom: 10px; color: var(--text-tertiary); }
         .upload-area p   { font-size: 14px; color: var(--text-secondary); }
@@ -1729,7 +1695,7 @@
         .note-card.keyboard-selected {
             outline: 2px solid var(--accent);
             outline-offset: 2px;
-            box-shadow: 0 0 0 4px rgba(255,214,10,0.12);
+            box-shadow: 0 0 0 4px rgba(91,110,245,0.15);
         }
 
         /* ── COMMAND PALETTE ─────────────────────────────────────── */
@@ -1932,7 +1898,7 @@
     <div class="auth-card">
         <div class="auth-logo">
             <div class="auth-logo-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></div>
-            <h1>Jot It</h1>
+            <h1>Jot It<span style="color:#5B6EF5">.</span></h1>
             <p>Capture every thought, beautifully.</p>
         </div>
 
@@ -2517,23 +2483,19 @@
     }
 
     function getCategoryColor(note) {
-        const content = (note.content || '').toLowerCase();
-        const title = (note.title || '').toLowerCase();
-        if (content.includes('#work')) return '#FFD60A';
-        if (content.includes('#personal')) return '#06B6D4';
-        if (content.includes('#idea')) return '#A855F7';
-        if (title.startsWith('scanned')) return '#EF4444';
-        return '#9CA3AF';
+        const cat = (note.category || 'General').toLowerCase();
+        if (cat === 'personal') return '#818CF8';
+        if (cat === 'work')     return '#4ADE80';
+        if (cat === 'ideas')    return '#C084FC';
+        return '#888888';
     }
 
     function getCategoryInfo(note) {
-        const content = (note.content || '').toLowerCase();
-        const title = (note.title || '').toLowerCase();
-        if (title.startsWith('scanned')) return { gradient: 'linear-gradient(90deg, #EF4444 0%, #DC2626 100%)', name: 'Scanned', cls: 'cat-scanned' };
-        if (content.includes('#work'))     return { gradient: 'linear-gradient(90deg, #FFD60A 0%, #F59E0B 100%)', name: 'Work', cls: 'cat-work' };
-        if (content.includes('#personal')) return { gradient: 'linear-gradient(90deg, #06B6D4 0%, #0891B2 100%)', name: 'Personal', cls: 'cat-personal' };
-        if (content.includes('#idea'))     return { gradient: 'linear-gradient(90deg, #A855F7 0%, #9333EA 100%)', name: 'Ideas', cls: 'cat-ideas' };
-        return { gradient: 'linear-gradient(90deg, #6B7280 0%, #4B5563 100%)', name: 'General', cls: 'cat-general' };
+        const cat = (note.category || 'General').toLowerCase();
+        if (cat === 'personal') return { color: '#818CF8', name: 'Personal', cls: 'cat-personal' };
+        if (cat === 'work')     return { color: '#4ADE80', name: 'Work',     cls: 'cat-work' };
+        if (cat === 'ideas')    return { color: '#C084FC', name: 'Ideas',    cls: 'cat-ideas' };
+        return { color: '#888888', name: note.category || 'General', cls: 'cat-general' };
     }
 
     function updateNoteCount(total) {
@@ -2923,7 +2885,7 @@
             if (isFirstVisit) {
                 grid.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon"><svg width="90" height="90" viewBox="0 0 100 100" fill="none"><rect x="18" y="12" width="52" height="66" rx="4" stroke="#FFD60A" stroke-width="2.5"/><line x1="28" y1="28" x2="62" y2="28" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="40" x2="62" y2="40" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="52" x2="48" y2="52" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="58" y1="62" x2="72" y2="76" stroke="#FFD60A" stroke-width="3" stroke-linecap="round"/><circle cx="74" cy="78" r="3" fill="#FFD60A"/></svg></div>
+                        <div class="empty-state-icon"><svg width="90" height="90" viewBox="0 0 100 100" fill="none"><rect x="18" y="12" width="52" height="66" rx="4" stroke="#5B6EF5" stroke-width="2.5"/><line x1="28" y1="28" x2="62" y2="28" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="40" x2="62" y2="40" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="52" x2="48" y2="52" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="58" y1="62" x2="72" y2="76" stroke="#5B6EF5" stroke-width="3" stroke-linecap="round"/><circle cx="74" cy="78" r="3" fill="#5B6EF5"/></svg></div>
                         <div class="empty-title">Welcome to Jot It!</div>
                         <p class="empty-desc">Your canvas is blank. Jot down ideas, scan handwritten notes, or just capture what's on your mind.</p>
                         <button onclick="openModal()" class="btn-cta btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Start Writing</button>
@@ -2945,7 +2907,7 @@
             } else {
                 grid.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon"><svg width="90" height="90" viewBox="0 0 100 100" fill="none"><rect x="18" y="12" width="52" height="66" rx="4" stroke="#FFD60A" stroke-width="2.5"/><line x1="28" y1="28" x2="62" y2="28" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="40" x2="62" y2="40" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="52" x2="48" y2="52" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="58" y1="62" x2="72" y2="76" stroke="#FFD60A" stroke-width="3" stroke-linecap="round"/><circle cx="74" cy="78" r="3" fill="#FFD60A"/></svg></div>
+                        <div class="empty-state-icon"><svg width="90" height="90" viewBox="0 0 100 100" fill="none"><rect x="18" y="12" width="52" height="66" rx="4" stroke="#5B6EF5" stroke-width="2.5"/><line x1="28" y1="28" x2="62" y2="28" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="40" x2="62" y2="40" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="28" y1="52" x2="48" y2="52" stroke="#6B6B6B" stroke-width="2" stroke-linecap="round"/><line x1="58" y1="62" x2="72" y2="76" stroke="#5B6EF5" stroke-width="3" stroke-linecap="round"/><circle cx="74" cy="78" r="3" fill="#5B6EF5"/></svg></div>
                         <div class="empty-title">Ready when you are!</div>
                         <p class="empty-desc">No notes yet — every great idea starts somewhere. What's on your mind?</p>
                         <button onclick="openModal()" class="btn-cta btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Start Writing</button>
@@ -2966,12 +2928,13 @@
             el.style.animationDelay = `${i * 0.04}s`;
 
             const catInfo = getCategoryInfo(note);
-            const preview = (note.content || '').replace(/#\w+/g, '').trim();
-            const previewText = preview.length > 150 ? preview.substring(0, 150) + '…' : preview;
+            const preview = (note.content || '').trim();
+            const previewText = preview.length > 120 ? preview.substring(0, 120) + '…' : preview;
             const dateStr = relativeTime(note.updatedAt);
 
+            el.style.borderLeft = `3px solid ${catInfo.color}`;
+
             el.innerHTML = `
-                <div class="note-card-accent" style="background:${catInfo.gradient}"></div>
                 <div class="note-card-content">
                     <h3 class="note-card-title">${esc(note.title)}</h3>
                     <p class="note-card-preview">${esc(previewText)}</p>
@@ -3940,7 +3903,7 @@
         }
     });
     function _launchConfetti() {
-        const colors = ['#FFD60A','#EC4899','#10B981','#3B82F6','#F97316','#8B5CF6'];
+        const colors = ['#5B6EF5','#EC4899','#10B981','#4ADE80','#F97316','#C084FC'];
         for (let i = 0; i < 90; i++) {
             const c = document.createElement('div');
             const size = Math.random() * 10 + 5;

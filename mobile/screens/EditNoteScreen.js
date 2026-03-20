@@ -87,7 +87,7 @@ export default function EditNoteScreen({ navigation, route }) {
             style={[styles.saveBtn, saving && styles.saveBtnDisabled]}
           >
             {saving ? (
-              <ActivityIndicator color="#0f0f1a" size="small" />
+              <ActivityIndicator color="#ffffff" size="small" />
             ) : (
               <Text style={styles.saveBtnText}>Save</Text>
             )}
@@ -99,8 +99,8 @@ export default function EditNoteScreen({ navigation, route }) {
         <TextInput
           style={[styles.titleInput, titleFocused && styles.inputFocused]}
           placeholder="Title"
-          placeholderTextColor="rgba(255,255,255,0.4)"
-          color="#ffffff"
+          placeholderTextColor="#444444"
+          color="#F0F0F0"
           value={title}
           onChangeText={setTitle}
           onFocus={() => setTitleFocused(true)}
@@ -110,8 +110,8 @@ export default function EditNoteScreen({ navigation, route }) {
         <TextInput
           style={[styles.contentInput, contentFocused && styles.inputFocused]}
           placeholder="Start writing..."
-          placeholderTextColor="rgba(255,255,255,0.4)"
-          color="#ffffff"
+          placeholderTextColor="#444444"
+          color="#F0F0F0"
           value={content}
           onChangeText={setContent}
           multiline
@@ -142,7 +142,7 @@ export default function EditNoteScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f0f1a',
+    backgroundColor: '#080808',
   },
   header: {
     flexDirection: 'row',
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.08)',
+    borderBottomColor: '#1A1A1A',
   },
   headerBtn: {
     paddingVertical: 6,
@@ -159,11 +159,11 @@ const styles = StyleSheet.create({
     minWidth: 60,
   },
   headerBtnText: {
-    color: 'rgba(255,255,255,0.6)',
+    color: '#444444',
     fontSize: 15,
   },
   headerTitle: {
-    color: '#ffffff',
+    color: '#F0F0F0',
     fontSize: 17,
     fontWeight: '700',
   },
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   saveBtn: {
-    backgroundColor: '#FFD60A',
+    backgroundColor: '#5B6EF5',
     paddingVertical: 7,
     paddingHorizontal: 18,
     borderRadius: 10,
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   saveBtnText: {
-    color: '#0f0f1a',
+    color: '#ffffff',
     fontWeight: '700',
     fontSize: 15,
   },
@@ -197,35 +197,35 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   titleInput: {
-    backgroundColor: '#1e1e3a',
+    backgroundColor: '#111111',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 18,
     fontWeight: '600',
-    color: '#ffffff',
+    color: '#F0F0F0',
     marginBottom: 14,
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: '#1E1E1E',
   },
   contentInput: {
-    backgroundColor: '#1e1e3a',
+    backgroundColor: '#111111',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 15,
-    color: '#ffffff',
+    color: '#F0F0F0',
     marginBottom: 20,
     borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: '#1E1E1E',
     minHeight: 180,
     lineHeight: 22,
   },
   inputFocused: {
-    borderColor: '#FFD60A',
+    borderColor: '#5B6EF5',
   },
   sectionLabel: {
-    color: 'rgba(255,255,255,0.5)',
+    color: '#444444',
     fontSize: 13,
     fontWeight: '600',
     marginBottom: 10,
@@ -241,20 +241,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#111111',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: '#1E1E1E',
   },
   catChipActive: {
-    backgroundColor: '#FFD60A',
-    borderColor: '#FFD60A',
+    backgroundColor: '#5B6EF5',
+    borderColor: '#5B6EF5',
   },
   catChipText: {
-    color: 'rgba(255,255,255,0.7)',
+    color: '#444444',
     fontSize: 14,
     fontWeight: '600',
   },
   catChipTextActive: {
-    color: '#0f0f1a',
+    color: '#ffffff',
   },
 });

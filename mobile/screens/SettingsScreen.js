@@ -59,7 +59,7 @@ export default function SettingsScreen({ onLogout }) {
             </View>
             <Text style={styles.rowText}>Logout</Text>
           </View>
-          <Ionicons name="chevron-forward" size={18} color="rgba(255,255,255,0.3)" />
+          <Ionicons name="chevron-forward" size={18} color="#333333" />
         </TouchableOpacity>
       </View>
 
@@ -67,8 +67,8 @@ export default function SettingsScreen({ onLogout }) {
         <Text style={styles.sectionLabel}>About</Text>
         <View style={styles.row}>
           <View style={styles.rowLeft}>
-            <View style={[styles.rowIcon, { backgroundColor: 'rgba(255,214,10,0.15)' }]}>
-              <Ionicons name="information-circle-outline" size={20} color="#FFD60A" />
+            <View style={[styles.rowIcon, { backgroundColor: 'rgba(91,110,245,0.15)' }]}>
+              <Ionicons name="information-circle-outline" size={20} color="#5B6EF5" />
             </View>
             <Text style={styles.rowText}>Version</Text>
           </View>
@@ -91,32 +91,32 @@ export default function SettingsScreen({ onLogout }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f0f1a',
+    backgroundColor: '#080808',
     padding: 16,
     paddingTop: 50,
   },
   pageTitle: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#FFD60A',
+    color: '#5B6EF5',
     marginBottom: 24,
     marginTop: 8,
   },
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#0F0F0F',
     borderRadius: 16,
     padding: 16,
     marginBottom: 28,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: '#1A1A1A',
   },
   avatar: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#FFD60A',
+    backgroundColor: '#5B6EF5',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#0f0f1a',
+    color: '#ffffff',
   },
   profileInfo: {
     flex: 1,
@@ -132,18 +132,18 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#ffffff',
+    color: '#F0F0F0',
     marginBottom: 2,
   },
   profileEmail: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.5)',
+    color: '#444444',
   },
   section: {
     marginBottom: 24,
   },
   sectionLabel: {
-    color: 'rgba(255,255,255,0.4)',
+    color: '#444444',
     fontSize: 12,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -155,13 +155,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#0F0F0F',
     paddingVertical: 14,
     paddingHorizontal: 14,
     borderRadius: 12,
     marginBottom: 2,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: '#1A1A1A',
   },
   rowLast: {
     marginBottom: 0,
@@ -179,12 +179,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   rowText: {
-    color: '#ffffff',
+    color: '#F0F0F0',
     fontSize: 15,
     fontWeight: '500',
   },
   rowValue: {
-    color: 'rgba(255,255,255,0.4)',
+    color: '#444444',
     fontSize: 14,
   },
 });
