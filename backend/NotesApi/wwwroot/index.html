@@ -118,38 +118,7 @@
             position: relative;
         }
 
-        /* Animated gradient orbs */
-        body::before,
-        body::after {
-            content: '';
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.3;
-            z-index: -1;
-            animation: floatOrb 20s ease-in-out infinite;
-            pointer-events: none;
-        }
-        body::before {
-            width: 400px;
-            height: 400px;
-            background: linear-gradient(135deg, var(--accent), var(--cyan));
-            top: -200px;
-            right: -200px;
-        }
-        body::after {
-            width: 500px;
-            height: 500px;
-            background: linear-gradient(135deg, var(--purple), var(--cyan));
-            bottom: -250px;
-            left: -250px;
-            animation-delay: -10s;
-        }
-        @keyframes floatOrb {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(50px, -50px) scale(1.1); }
-            66% { transform: translate(-30px, 30px) scale(0.9); }
-        }
+        body::before, body::after { display: none; }
 
         .btn { cursor: pointer; border: none; background: none; font-family: inherit; transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -503,7 +472,6 @@
             flex-shrink: 0;
             padding: 0 16px 10px;
             background: transparent;
-            animation: slideDown 0.2s ease both;
         }
 
         @keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
@@ -1845,7 +1813,7 @@
                 backdrop-filter: blur(8px);
                 -webkit-backdrop-filter: blur(8px);
             }
-            body::before, body::after { opacity: 0.2; }
+            body::before, body::after { display: none; }
         }
 
         /* ── GLASSMORPHISM: BROWSER FALLBACK ─────────────────── */
@@ -1887,7 +1855,7 @@
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.01ms !important;
             }
-            body::before, body::after { animation: none; }
+            body::before, body::after { display: none; }
         }
     </style>
 </head>
@@ -2000,8 +1968,8 @@
         </div>
     </header>
 
-    <!-- Search bar (collapsible) -->
-    <div id="search-bar" class="search-bar-panel hidden">
+    <!-- Search bar -->
+    <div id="search-bar" class="search-bar-panel">
         <div class="search-inner">
             <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
             <input type="text" id="search-input" class="search-input" placeholder="Search notes…"
@@ -2089,10 +2057,10 @@
         <div class="sheet-footer">
             <div class="sheet-footer-left">
                 <select id="note-category" class="category-select" aria-label="Category">
-                    <option value="general">General</option>
-                    <option value="work">Work</option>
-                    <option value="personal">Personal</option>
-                    <option value="ideas">Ideas</option>
+                    <option value="General">General</option>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Ideas">Ideas</option>
                 </select>
                 <button onclick="openScanModal()" class="btn-scan-trigger btn" title="Scan handwriting" aria-label="Scan handwriting">
                     <i class="fa-solid fa-camera"></i>
@@ -3036,12 +3004,7 @@
         document.getElementById('note-content').value = note ? note.content : '';
 
         const catSelect = document.getElementById('note-category');
-        catSelect.value = 'general';
-        if (note) {
-            if ((note.content || '').includes('#work'))     catSelect.value = 'work';
-            if ((note.content || '').includes('#personal')) catSelect.value = 'personal';
-            if ((note.content || '').includes('#idea'))     catSelect.value = 'ideas';
-        }
+        catSelect.value = (note && note.category) ? note.category : 'General';
 
         const saveBtn = document.getElementById('save-note-btn');
         saveBtn.innerHTML = 'Save';
@@ -3062,13 +3025,12 @@
         const saveBtn = document.getElementById('save-note-btn');
 
         if (!title) { toast('Don\'t forget a title!', 'warning'); return; }
-        if (cat !== 'general' && !content.includes('#' + cat)) content += `\n\n#${cat}`;
 
         const method = state.editingId ? 'PUT' : 'POST';
         const url    = state.editingId ? `/notes/${state.editingId}` : '/notes';
 
         setButtonLoading(saveBtn, true, 'Saving...');
-        const res = await api(url, method, { title, content });
+        const res = await api(url, method, { title, content, category: cat });
         setButtonLoading(saveBtn, false);
 
         if (res) {
