@@ -2828,7 +2828,7 @@
             ago.setDate(ago.getDate() - 7);
             filtered = filtered.filter(n => new Date(n.updatedAt) >= ago);
         } else if (state.category !== 'all') {
-            filtered = filtered.filter(n => (n.content || '').toLowerCase().includes('#' + state.category));
+            filtered = filtered.filter(n => (n.category || 'General').toLowerCase() === state.category.toLowerCase());
         }
 
         const q = document.querySelector('.search-input')?.value?.toLowerCase() || '';
@@ -3023,6 +3023,7 @@
         let content   = document.getElementById('note-content').value;
         const cat     = document.getElementById('note-category').value;
         const saveBtn = document.getElementById('save-note-btn');
+        console.log('Saving note with category:', cat);
 
         if (!title) { toast('Don\'t forget a title!', 'warning'); return; }
 
@@ -3031,6 +3032,7 @@
 
         setButtonLoading(saveBtn, true, 'Saving...');
         const res = await api(url, method, { title, content, category: cat });
+        console.log('API response:', res);
         setButtonLoading(saveBtn, false);
 
         if (res) {
