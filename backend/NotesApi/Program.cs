@@ -244,6 +244,7 @@ app.MapPost("/notes", async (
         Id = Guid.NewGuid(),
         Title = request.Title.Trim(),
         Content = request.Content?.Trim() ?? string.Empty,
+        Category = request.Category ?? "General",
         CreatedAt = DateTime.UtcNow,
         UpdatedAt = DateTime.UtcNow,
         UserId = userId
@@ -275,6 +276,7 @@ app.MapPut("/notes/{id}", async (
 
     note.Title = request.Title.Trim();
     note.Content = request.Content?.Trim() ?? string.Empty;
+    note.Category = request.Category ?? "General";
     note.UpdatedAt = DateTime.UtcNow;
 
     await db.SaveChangesAsync();
