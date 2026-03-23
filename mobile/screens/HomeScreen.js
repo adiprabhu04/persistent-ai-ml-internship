@@ -24,10 +24,10 @@ const CATEGORY_COLORS = {
 };
 
 const CATEGORY_BADGE = {
-  Personal: { bg: '#13143A', text: '#818CF8' },
-  Work:     { bg: '#0D2A1A', text: '#4ADE80' },
-  Ideas:    { bg: '#1E0D2E', text: '#C084FC' },
-  General:  { bg: '#1A1A1A', text: '#888888' },
+  Personal: { bg: '#13143A', border: '#818CF8', text: '#818CF8' },
+  Work:     { bg: '#0D2A1A', border: '#4ADE80', text: '#4ADE80' },
+  Ideas:    { bg: '#1E0D2E', border: '#C084FC', text: '#C084FC' },
+  General:  { bg: '#1A1A1A', border: '#888888', text: '#888888' },
 };
 
 function NoteCard({ note, onPress, onDelete }) {
@@ -71,7 +71,7 @@ function NoteCard({ note, onPress, onDelete }) {
           <Text style={styles.cardTitle} numberOfLines={1}>
             {note.title || 'Untitled'}
           </Text>
-          <View style={[styles.categoryBadge, { backgroundColor: badge.bg }]}>
+          <View style={[styles.categoryBadge, { backgroundColor: badge.bg, borderWidth: 1, borderColor: badge.border }]}>
             <Text style={[styles.categoryText, { color: badge.text }]}>
               {note.category || 'General'}
             </Text>

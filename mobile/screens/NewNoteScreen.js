@@ -15,6 +15,13 @@ import { createNote } from '../services/api';
 
 const CATEGORIES = ['General', 'Personal', 'Work', 'Ideas'];
 
+const CATEGORY_CHIP = {
+  General:  { bg: '#1A1A1A', border: '#888888', text: '#888888' },
+  Personal: { bg: '#13143A', border: '#818CF8', text: '#818CF8' },
+  Work:     { bg: '#0D2A1A', border: '#4ADE80', text: '#4ADE80' },
+  Ideas:    { bg: '#1E0D2E', border: '#C084FC', text: '#C084FC' },
+};
+
 export default function NewNoteScreen({ navigation, route }) {
   const prefillText = route.params?.prefillText || '';
   const [title, setTitle] = useState('');
@@ -31,6 +38,7 @@ export default function NewNoteScreen({ navigation, route }) {
     }
     setSaving(true);
     try {
+      console.log('[NewNote] saving with category:', category);
       await createNote(title.trim() || 'Untitled', content.trim(), category);
       navigation.goBack();
     } catch (err) {
@@ -91,17 +99,24 @@ export default function NewNoteScreen({ navigation, route }) {
 
         <Text style={styles.sectionLabel}>Category</Text>
         <View style={styles.categoryRow}>
-          {CATEGORIES.map((cat) => (
-            <TouchableOpacity
-              key={cat}
-              style={[styles.catChip, category === cat && styles.catChipActive]}
-              onPress={() => setCategory(cat)}
-            >
-              <Text style={[styles.catChipText, category === cat && styles.catChipTextActive]}>
-                {cat}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {CATEGORIES.map((cat) => {
+            const active = category === cat;
+            const chip = CATEGORY_CHIP[cat] || CATEGORY_CHIP.General;
+            return (
+              <TouchableOpacity
+                key={cat}
+                style={[
+                  styles.catChip,
+                  active && { backgroundColor: chip.bg, borderColor: chip.border },
+                ]}
+                onPress={() => setCategory(cat)}
+              >
+                <Text style={[styles.catChipText, active && { color: chip.text }]}>
+                  {cat}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -205,16 +220,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#1E1E1E',
   },
-  catChipActive: {
-    backgroundColor: '#5B6EF5',
-    borderColor: '#5B6EF5',
-  },
   catChipText: {
     color: '#444444',
     fontSize: 14,
     fontWeight: '600',
-  },
-  catChipTextActive: {
-    color: '#ffffff',
   },
 });
