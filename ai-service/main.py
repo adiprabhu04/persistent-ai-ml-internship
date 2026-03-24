@@ -6,6 +6,8 @@ from PIL import Image, ImageEnhance, ImageFilter
 import numpy as np
 import io
 import os
+import json
+import tempfile
 
 app = FastAPI(title="Notely OCR Service")
 
@@ -18,7 +20,24 @@ app.add_middleware(
 )
 
 # Check if Google credentials are available
-GOOGLE_CREDENTIALS_PRESENT = bool(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
+GOOGLE_CREDENTIALS_JSON = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+GOOGLE_CREDENTIALS_PRESENT = False
+
+if GOOGLE_CREDENTIALS_JSON:
+    try:
+        creds_dict = json.loads(GOOGLE_CREDENTIALS_JSON)
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+            json.dump(creds_dict, f)
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = f.name
+        GOOGLE_CREDENTIALS_PRESENT = True
+        print("Google credentials loaded from environment variable")
+    except Exception as e:
+        print(f"Failed to load Google credentials: {e}")
+elif os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
+    GOOGLE_CREDENTIALS_PRESENT = True
+    print("Google credentials loaded from file path")
+else:
+    print("No Google credentials found, will use Tesseract fallback")
 
 PSM_MODES = {
     "auto": 3,
