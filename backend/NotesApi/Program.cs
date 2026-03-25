@@ -473,4 +473,18 @@ app.MapPost("/auth/login", async (LoginRequest request, NotesDbContext db) =>
     });
 });
 
+// Background keepalive for OCR service
+var httpClientFactory = app.Services.GetRequiredService<IHttpClientFactory>();
+_ = Task.Run(async () => {
+    var aiServiceUrl = Environment.GetEnvironmentVariable("AI_SERVICE_URL")
+        ?? "http://localhost:8000";
+    while (true) {
+        await Task.Delay(TimeSpan.FromMinutes(10));
+        try {
+            using var client = httpClientFactory.CreateClient();
+            await client.GetAsync(aiServiceUrl.TrimEnd('/') + "/health");
+        } catch { }
+    }
+});
+
 app.Run();
