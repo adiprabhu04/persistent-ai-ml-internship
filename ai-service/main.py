@@ -8,6 +8,7 @@ import io
 import os
 import json
 import tempfile
+import gc
 
 app = FastAPI(title="Notely OCR Service")
 
@@ -63,9 +64,10 @@ def preprocess_image(image: Image.Image, source: str = "upload") -> Image.Image:
     if image.mode != 'L':
         image = image.convert('L')
 
-    # 3. Upscale canvas images 4x for better detail
-    if source == "canvas":
-        new_size = (image.width * 4, image.height * 4)
+    # 3. Upscale small images (max 2x) for better detail
+    if image.width < 800:
+        scale = min(2.0, 800 / image.width)
+        new_size = (int(image.width * scale), int(image.height * scale))
         image = image.resize(new_size, Image.Resampling.LANCZOS)
 
     # 4. Denoise (reduce pencil texture, paper grain)
@@ -82,17 +84,12 @@ def preprocess_image(image: Image.Image, source: str = "upload") -> Image.Image:
     enhancer = ImageEnhance.Brightness(image)
     image = enhancer.enhance(1.1)
 
-    # 8. Adaptive thresholding for canvas drawings
+    # 8. Simple threshold for canvas drawings
     if source == "canvas":
-        try:
-            from scipy.ndimage import gaussian_filter
-            img_array = np.array(image, dtype=np.float64)
-            blurred = gaussian_filter(img_array, sigma=20)
-            binary = img_array > (blurred - 10)
-            image = Image.fromarray((binary * 255).astype(np.uint8))
-        except ImportError:
-            pass  # scipy not available, skip adaptive threshold
+        image = image.point(lambda x: 0 if x < 128 else 255, '1')
+        image = image.convert('L')
 
+    gc.collect()
     return image
 
 
