@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Jot It",
-    "slug": "jot-it",
+    "slug": "jotit",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,18 +12,20 @@
       "backgroundColor": "#080808"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
+      "bundleIdentifier": "com.jotit.app",
       "infoPlist": {
         "NSCameraUsageDescription": "Jot It needs camera access to scan text from photos.",
         "NSPhotoLibraryUsageDescription": "Jot It needs photo library access to upload images for scanning."
       }
     },
     "android": {
+      "package": "com.jotit.app",
       "adaptiveIcon": {
-        "backgroundColor": "#080808",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "monochromeImage": "./assets/android-icon-monochrome.png",
+        "backgroundColor": "#080808"
       },
       "permissions": [
         "CAMERA",
@@ -37,6 +39,11 @@
     "plugins": [
       "expo-camera",
       "expo-image-picker"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "placeholder"
+      }
+    }
   }
 }
