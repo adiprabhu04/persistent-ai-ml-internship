@@ -64,18 +64,29 @@ def preprocess_image(image: Image.Image, source: str = "upload") -> Image.Image:
     if image.mode != 'L':
         image = image.convert('L')
 
-    # 3. Upscale small images (max 2x) for better detail
-    if image.width < 800:
-        scale = min(2.0, 800 / image.width)
-        new_size = (int(image.width * scale), int(image.height * scale))
-        image = image.resize(new_size, Image.Resampling.LANCZOS)
+    # 3. Upscaling — smarter minimum size for canvas to improve thin stroke visibility
+    if source == "canvas":
+        current_max = max(image.width, image.height)
+        if current_max < 1500:
+            scale = 1500 / current_max
+            new_size = (int(image.width * scale), int(image.height * scale))
+            image = image.resize(new_size, Image.Resampling.LANCZOS)
+    else:
+        if image.width < 800:
+            scale = min(2.0, 800 / image.width)
+            new_size = (int(image.width * scale), int(image.height * scale))
+            image = image.resize(new_size, Image.Resampling.LANCZOS)
 
-    # 4. Denoise (reduce pencil texture, paper grain)
-    image = image.filter(ImageFilter.MedianFilter(size=3))
+    # 4. For canvas: thicken thin pen strokes before contrast boost
+    if source == "canvas":
+        image = image.filter(ImageFilter.MaxFilter(size=3))
+    else:
+        # Denoise (reduce pencil texture, paper grain) — skip for canvas to preserve strokes
+        image = image.filter(ImageFilter.MedianFilter(size=3))
 
-    # 5. Strong contrast boost
+    # 5. Contrast boost — stronger for canvas handwriting
     enhancer = ImageEnhance.Contrast(image)
-    image = enhancer.enhance(2.0)
+    image = enhancer.enhance(3.0 if source == "canvas" else 2.0)
 
     # 6. Sharpen edges
     image = image.filter(ImageFilter.UnsharpMask(radius=2, percent=150, threshold=3))
@@ -84,13 +95,67 @@ def preprocess_image(image: Image.Image, source: str = "upload") -> Image.Image:
     enhancer = ImageEnhance.Brightness(image)
     image = enhancer.enhance(1.1)
 
-    # 8. Simple threshold for canvas drawings
+    # 8. Thresholding for canvas drawings — Otsu-style using mean
     if source == "canvas":
-        image = image.point(lambda x: 0 if x < 128 else 255, '1')
-        image = image.convert('L')
+        img_array = np.array(image, dtype=np.uint8)
+        threshold = int(img_array.mean() * 0.8)
+        binary = img_array < threshold  # dark pixels = ink
+        result = np.where(binary, 0, 255).astype(np.uint8)
+        image = Image.fromarray(result)
+        del img_array, binary, result
+        gc.collect()
 
     gc.collect()
     return image
+
+
+def run_google_vision(client: vision.ImageAnnotatorClient, image_bytes: bytes) -> dict | None:
+    """Run Vision OCR with document_text_detection, falling back to text_detection if empty."""
+    try:
+        vision_image = vision.Image(content=image_bytes)
+
+        response = client.document_text_detection(
+            image=vision_image,
+            image_context={"language_hints": ["en"]}
+        )
+
+        # Fallback: if document_text_detection returns nothing, try text_detection
+        if not response.text_annotations:
+            response = client.text_detection(
+                image=vision_image,
+                image_context={"language_hints": ["en"]}
+            )
+
+        if not response.text_annotations:
+            return None
+
+        full_text = response.text_annotations[0].description
+        words = []
+
+        try:
+            for page in response.full_text_annotation.pages:
+                for block in page.blocks:
+                    for paragraph in block.paragraphs:
+                        for word in paragraph.words:
+                            word_text = ''.join([symbol.text for symbol in word.symbols])
+                            word_conf = word.confidence if hasattr(word, 'confidence') and word.confidence else 0.9
+                            words.append({
+                                "text": word_text,
+                                "confidence": round(word_conf * 100, 1)
+                            })
+        except Exception:
+            pass
+
+        avg_confidence = sum(w["confidence"] for w in words) / len(words) if words else 85.0
+        return {
+            "text": full_text.strip(),
+            "confidence": round(avg_confidence, 1),
+            "words": words,
+            "engine": "google_vision"
+        }
+    except Exception as e:
+        print(f"Google Vision error: {str(e)}")
+        return None
 
 
 def get_tesseract_config(image_type: str = "auto") -> str:
@@ -127,44 +192,24 @@ async def extract_text(
         # Use Google Vision API as primary
         if GOOGLE_CREDENTIALS_PRESENT:
             print("Using Google Vision API")
-            try:
-                vision_client = vision.ImageAnnotatorClient()
+            vision_client = vision.ImageAnnotatorClient()
 
-                img_byte_arr = io.BytesIO()
-                processed.save(img_byte_arr, format='PNG')
-                content = img_byte_arr.getvalue()
+            img_byte_arr = io.BytesIO()
+            processed.save(img_byte_arr, format='PNG')
+            processed_bytes = img_byte_arr.getvalue()
+            img_byte_arr.close()
 
-                vision_image = vision.Image(content=content)
-                response = vision_client.document_text_detection(
-                    image=vision_image,
-                    image_context={"language_hints": ["en"]}
-                )
+            result = run_google_vision(vision_client, processed_bytes)
+            del processed_bytes
+            gc.collect()
 
-                if response.text_annotations:
-                    full_text = response.text_annotations[0].description
-
-                    # Extract word-level confidence
-                    words = []
-                    for page in response.full_text_annotation.pages:
-                        for block in page.blocks:
-                            for paragraph in block.paragraphs:
-                                for word in paragraph.words:
-                                    word_text = ''.join([symbol.text for symbol in word.symbols])
-                                    word_conf = word.confidence if hasattr(word, 'confidence') and word.confidence else 0.9
-                                    words.append({
-                                        "text": word_text,
-                                        "confidence": round(word_conf * 100, 1)
-                                    })
-
-                    avg_confidence = sum(w["confidence"] for w in words) / len(words) if words else 85.0
-                    result = {
-                        "text": full_text.strip(),
-                        "confidence": round(avg_confidence, 1),
-                        "words": words,
-                        "engine": "google_vision"
-                    }
-            except Exception as e:
-                print(f"Google Vision error: {str(e)}")
+            # For canvas: also try Vision on the original image and keep the better result
+            if source == "canvas":
+                original_result = run_google_vision(vision_client, contents)
+                if original_result:
+                    if result is None or original_result["confidence"] > result["confidence"]:
+                        result = original_result
+                gc.collect()
 
         # Fallback to Tesseract
         if not result:
