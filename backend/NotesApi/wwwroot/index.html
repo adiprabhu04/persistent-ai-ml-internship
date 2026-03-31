@@ -16,7 +16,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* Mobile Safari auth input fix */
         [data-theme="dark"] input[type="email"],
         [data-theme="dark"] input[type="password"],
         [data-theme="dark"] input[type="text"] {
@@ -4008,23 +4007,70 @@
     // ── WORD SUGGESTIONS ────────────────────────────────────────
     (function() {
         const WORD_DICT = [
-            'about','above','across','after','again','against','along','already','also','although',
-            'always','among','another','around','away','because','before','being','below','between',
-            'both','bring','build','called','change','comes','could','create','during','each',
-            'early','enough','every','example','first','found','from','front','general','given',
-            'going','great','group','hands','having','heard','high','house','however','human',
-            'important','inside','keep','knew','large','later','leave','light','likely','little',
-            'local','long','look','made','make','many','might','more','most','move','much','must',
-            'need','never','next','night','nothing','often','once','only','open','order','other',
-            'over','part','people','place','point','possible','power','public','quite','rather',
-            'right','room','same','say','second','sense','should','since','small','some','soon',
-            'south','start','state','still','story','such','sure','system','take','than','that',
-            'their','them','then','there','these','they','thing','think','this','those','though',
-            'through','time','together','told','took','toward','turn','under','until','upon','used',
-            'using','very','want','well','were','what','when','where','which','while','will','with',
-            'within','without','word','work','world','would','write','year','your',
-            'meeting','agenda','todo','reminder','idea','project','task','review','follow','update',
-            'call','email','notes','important','urgent','deadline','schedule','plan','discuss','action'
+          // A
+          'action','agenda','app','article','analysis','answer','about','add',
+          'amazing','area','account','apply','available','assign',
+          // B
+          'budget','brief','build','background','backup','blog','book','bug',
+          'business','block','break','board',
+          // C
+          'call','cancel','check','code','comment','complete','contact','content',
+          'create','client','change','confirm','copy','cost','current',
+          // D
+          'deadline','decision','deploy','design','details','discuss','done',
+          'document','data','debug','demo','draft','database',
+          // E
+          'email','error','event','example','edit','expand','export',
+          'estimate','execute','enable',
+          // F
+          'feature','feedback','file','fix','follow','form','function',
+          'final','finish','focus','frontend',
+          // G
+          'goal','general','github','group','guide','get',
+          // H
+          'help','home','hotfix','handle','host',
+          // I
+          'idea','important','issue','improve','implement','info','input',
+          'interface','integration',
+          // J
+          'job','jira','join',
+          // K
+          'keep','key','knowledge',
+          // L
+          'launch','learn','list','log','link','layout',
+          // M
+          'meeting','message','mobile','model','monitor','merge',
+          'manage','milestone','module',
+          // N
+          'note','notes','next','need','network','new',
+          // O
+          'objective','output','optimize','option','order','outreach',
+          // P
+          'plan','personal','priority','project','proposal','push',
+          'problem','process','product','progress','present',
+          // Q
+          'question','queue','quick',
+          // R
+          'release','reminder','report','research','review','roadmap',
+          'refactor','request','resource',
+          // S
+          'schedule','search','send','setup','share','sprint','status',
+          'summary','support','sync','scope','solution','server',
+          // T
+          'task','team','test','todo','track','ticket','template',
+          'timeline','thought','testing',
+          // U
+          'update','upload','urgent','user','ui','ux',
+          // V
+          'version','verify','video','view',
+          // W
+          'work','write','website','workflow',
+          // X
+          'xcode',
+          // Y
+          'yesterday',
+          // Z
+          'zoom'
         ];
 
         const textarea = document.getElementById('note-content');
@@ -4040,8 +4086,12 @@
         }
 
         function renderSuggestions(word) {
-            if (word.length < 2) { container.classList.add('hidden'); return; }
-            const matches = WORD_DICT.filter(w => w.startsWith(word) && w !== word).slice(0, 3);
+            if (word.length < 1) { container.classList.add('hidden'); return; }
+            const primary = WORD_DICT.filter(w => w.startsWith(word) && w !== word)
+                .sort((a, b) => a.length - b.length);
+            const secondary = WORD_DICT.filter(w => !w.startsWith(word) && w.includes(word) && w !== word)
+                .sort((a, b) => a.length - b.length);
+            const matches = [...primary, ...secondary].slice(0, 4);
             if (matches.length === 0) { container.classList.add('hidden'); return; }
             container.innerHTML = '';
             matches.forEach(w => {
