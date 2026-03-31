@@ -1,13 +1,14 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from google.cloud import vision
+from azure.cognitiveservices.vision.computervision import ComputerVisionClient
+from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes
+from msrest.authentication import CognitiveServicesCredentials
 import pytesseract
+import time
 from PIL import Image, ImageEnhance, ImageFilter
 import numpy as np
 import io
 import os
-import json
-import tempfile
 import gc
 
 app = FastAPI(title="Notely OCR Service")
@@ -20,25 +21,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Check if Google credentials are available
-GOOGLE_CREDENTIALS_JSON = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS_JSON")
-GOOGLE_CREDENTIALS_PRESENT = False
-
-if GOOGLE_CREDENTIALS_JSON:
-    try:
-        creds_dict = json.loads(GOOGLE_CREDENTIALS_JSON)
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
-            json.dump(creds_dict, f)
-            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = f.name
-        GOOGLE_CREDENTIALS_PRESENT = True
-        print("Google credentials loaded from environment variable")
-    except Exception as e:
-        print(f"Failed to load Google credentials: {e}")
-elif os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
-    GOOGLE_CREDENTIALS_PRESENT = True
-    print("Google credentials loaded from file path")
-else:
-    print("No Google credentials found, will use Tesseract fallback")
+AZURE_VISION_KEY = os.environ.get("AZURE_VISION_KEY")
+AZURE_VISION_ENDPOINT = os.environ.get("AZURE_VISION_ENDPOINT")
+AZURE_VISION_PRESENT = bool(AZURE_VISION_KEY and AZURE_VISION_ENDPOINT)
 
 PSM_MODES = {
     "auto": 3,
@@ -109,55 +94,6 @@ def preprocess_image(image: Image.Image, source: str = "upload") -> Image.Image:
     return image
 
 
-def run_google_vision(client: vision.ImageAnnotatorClient, image_bytes: bytes) -> dict | None:
-    """Run Vision OCR with document_text_detection, falling back to text_detection if empty."""
-    try:
-        vision_image = vision.Image(content=image_bytes)
-
-        response = client.document_text_detection(
-            image=vision_image,
-            image_context={"language_hints": ["en"]}
-        )
-
-        # Fallback: if document_text_detection returns nothing, try text_detection
-        if not response.text_annotations:
-            response = client.text_detection(
-                image=vision_image,
-                image_context={"language_hints": ["en"]}
-            )
-
-        if not response.text_annotations:
-            return None
-
-        full_text = response.text_annotations[0].description
-        words = []
-
-        try:
-            for page in response.full_text_annotation.pages:
-                for block in page.blocks:
-                    for paragraph in block.paragraphs:
-                        for word in paragraph.words:
-                            word_text = ''.join([symbol.text for symbol in word.symbols])
-                            word_conf = word.confidence if hasattr(word, 'confidence') and word.confidence else 0.9
-                            words.append({
-                                "text": word_text,
-                                "confidence": round(word_conf * 100, 1)
-                            })
-        except Exception:
-            pass
-
-        avg_confidence = sum(w["confidence"] for w in words) / len(words) if words else 85.0
-        return {
-            "text": full_text.strip(),
-            "confidence": round(avg_confidence, 1),
-            "words": words,
-            "engine": "google_vision"
-        }
-    except Exception as e:
-        print(f"Google Vision error: {str(e)}")
-        return None
-
-
 def get_tesseract_config(image_type: str = "auto") -> str:
     psm = PSM_MODES.get(image_type, PSM_MODES["auto"])
     return f"--oem 3 --psm {psm}"
@@ -165,7 +101,7 @@ def get_tesseract_config(image_type: str = "auto") -> str:
 
 @app.get("/")
 def health_check():
-    return {"status": "healthy", "model": "Google Cloud Vision OCR"}
+    return {"status": "healthy", "model": "Azure Computer Vision OCR"}
 
 
 @app.get("/health")
@@ -189,27 +125,54 @@ async def extract_text(
 
         result = None
 
-        # Use Google Vision API as primary
-        if GOOGLE_CREDENTIALS_PRESENT:
-            print("Using Google Vision API")
-            vision_client = vision.ImageAnnotatorClient()
+        # Use Azure Computer Vision as primary
+        if AZURE_VISION_PRESENT:
+            print("Using Azure Computer Vision")
+            try:
+                client = ComputerVisionClient(
+                    AZURE_VISION_ENDPOINT,
+                    CognitiveServicesCredentials(AZURE_VISION_KEY)
+                )
 
-            img_byte_arr = io.BytesIO()
-            processed.save(img_byte_arr, format='PNG')
-            processed_bytes = img_byte_arr.getvalue()
-            img_byte_arr.close()
+                img_byte_arr = io.BytesIO()
+                processed.save(img_byte_arr, format='PNG')
+                img_byte_arr.seek(0)
 
-            result = run_google_vision(vision_client, processed_bytes)
-            del processed_bytes
-            gc.collect()
+                # Use Read API for better handwriting support
+                read_response = client.read_in_stream(img_byte_arr, raw=True)
+                operation_location = read_response.headers["Operation-Location"]
+                operation_id = operation_location.split("/")[-1]
 
-            # For canvas: also try Vision on the original image and keep the better result
-            if source == "canvas":
-                original_result = run_google_vision(vision_client, contents)
-                if original_result:
-                    if result is None or original_result["confidence"] > result["confidence"]:
-                        result = original_result
-                gc.collect()
+                # Poll for result
+                max_tries = 10
+                for i in range(max_tries):
+                    read_result = client.get_read_result(operation_id)
+                    if read_result.status not in [OperationStatusCodes.running, OperationStatusCodes.not_started]:
+                        break
+                    time.sleep(1)
+
+                full_text = ""
+                words = []
+                if read_result.status == OperationStatusCodes.succeeded:
+                    for page in read_result.analyze_result.read_results:
+                        for line in page.lines:
+                            full_text += line.text + "\n"
+                            for word in line.words:
+                                words.append({
+                                    "text": word.text,
+                                    "confidence": round(word.confidence * 100, 1)
+                                })
+
+                avg_confidence = sum(w["confidence"] for w in words) / len(words) if words else 0
+
+                result = {
+                    "text": full_text.strip(),
+                    "confidence": round(avg_confidence, 1),
+                    "words": words,
+                    "engine": "azure_vision"
+                }
+            except Exception as e:
+                print(f"Azure Vision error: {str(e)}")
 
         # Fallback to Tesseract
         if not result:
