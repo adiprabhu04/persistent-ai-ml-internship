@@ -245,6 +245,7 @@ app.MapPost("/notes", async (
         Title = request.Title.Trim(),
         Content = request.Content?.Trim() ?? string.Empty,
         Category = request.Category ?? "General",
+        ImageData = request.ImageData,
         CreatedAt = DateTime.UtcNow,
         UpdatedAt = DateTime.UtcNow,
         UserId = userId

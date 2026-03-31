@@ -969,6 +969,9 @@
         }
         .word-suggestion-pill:hover { background: #5B6EF5; color: #fff; }
 
+        .note-scan-image { margin-top: 16px; }
+        .scan-image-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+
         .sheet-footer {
             display: flex;
             align-items: center;
@@ -2073,6 +2076,10 @@
                       placeholder="What's on your mind? Use #work, #personal, or #ideas to categorize…"
                       aria-label="Note content"></textarea>
             <div id="word-suggestions" class="word-suggestions hidden" aria-label="Word suggestions"></div>
+            <div id="note-scan-image-container" class="note-scan-image hidden">
+                <p class="scan-image-label">Original Scan</p>
+                <img id="note-scan-image-img" src="" alt="Original scan" style="max-width:100%;border-radius:8px;margin-top:8px;">
+            </div>
         </div>
         <div class="sheet-footer">
             <div class="sheet-footer-left">
@@ -2537,6 +2544,7 @@
         currentStroke: null
     };
     let pendingUploadFile = null;
+    let lastScannedImageData = null;
     let pendingConfirmAction = null;
     let currentOcrWords = [];
     let currentScanStep = 'input';
@@ -3032,6 +3040,14 @@
         saveBtn.innerHTML = 'Save';
         saveBtn.disabled = false;
 
+        const scanImgContainer = document.getElementById('note-scan-image-container');
+        if (note && note.imageData) {
+            document.getElementById('note-scan-image-img').src = note.imageData;
+            scanImgContainer.classList.remove('hidden');
+        } else {
+            scanImgContainer.classList.add('hidden');
+        }
+
         document.getElementById('note-modal').classList.add('open');
         setTimeout(() => document.getElementById('note-title').focus(), 80);
     }
@@ -3099,6 +3115,7 @@
     function openScanModal() {
         switchScanStep('input');
         switchScanTab('draw');
+        lastScannedImageData = null;
         currentOcrWords = [];
         pendingUploadFile = null;
         document.getElementById('upload-drop-area').classList.remove('hidden');
@@ -3132,6 +3149,7 @@
         pendingUploadFile = file;
         const reader = new FileReader();
         reader.onload = (ev) => {
+            lastScannedImageData = ev.target.result;
             document.getElementById('upload-preview-img').src = ev.target.result;
             document.getElementById('upload-drop-area').classList.add('hidden');
             document.getElementById('upload-preview-section').classList.remove('hidden');
@@ -3311,6 +3329,7 @@
         ctx.drawImage(canvas, 0, 0);
         offscreen.toBlob(async function(blob) {
             if (!blob) return;
+            lastScannedImageData = offscreen.toDataURL('image/png');
             const formData = new FormData();
             formData.append('file', blob, 'canvas.png');
             formData.append('source', 'canvas');
@@ -3444,7 +3463,7 @@
         const extractedText = document.getElementById('scan-preview-text').value;
         if (!extractedText.trim()) { toast('Nothing to save yet — edit the text above!', 'warning'); return; }
         const title = 'Scanned — ' + new Date().toLocaleDateString();
-        const result = await api('/notes', 'POST', { title, content: extractedText });
+        const result = await api('/notes', 'POST', { title, content: extractedText, imageData: lastScannedImageData });
         if (result) {
             closeScanModal();
             closeModal();
