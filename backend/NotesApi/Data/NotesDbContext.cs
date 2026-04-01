@@ -7,4 +7,5 @@ public class NotesDbContext : DbContext
 
     public DbSet<Note> Notes => Set<Note>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<OcrFeedback> OcrFeedbacks => Set<OcrFeedback>();
 }

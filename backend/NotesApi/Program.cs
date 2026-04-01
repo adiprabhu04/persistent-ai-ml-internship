@@ -474,6 +474,50 @@ app.MapPost("/auth/login", async (LoginRequest request, NotesDbContext db) =>
     });
 });
 
+app.MapPost("/ocr/feedback", async (
+    HttpContext context,
+    NotesDbContext db,
+    OcrFeedbackRequest request) =>
+{
+    var userId = AuthHelpers.GetUserId(context);
+    var feedback = new OcrFeedback
+    {
+        UserId = userId,
+        ExtractedText = request.ExtractedText,
+        Engine = request.Engine ?? "azure_vision",
+        Confidence = request.Confidence,
+        IsAccurate = request.IsAccurate,
+        CorrectedText = request.CorrectedText
+    };
+    db.OcrFeedbacks.Add(feedback);
+    await db.SaveChangesAsync();
+    return Results.Ok(new { success = true });
+}).RequireAuthorization();
+
+app.MapGet("/ocr/stats", async (
+    HttpContext context,
+    NotesDbContext db) =>
+{
+    var userId = AuthHelpers.GetUserId(context);
+    var feedbacks = await db.OcrFeedbacks
+        .Where(f => f.UserId == userId)
+        .ToListAsync();
+
+    var total = feedbacks.Count;
+    var accurate = feedbacks.Count(f => f.IsAccurate);
+    var avgConfidence = feedbacks.Any(f => f.Confidence.HasValue)
+        ? feedbacks.Where(f => f.Confidence.HasValue).Average(f => f.Confidence!.Value)
+        : 0;
+
+    return Results.Ok(new {
+        total,
+        accurate,
+        inaccurate = total - accurate,
+        accuracyRate = total > 0 ? Math.Round((double)accurate / total * 100, 1) : 0,
+        avgConfidence = Math.Round(avgConfidence, 1)
+    });
+}).RequireAuthorization();
+
 // Background keepalive for OCR service
 var httpClientFactory = app.Services.GetRequiredService<IHttpClientFactory>();
 _ = Task.Run(async () => {

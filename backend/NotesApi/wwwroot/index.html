@@ -1264,6 +1264,15 @@
             font-family: inherit;
         }
         .word-confidence { font-size: 10px; color: var(--text-tertiary); }
+        .ocr-feedback { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+        .feedback-label { font-size: 13px; color: var(--text-secondary); }
+        .feedback-btn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--glass-border); background: transparent; color: var(--text); font-size: 13px; cursor: pointer; transition: all 0.2s; }
+        .feedback-btn.feedback-yes:hover { background: #0D2A1A; color: #4ADE80; border-color: #4ADE80; }
+        .feedback-btn.feedback-no:hover { background: #2A0D0D; color: #EF4444; border-color: #EF4444; }
+        .feedback-thanks { font-size: 13px; color: #4ADE80; }
+        .stats-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--glass-border); font-size: 14px; color: var(--text-secondary); }
+        .stats-row:last-child { border-bottom: none; }
+        .stats-row span:last-child { font-weight: 600; color: var(--text); }
         .scan-confidence-bar { margin-bottom: 10px; }
         .scan-confidence-bar-header {
             display: flex;
@@ -2215,6 +2224,18 @@
                 <i class="fa-solid fa-pen-to-square" style="color:var(--accent);flex-shrink:0;"></i>
                 Review and edit the extracted text before saving.
             </p>
+            <div class="ocr-feedback" id="ocr-feedback-bar">
+                <span class="feedback-label">Was this accurate?</span>
+                <button class="feedback-btn feedback-yes" onclick="submitOcrFeedback(true)">
+                    <i class="fa-solid fa-thumbs-up"></i> Yes
+                </button>
+                <button class="feedback-btn feedback-no" onclick="submitOcrFeedback(false)">
+                    <i class="fa-solid fa-thumbs-down"></i> No
+                </button>
+            </div>
+            <div id="ocr-feedback-thanks" style="display:none">
+                <span class="feedback-thanks">Thanks for your feedback!</span>
+            </div>
             <div class="scan-actions">
                 <button onclick="switchScanStep('input')" class="btn-ghost btn">
                     <i class="fa-solid fa-rotate-left"></i> Try Again
@@ -2273,6 +2294,23 @@
                 <h3>Data</h3>
                 <div style="display:flex;gap:10px;flex-wrap:wrap;">
                     <button class="btn-secondary-sm btn" onclick="exportNotes()">Export Notes</button>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3>OCR Accuracy</h3>
+                <div id="ocr-stats-container">
+                    <div class="stats-row">
+                        <span>Total scans rated</span>
+                        <span id="stat-total">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span>Accuracy rate</span>
+                        <span id="stat-accuracy">-</span>
+                    </div>
+                    <div class="stats-row">
+                        <span>Avg confidence</span>
+                        <span id="stat-confidence">-</span>
+                    </div>
                 </div>
             </div>
             <div class="settings-section" style="border-bottom:none;">
@@ -2545,6 +2583,7 @@
     };
     let pendingUploadFile = null;
     let lastScannedImageData = null;
+    let lastScanResult = null;
     let pendingConfirmAction = null;
     let currentOcrWords = [];
     let currentScanStep = 'input';
@@ -2752,6 +2791,14 @@
                 document.getElementById('settings-email').value = state.email;
             }
         } catch (e) { /* use cached state */ }
+        try {
+            const stats = await api('/ocr/stats');
+            if (stats) {
+                document.getElementById('stat-total').textContent = stats.total;
+                document.getElementById('stat-accuracy').textContent = stats.total > 0 ? stats.accuracyRate + '%' : 'No data';
+                document.getElementById('stat-confidence').textContent = stats.total > 0 ? stats.avgConfidence + '%' : 'No data';
+            }
+        } catch (e) { /* stats unavailable */ }
     }
 
     function closeSettingsModal(e) {
@@ -3368,6 +3415,9 @@
                 document.getElementById('scan-words-container').style.display = 'none';
                 document.getElementById('scan-confidence-section').style.display = 'none';
             }
+            lastScanResult = { text: data.text || '', engine: 'azure_vision', confidence: data.confidence ?? null };
+            document.getElementById('ocr-feedback-bar').style.display = 'flex';
+            document.getElementById('ocr-feedback-thanks').style.display = 'none';
             switchScanStep('preview');
         } catch (err) {
             showScanError('Connection lost', 'Please check your internet connection and try again.');
@@ -3457,6 +3507,22 @@
         document.getElementById('scan-error-title').textContent = title;
         document.getElementById('scan-error-detail').textContent = detail;
         switchScanStep('error');
+    }
+
+    async function submitOcrFeedback(isAccurate) {
+        document.getElementById('ocr-feedback-bar').style.display = 'none';
+        document.getElementById('ocr-feedback-thanks').style.display = 'block';
+        try {
+            await api('/ocr/feedback', 'POST', {
+                extractedText: lastScanResult?.text || '',
+                engine: lastScanResult?.engine || 'azure_vision',
+                confidence: lastScanResult?.confidence || null,
+                isAccurate: isAccurate,
+                correctedText: isAccurate ? null : document.getElementById('scan-preview-text')?.value
+            });
+        } catch (e) {
+            console.log('Feedback error:', e);
+        }
     }
 
     async function scanSaveAsNote() {
