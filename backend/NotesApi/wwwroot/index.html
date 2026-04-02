@@ -724,7 +724,21 @@
             justify-content: center;
         }
         .note-card:hover .note-card-delete { opacity: 1; }
+        .note-card:hover .pin-btn { opacity: 1 !important; }
+        .note-card .pin-btn.pinned { opacity: 1 !important; }
         .note-card-delete:hover { background: rgba(239,68,68,0.12); color: var(--error); }
+
+        /* Pin button */
+        .pin-btn { background: none; border: none; cursor: pointer; padding: 4px; color: var(--text-tertiary); transition: color 0.2s; }
+        .pin-btn.pinned { color: #5B6EF5; }
+        .pin-btn:hover { color: #5B6EF5; }
+
+        /* Pinned section labels */
+        .pinned-label { font-size: 11px; font-weight: 600; color: var(--text-tertiary); letter-spacing: 0.8px; text-transform: uppercase; padding: 4px 0 8px 0; }
+        .pin-divider { border: none; border-top: 1px solid var(--glass-border); margin: 8px 0 16px 0; }
+
+        /* Pinned card highlight */
+        .note-card.is-pinned { border-left-width: 3px !important; box-shadow: inset 3px 0 0 0 #5B6EF5, var(--shadow-sm); }
 
         /* Deleting animation */
         @keyframes cardSwoop {
@@ -2074,9 +2088,14 @@
         <div class="drag-handle" aria-hidden="true"></div>
         <div class="sheet-header">
             <span id="modal-title-label" class="sheet-title">New Note</span>
-            <button onclick="closeModal()" class="btn-close btn" aria-label="Close">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <div style="display:flex;align-items:center;gap:4px;">
+                <button id="modal-pin-btn" onclick="toggleModalPin()" class="pin-btn btn" aria-label="Pin note" style="display:none;">
+                    <i class="fa-solid fa-thumbtack"></i>
+                </button>
+                <button onclick="closeModal()" class="btn-close btn" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
         </div>
         <div class="sheet-body">
             <input type="text" id="note-title" class="note-title-input"
@@ -2961,13 +2980,36 @@
             return;
         }
 
-        filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+        filtered.sort((a, b) => {
+            if (!!b.isPinned !== !!a.isPinned) return b.isPinned ? 1 : -1;
+            return new Date(b.updatedAt) - new Date(a.updatedAt);
+        });
 
         updateNoteCount(state.notes.length);
 
+        const pinned = filtered.filter(n => n.isPinned);
+        const unpinned = filtered.filter(n => !n.isPinned);
+        const hasBoth = pinned.length > 0 && unpinned.length > 0;
+
+        if (pinned.length > 0) {
+            const label = document.createElement('div');
+            label.className = 'pinned-label';
+            label.textContent = 'Pinned';
+            grid.appendChild(label);
+        }
+
         filtered.forEach((note, i) => {
+            if (hasBoth && !note.isPinned && pinned.length > 0) {
+                const prevNote = filtered[i - 1];
+                if (prevNote && prevNote.isPinned) {
+                    const divider = document.createElement('hr');
+                    divider.className = 'pin-divider';
+                    grid.appendChild(divider);
+                }
+            }
+
             const el = document.createElement('div');
-            el.className = 'note-card';
+            el.className = 'note-card' + (note.isPinned ? ' is-pinned' : '');
             el.setAttribute('role', 'listitem');
             el.dataset.id = note.id;
             el.style.animationDelay = `${i * 0.04}s`;
@@ -2993,6 +3035,9 @@
                     </div>
                     <span class="note-card-category ${catInfo.cls}">${catInfo.name}</span>
                 </div>
+                <button class="pin-btn btn${note.isPinned ? ' pinned' : ''}" onclick="togglePin(event, '${note.id}')" aria-label="${note.isPinned ? 'Unpin note' : 'Pin note'}" style="position:absolute;top:10px;right:38px;opacity:0;transition:opacity 0.2s;">
+                    <i class="fa-solid fa-thumbtack" style="font-size:13px;"></i>
+                </button>
                 <button class="note-card-delete btn" onclick="deleteNote(event, '${note.id}')" aria-label="Delete note">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
@@ -3080,6 +3125,15 @@
         document.getElementById('note-title').value = note ? note.title : '';
         document.getElementById('note-content').value = note ? note.content : '';
 
+        const pinBtn = document.getElementById('modal-pin-btn');
+        if (note) {
+            pinBtn.style.display = '';
+            pinBtn.classList.toggle('pinned', !!note.isPinned);
+        } else {
+            pinBtn.style.display = 'none';
+            pinBtn.classList.remove('pinned');
+        }
+
         const catSelect = document.getElementById('note-category');
         catSelect.value = (note && note.category) ? note.category : 'General';
 
@@ -3141,6 +3195,36 @@
             fetchNotes();
             toast('Note deleted', 'success');
         });
+    }
+
+    async function togglePin(e, noteId) {
+        e.stopPropagation();
+        try {
+            const res = await api(`/notes/${noteId}/pin`, 'PUT');
+            const note = state.notes.find(n => n.id === noteId);
+            if (note && res) {
+                note.isPinned = res.isPinned;
+                renderNotes();
+            }
+        } catch (err) {
+            console.log('Pin error:', err);
+        }
+    }
+
+    async function toggleModalPin() {
+        if (!state.editingId) return;
+        try {
+            const res = await api(`/notes/${state.editingId}/pin`, 'PUT');
+            const note = state.notes.find(n => n.id === state.editingId);
+            if (note && res) {
+                note.isPinned = res.isPinned;
+                const pinBtn = document.getElementById('modal-pin-btn');
+                pinBtn.classList.toggle('pinned', res.isPinned);
+                renderNotes();
+            }
+        } catch (err) {
+            console.log('Pin error:', err);
+        }
     }
 
     function showConfirm(callback) {

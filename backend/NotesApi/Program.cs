@@ -197,7 +197,8 @@ app.MapGet("/notes", async (
     var totalCount = await query.CountAsync();
 
     var notes = await query
-        .OrderByDescending(n => n.UpdatedAt)
+        .OrderByDescending(n => n.IsPinned)
+        .ThenByDescending(n => n.UpdatedAt)
         .Skip((page - 1) * pageSize)
         .Take(pageSize)
         .ToListAsync();
@@ -284,6 +285,19 @@ app.MapPut("/notes/{id}", async (
     return Results.Ok(note);
 })
 .RequireAuthorization();
+
+app.MapPut("/notes/{id}/pin", async (
+    Guid id,
+    HttpContext context,
+    NotesDbContext db) =>
+{
+    var userId = AuthHelpers.GetUserId(context);
+    var note = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
+    if (note == null) return Results.NotFound();
+    note.IsPinned = !note.IsPinned;
+    await db.SaveChangesAsync();
+    return Results.Ok(new { id = note.Id, isPinned = note.IsPinned });
+}).RequireAuthorization();
 
 app.MapDelete("/notes/{id}", async (
     Guid id,
