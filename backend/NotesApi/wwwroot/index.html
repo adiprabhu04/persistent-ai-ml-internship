@@ -1935,6 +1935,30 @@
             }
             body::before, body::after { display: none; }
         }
+
+        .btn-templates { background: none; border: 1px solid #1E1E1E;
+          color: var(--text-secondary); padding: 6px 12px; border-radius: 8px;
+          font-size: 13px; cursor: pointer; transition: all 0.2s;
+          display: flex; align-items: center; gap: 6px; }
+        .btn-templates:hover { border-color: #5B6EF5; color: #5B6EF5; }
+        .template-picker { background: #0F0F0F; border: 1px solid #1E1E1E;
+          border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+        .template-picker-label { font-size: 11px; font-weight: 600;
+          color: var(--text-tertiary); text-transform: uppercase;
+          letter-spacing: 0.8px; margin-bottom: 12px; }
+        .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+          gap: 8px; }
+        .template-card { background: #111111; border: 1px solid #1E1E1E;
+          border-radius: 10px; padding: 12px; cursor: pointer;
+          transition: all 0.2s; }
+        .template-card:hover { border-color: #5B6EF5; background: #13143A; }
+        .template-card-icon { font-size: 20px; margin-bottom: 6px; }
+        .template-card-name { font-size: 13px; font-weight: 500;
+          color: var(--text); margin-bottom: 2px; }
+        .template-card-desc { font-size: 11px; color: var(--text-tertiary); }
+
+        [data-theme="light"] .template-picker { background: #F5F5F5; border-color: #E5E5E5; }
+        [data-theme="light"] .template-card { background: #FFFFFF; border-color: #E5E5E5; }
     </style>
 </head>
 <body>
@@ -2122,6 +2146,10 @@
         <div class="sheet-header">
             <span id="modal-title-label" class="sheet-title">New Note</span>
             <div style="display:flex;align-items:center;gap:4px;">
+                <button type="button" class="btn-templates" onclick="toggleTemplates()"
+                  id="templates-btn" title="Use a template">
+                  <i class="fa-solid fa-file-lines"></i> Templates
+                </button>
                 <button id="modal-pin-btn" onclick="toggleModalPin()" class="pin-btn btn" aria-label="Pin note" style="display:none;">
                     <i class="fa-solid fa-thumbtack"></i>
                 </button>
@@ -2133,6 +2161,10 @@
         <div class="sheet-body">
             <input type="text" id="note-title" class="note-title-input"
                    placeholder="Note title…" maxlength="200" autocomplete="off" aria-label="Note title">
+            <div id="template-picker" class="template-picker" style="display:none">
+              <p class="template-picker-label">Choose a template</p>
+              <div class="template-grid" id="template-grid"></div>
+            </div>
             <textarea id="note-content" class="note-content-textarea" aria-label="Note content" style="display:none;"></textarea>
             <div class="rich-toolbar" id="rich-toolbar">
               <button type="button" class="rich-btn" onclick="execCmd('bold')" title="Bold">
@@ -3315,6 +3347,9 @@ ${notesHTML}
             pinBtn.classList.remove('pinned');
         }
 
+        const templatesBtn = document.getElementById('templates-btn');
+        if (templatesBtn) templatesBtn.style.display = note ? 'none' : '';
+
         const catSelect = document.getElementById('note-category');
         catSelect.value = (note && note.category) ? note.category : 'General';
 
@@ -3334,10 +3369,109 @@ ${notesHTML}
         setTimeout(() => document.getElementById('note-title').focus(), 80);
     }
 
+    const TEMPLATES = [
+      {
+        id: 'meeting',
+        name: 'Meeting Notes',
+        icon: 'fa-users',
+        desc: 'Agenda & action items',
+        category: 'Work',
+        title: 'Meeting Notes — ',
+        content: '<h3>Attendees</h3><ul><li></li></ul><h3>Agenda</h3><ul><li></li></ul><h3>Discussion</h3><p></p><h3>Action Items</h3><ul><li></li></ul><h3>Next Meeting</h3><p></p>'
+      },
+      {
+        id: 'todo',
+        name: 'To-Do List',
+        icon: 'fa-list-check',
+        desc: 'Tasks to complete',
+        category: 'Personal',
+        title: 'To-Do — ',
+        content: '<h3>Today</h3><ul><li></li><li></li><li></li></ul><h3>This Week</h3><ul><li></li><li></li></ul><h3>Someday</h3><ul><li></li></ul>'
+      },
+      {
+        id: 'brainstorm',
+        name: 'Brainstorm',
+        icon: 'fa-lightbulb',
+        desc: 'Capture ideas fast',
+        category: 'Ideas',
+        title: 'Brainstorm — ',
+        content: '<h3>Problem Statement</h3><p></p><h3>Ideas</h3><ul><li></li><li></li><li></li></ul><h3>Best Options</h3><ul><li></li></ul><h3>Next Steps</h3><p></p>'
+      },
+      {
+        id: 'daily',
+        name: 'Daily Journal',
+        icon: 'fa-sun',
+        desc: 'Daily reflection',
+        category: 'Personal',
+        title: 'Journal — ',
+        content: '<h3>How I Feel</h3><p></p><h3>Top 3 Priorities</h3><ul><li></li><li></li><li></li></ul><h3>Notes</h3><p></p><h3>Gratitude</h3><ul><li></li></ul>'
+      },
+      {
+        id: 'project',
+        name: 'Project Plan',
+        icon: 'fa-diagram-project',
+        desc: 'Plan a project',
+        category: 'Work',
+        title: 'Project — ',
+        content: '<h3>Overview</h3><p></p><h3>Goals</h3><ul><li></li></ul><h3>Timeline</h3><ul><li></li></ul><h3>Resources Needed</h3><ul><li></li></ul><h3>Risks</h3><ul><li></li></ul>'
+      },
+      {
+        id: 'reading',
+        name: 'Book Notes',
+        icon: 'fa-book',
+        desc: 'Notes from reading',
+        category: 'Personal',
+        title: 'Book Notes — ',
+        content: '<h3>Book</h3><p></p><h3>Key Ideas</h3><ul><li></li></ul><h3>Favourite Quotes</h3><ul><li></li></ul><h3>My Takeaways</h3><p></p><h3>Action Items</h3><ul><li></li></ul>'
+      }
+    ];
+
+    function toggleTemplates() {
+        const picker = document.getElementById('template-picker');
+        const isVisible = picker.style.display !== 'none';
+        picker.style.display = isVisible ? 'none' : 'block';
+        if (!isVisible) renderTemplateGrid();
+    }
+
+    function renderTemplateGrid() {
+        const grid = document.getElementById('template-grid');
+        grid.innerHTML = TEMPLATES.map(t => `
+            <div class="template-card" onclick="applyTemplate('${t.id}')">
+                <div class="template-card-icon">
+                    <i class="fa-solid ${t.icon}"></i>
+                </div>
+                <div class="template-card-name">${t.name}</div>
+                <div class="template-card-desc">${t.desc}</div>
+            </div>
+        `).join('');
+    }
+
+    function applyTemplate(templateId) {
+        const template = TEMPLATES.find(t => t.id === templateId);
+        if (!template) return;
+
+        const today = new Date().toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
+        });
+        document.getElementById('note-title').value = template.title + today;
+
+        const editor = document.getElementById('note-content-editor');
+        editor.innerHTML = template.content;
+        document.getElementById('note-content').value = template.content;
+
+        const catSelect = document.getElementById('note-category');
+        if (catSelect) catSelect.value = template.category;
+
+        document.getElementById('template-picker').style.display = 'none';
+
+        editor.focus();
+    }
+
     function closeModal() {
         document.getElementById('note-modal').classList.remove('open');
         document.getElementById('note-content-editor').innerHTML = '';
         document.getElementById('note-content').value = '';
+        document.getElementById('template-picker').style.display = 'none';
     }
 
     async function saveNote() {
