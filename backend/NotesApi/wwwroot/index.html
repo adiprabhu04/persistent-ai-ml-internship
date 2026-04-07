@@ -740,6 +740,14 @@
         /* Pinned card highlight */
         .note-card.is-pinned { border-left-width: 3px !important; box-shadow: inset 3px 0 0 0 #5B6EF5, var(--shadow-sm); }
 
+        /* Drag and drop */
+        .note-card.draggable { cursor: grab; }
+        .note-card.draggable:active { cursor: grabbing; }
+        .note-card.dragging { opacity: 0.4; border: 2px dashed #5B6EF5; }
+        .note-card.drag-over { border-color: #5B6EF5; background: #13143A; transform: scale(1.02); transition: transform 0.1s; }
+        .note-card .drag-handle { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); opacity: 0; transition: opacity 0.2s; font-size: 12px; cursor: grab; width: auto; height: auto; background: none; border-radius: 0; margin: 0; }
+        .note-card:hover .drag-handle { opacity: 1; }
+
         /* Deleting animation */
         @keyframes cardSwoop {
             to { transform: translateX(110%); opacity: 0; }
@@ -2416,6 +2424,7 @@
                     <i class="fa-solid fa-file-pdf"></i> Export PDF
                   </button>
                 </div>
+                <button onclick="resetNoteOrder()" class="btn-secondary" style="margin-top:8px;width:100%">Reset Note Order</button>
             </div>
             <div class="settings-section">
                 <h3>OCR Accuracy</h3>
@@ -3087,7 +3096,7 @@ ${notesHTML}
         renderSkeletonLoaders(grid);
         const res = await api('/notes?page=1&pageSize=100');
         if (res) {
-            state.notes = res.data || [];
+            state.notes = applyCustomOrder(res.data || []);
             updateNoteCount(state.notes.length);
             renderNotes();
         } else {
@@ -3188,10 +3197,28 @@ ${notesHTML}
             return;
         }
 
-        filtered.sort((a, b) => {
-            if (!!b.isPinned !== !!a.isPinned) return b.isPinned ? 1 : -1;
-            return new Date(b.updatedAt) - new Date(a.updatedAt);
-        });
+        const _savedOrder = localStorage.getItem('jotit-note-order');
+        if (_savedOrder) {
+            try {
+                const _orderMap = {};
+                JSON.parse(_savedOrder).forEach((id, i) => _orderMap[id] = i);
+                filtered.sort((a, b) => {
+                    if (a.isPinned && !b.isPinned) return -1;
+                    if (!a.isPinned && b.isPinned) return 1;
+                    return (_orderMap[a.id] ?? 999) - (_orderMap[b.id] ?? 999);
+                });
+            } catch {
+                filtered.sort((a, b) => {
+                    if (!!b.isPinned !== !!a.isPinned) return b.isPinned ? 1 : -1;
+                    return new Date(b.updatedAt) - new Date(a.updatedAt);
+                });
+            }
+        } else {
+            filtered.sort((a, b) => {
+                if (!!b.isPinned !== !!a.isPinned) return b.isPinned ? 1 : -1;
+                return new Date(b.updatedAt) - new Date(a.updatedAt);
+            });
+        }
 
         updateNoteCount(state.notes.length);
 
@@ -3217,9 +3244,11 @@ ${notesHTML}
             }
 
             const el = document.createElement('div');
-            el.className = 'note-card' + (note.isPinned ? ' is-pinned' : '');
+            el.className = 'note-card draggable' + (note.isPinned ? ' is-pinned' : '');
             el.setAttribute('role', 'listitem');
+            el.setAttribute('draggable', 'true');
             el.dataset.id = note.id;
+            el.dataset.noteId = note.id;
             el.style.animationDelay = `${i * 0.04}s`;
 
             const catInfo = getCategoryInfo(note);
@@ -3231,6 +3260,7 @@ ${notesHTML}
             el.style.borderLeft = `3px solid ${catInfo.color}`;
 
             el.innerHTML = `
+                <div class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></div>
                 <div class="note-card-content">
                     <h3 class="note-card-title">${esc(note.title)}</h3>
                     <p class="note-card-preview">${esc(previewText)}</p>
@@ -3260,6 +3290,90 @@ ${notesHTML}
             grid.appendChild(el);
             initCardGestures(el, note);
         });
+        initDragAndDrop();
+    }
+
+    function initDragAndDrop() {
+        const cards = document.querySelectorAll('.note-card.draggable');
+        let dragSrcId = null;
+
+        cards.forEach(card => {
+            card.addEventListener('dragstart', (e) => {
+                dragSrcId = card.dataset.noteId;
+                card.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+                document.querySelectorAll('.note-card').forEach(c => {
+                    c.classList.remove('drag-over');
+                });
+            });
+
+            card.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                card.classList.add('drag-over');
+            });
+
+            card.addEventListener('dragleave', () => {
+                card.classList.remove('drag-over');
+            });
+
+            card.addEventListener('drop', (e) => {
+                e.preventDefault();
+                card.classList.remove('drag-over');
+                const targetId = card.dataset.noteId;
+                if (dragSrcId && dragSrcId !== targetId) {
+                    reorderNotes(dragSrcId, targetId);
+                }
+            });
+        });
+    }
+
+    function reorderNotes(srcId, targetId) {
+        const notes = [...state.notes];
+        const srcIndex = notes.findIndex(n => n.id === srcId);
+        const targetIndex = notes.findIndex(n => n.id === targetId);
+
+        if (srcIndex === -1 || targetIndex === -1) return;
+
+        const [removed] = notes.splice(srcIndex, 1);
+        notes.splice(targetIndex, 0, removed);
+
+        state.notes = notes;
+
+        const order = notes.map(n => n.id);
+        localStorage.setItem('jotit-note-order', JSON.stringify(order));
+
+        renderNotes();
+        initDragAndDrop();
+    }
+
+    function applyCustomOrder(notes) {
+        const savedOrder = localStorage.getItem('jotit-note-order');
+        if (!savedOrder) return notes;
+        try {
+            const order = JSON.parse(savedOrder);
+            const orderMap = {};
+            order.forEach((id, i) => orderMap[id] = i);
+            return [...notes].sort((a, b) => {
+                if (a.isPinned && !b.isPinned) return -1;
+                if (!a.isPinned && b.isPinned) return 1;
+                const ai = orderMap[a.id] ?? 999;
+                const bi = orderMap[b.id] ?? 999;
+                return ai - bi;
+            });
+        } catch {
+            return notes;
+        }
+    }
+
+    function resetNoteOrder() {
+        localStorage.removeItem('jotit-note-order');
+        fetchNotes();
+        showToast('Note order reset');
     }
 
     function filterCat(cat, btn) {
