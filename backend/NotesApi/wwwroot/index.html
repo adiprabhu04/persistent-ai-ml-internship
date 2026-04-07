@@ -745,6 +745,10 @@
         .note-card.draggable:active { cursor: grabbing; }
         .note-card.dragging { opacity: 0.4; border: 2px dashed #5B6EF5; }
         .note-card.drag-over { border-color: #5B6EF5; background: #13143A; transform: scale(1.02); transition: transform 0.1s; }
+        .note-card * { pointer-events: none; }
+        .note-card .pin-btn,
+        .note-card .note-card-delete,
+        .note-card .drag-handle { pointer-events: auto; }
         .note-card .drag-handle { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: var(--text-tertiary); opacity: 0; transition: opacity 0.2s; font-size: 12px; cursor: grab; width: auto; height: auto; background: none; border-radius: 0; margin: 0; }
         .note-card:hover .drag-handle { opacity: 1; }
 
@@ -3299,8 +3303,9 @@ ${notesHTML}
 
         cards.forEach(card => {
             card.addEventListener('dragstart', (e) => {
-                dragSrcId = card.dataset.noteId;
-                card.classList.add('dragging');
+                const src = e.target.closest('.note-card');
+                if (src) dragSrcId = src.dataset.noteId;
+                setTimeout(() => card.classList.add('dragging'), 0);
                 e.dataTransfer.effectAllowed = 'move';
             });
 
@@ -3313,8 +3318,13 @@ ${notesHTML}
 
             card.addEventListener('dragover', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 e.dataTransfer.dropEffect = 'move';
-                card.classList.add('drag-over');
+                const target = e.target.closest('.note-card');
+                if (target) {
+                    document.querySelectorAll('.note-card').forEach(c => c.classList.remove('drag-over'));
+                    target.classList.add('drag-over');
+                }
             });
 
             card.addEventListener('dragleave', () => {
@@ -3323,8 +3333,11 @@ ${notesHTML}
 
             card.addEventListener('drop', (e) => {
                 e.preventDefault();
-                card.classList.remove('drag-over');
-                const targetId = card.dataset.noteId;
+                e.stopPropagation();
+                document.querySelectorAll('.note-card').forEach(c => c.classList.remove('drag-over'));
+                const target = e.target.closest('.note-card');
+                if (!target) return;
+                const targetId = target.dataset.noteId;
                 if (dragSrcId && dragSrcId !== targetId) {
                     reorderNotes(dragSrcId, targetId);
                 }
@@ -3348,7 +3361,6 @@ ${notesHTML}
         localStorage.setItem('jotit-note-order', JSON.stringify(order));
 
         renderNotes();
-        initDragAndDrop();
     }
 
     function applyCustomOrder(notes) {
