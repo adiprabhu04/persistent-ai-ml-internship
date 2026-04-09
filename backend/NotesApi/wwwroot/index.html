@@ -1971,6 +1971,110 @@
 
         [data-theme="light"] .template-picker { background: #F5F5F5; border-color: #E5E5E5; }
         [data-theme="light"] .template-card { background: #FFFFFF; border-color: #E5E5E5; }
+
+        /* ── CHANGE 10: Darker header in dark mode ───────────────── */
+        .app-header {
+            background: #0D0D0D;
+            border-bottom: 1px solid #1A1A1A;
+        }
+        [data-theme="light"] .app-header {
+            background: #FFFFFF;
+            border-bottom: 1px solid #E5E5E5;
+        }
+
+        /* ── CHANGE 2: Mobile bottom nav ─────────────────────────── */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #0F0F0F;
+            border-top: 1px solid #1E1E1E;
+            padding: 8px 0 env(safe-area-inset-bottom);
+            z-index: 1000;
+            justify-content: space-around;
+        }
+        .mobile-nav-btn {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 4px; padding: 8px 16px; background: none; border: none;
+            color: #555; font-size: 11px; cursor: pointer;
+            min-width: 44px; min-height: 44px;
+            transition: color 0.2s;
+        }
+        .mobile-nav-btn.active { color: #5B6EF5; }
+        .mobile-nav-btn i { font-size: 18px; }
+
+        [data-theme="light"] .mobile-bottom-nav {
+            background: #FFFFFF;
+            border-top-color: #E5E5E5;
+        }
+
+        /* ── CHANGE 8: Modal slide animations ────────────────────── */
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes modalSlideOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+        .note-sheet.opening { animation: modalSlideIn 0.25s ease forwards !important; }
+        .note-sheet.closing { animation: modalSlideOut 0.2s ease forwards !important; }
+
+        /* ── MOBILE STYLES (max-width: 768px) ────────────────────── */
+        @media (max-width: 768px) {
+            /* CHANGE 1: Show mobile nav, hide desktop bottom nav */
+            .mobile-bottom-nav { display: flex; }
+            .bottom-nav { display: none !important; }
+
+            /* CHANGE 3: Single-column note cards */
+            .notes-grid {
+                grid-template-columns: 1fr !important;
+                padding: 12px !important;
+                padding-bottom: 80px !important;
+            }
+            .note-card {
+                width: 100% !important;
+            }
+
+            /* CHANGE 4: Mobile responsive header */
+            .app-header, .notes-header {
+                padding: 16px !important;
+                padding-top: max(16px, env(safe-area-inset-top)) !important;
+            }
+            .search-bar-container, #search-bar {
+                padding: 0 12px 12px !important;
+            }
+
+            /* Hide search bar by default on mobile; shown via showPage('search') */
+            #search-bar {
+                display: none;
+            }
+
+            /* CHANGE 6: Mobile touch targets minimum 44px */
+            .pin-btn, .note-card-delete, .rich-btn, .feedback-btn {
+                min-width: 44px !important;
+                min-height: 44px !important;
+            }
+            .nav-fab {
+                width: 56px !important;
+                height: 56px !important;
+                bottom: 80px !important;
+            }
+
+            /* CHANGE 7: Mobile modal full screen */
+            .modal-container, .modal, .note-sheet {
+                width: 100% !important;
+                height: 100% !important;
+                max-width: 100% !important;
+                max-height: 100% !important;
+                border-radius: 0 !important;
+                margin: 0 !important;
+            }
+            .modal-overlay {
+                padding: 0 !important;
+                align-items: flex-end !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2661,8 +2765,8 @@
         const cat = (note.category || 'General').toLowerCase();
         if (cat === 'personal') return { color: '#818CF8', name: 'Personal', cls: 'cat-personal' };
         if (cat === 'work')     return { color: '#4ADE80', name: 'Work',     cls: 'cat-work' };
-        if (cat === 'ideas')    return { color: '#C084FC', name: 'Ideas',    cls: 'cat-ideas' };
-        return { color: '#888888', name: note.category || 'General', cls: 'cat-general' };
+        if (cat === 'ideas')    return { color: '#F59E0B', name: 'Ideas',    cls: 'cat-ideas' };
+        return { color: '#6B7280', name: note.category || 'General', cls: 'cat-general' };
     }
 
     function updateNoteCount(total) {
@@ -2746,9 +2850,34 @@
         }
     });
 
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+    function showPage(page) {
+        // Auth / dashboard app-level page switching
+        if (page.endsWith('-page')) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(page).classList.add('active');
+            return;
+        }
+        // Mobile tab navigation
+        document.querySelectorAll('.mobile-nav-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.page === page);
+        });
+        const searchBar = document.getElementById('search-bar');
+        if (page === 'home') {
+            if (searchBar) searchBar.style.display = 'none';
+            state.recentOnly = false;
+            state.currentPage = 'home';
+            renderNotes();
+        } else if (page === 'search') {
+            if (searchBar) searchBar.style.display = 'block';
+            state.recentOnly = false;
+            state.currentPage = 'search';
+            document.querySelector('.search-input')?.focus();
+            renderNotes();
+        } else if (page === 'recent') {
+            if (searchBar) searchBar.style.display = 'none';
+            state.currentPage = 'recent';
+            renderRecentNotes();
+        }
     }
 
     function toggleAuth(mode) {
@@ -3297,6 +3426,12 @@ ${notesHTML}
         initDragAndDrop();
     }
 
+    function renderRecentNotes() {
+        state.recentOnly = true;
+        state.category = 'all';
+        renderNotes();
+    }
+
     function initDragAndDrop() {
         const cards = document.querySelectorAll('.note-card.draggable');
         let dragSrcId = null;
@@ -3491,7 +3626,15 @@ ${notesHTML}
             scanImgContainer.classList.add('hidden');
         }
 
-        document.getElementById('note-modal').classList.add('open');
+        const _modal = document.getElementById('note-modal');
+        _modal.classList.add('open');
+        const _sheet = _modal.querySelector('.note-sheet');
+        if (_sheet) {
+            _sheet.classList.remove('closing');
+            void _sheet.offsetWidth;
+            _sheet.classList.add('opening');
+            _sheet.addEventListener('animationend', () => _sheet.classList.remove('opening'), { once: true });
+        }
         setTimeout(() => document.getElementById('note-title').focus(), 80);
     }
 
@@ -3594,10 +3737,24 @@ ${notesHTML}
     }
 
     function closeModal() {
-        document.getElementById('note-modal').classList.remove('open');
-        document.getElementById('note-content-editor').innerHTML = '';
-        document.getElementById('note-content').value = '';
-        document.getElementById('template-picker').style.display = 'none';
+        const _modal = document.getElementById('note-modal');
+        const _sheet = _modal.querySelector('.note-sheet');
+        function _finishClose() {
+            _modal.classList.remove('open');
+            document.getElementById('note-content-editor').innerHTML = '';
+            document.getElementById('note-content').value = '';
+            document.getElementById('template-picker').style.display = 'none';
+        }
+        if (_sheet) {
+            _sheet.classList.remove('opening');
+            _sheet.classList.add('closing');
+            _sheet.addEventListener('animationend', () => {
+                _sheet.classList.remove('closing');
+                _finishClose();
+            }, { once: true });
+        } else {
+            _finishClose();
+        }
     }
 
     async function saveNote() {
@@ -4765,5 +4922,24 @@ ${notesHTML}
   setInterval(ping, 10 * 60 * 1000); // then every 10 minutes
 })();
 </script>
+
+<nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+  <button class="mobile-nav-btn active" data-page="home" onclick="showPage('home')">
+    <i class="fa-solid fa-house"></i>
+    <span>Home</span>
+  </button>
+  <button class="mobile-nav-btn" data-page="search" onclick="showPage('search')">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span>Search</span>
+  </button>
+  <button class="mobile-nav-btn" data-page="recent" onclick="showPage('recent')">
+    <i class="fa-solid fa-clock-rotate-left"></i>
+    <span>Recent</span>
+  </button>
+  <button class="mobile-nav-btn" onclick="openSettingsModal()">
+    <i class="fa-solid fa-gear"></i>
+    <span>Settings</span>
+  </button>
+</nav>
 </body>
 </html>
