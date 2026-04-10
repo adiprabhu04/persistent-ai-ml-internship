@@ -39,14 +39,16 @@
         /* ── DESIGN TOKENS ───────────────────────────────────── */
         :root {
             /* Dark mode (default) */
-            --bg: #080808;
-            --surface: #0F0F0F;
-            --surface-secondary: #111111;
-            --border: #1A1A1A;
-            --border-subtle: #1E1E1E;
-            --text: #F0F0F0;
-            --text-secondary: #444444;
-            --text-tertiary: #333333;
+            --bg: #0A0A0F;
+            --surface: #111118;
+            --surface-secondary: #111118;
+            --surface-2: #18181F;
+            --border: #252530;
+            --border-subtle: #252530;
+            --border-light: #2E2E3A;
+            --text: #F0F0F5;
+            --text-secondary: #8888A0;
+            --text-tertiary: #55556A;
             --accent: #5B6EF5;
             --accent-rgb: 91, 110, 245;
             --accent-hover: #4A5DE4;
@@ -58,8 +60,8 @@
             --error: #EF4444;
             --info: #3B82F6;
             /* Card / glass variables */
-            --glass-bg: #0F0F0F;
-            --glass-border: #1A1A1A;
+            --glass-bg: #111118;
+            --glass-border: #252530;
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
             --shadow-md: 0 2px 8px rgba(0,0,0,0.4);
@@ -74,17 +76,19 @@
         }
 
         [data-theme="light"] {
-            --bg: #F2F2F7;
+            --bg: #F0F0F5;
             --surface: #FFFFFF;
-            --surface-secondary: #FFFFFF;
-            --border: #EEEEEE;
-            --border-subtle: #E5E5E5;
-            --text: #0A0A0A;
-            --text-secondary: #AAAAAA;
-            --text-tertiary: #CCCCCC;
+            --surface-secondary: #F5F5FA;
+            --surface-2: #F5F5FA;
+            --border: #E0E0EA;
+            --border-subtle: #E0E0EA;
+            --border-light: #EBEBF5;
+            --text: #0A0A14;
+            --text-secondary: #555565;
+            --text-tertiary: #8888A0;
             --accent-dark: #ffffff;
             --glass-bg: #FFFFFF;
-            --glass-border: #EEEEEE;
+            --glass-border: #E0E0EA;
             --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
             --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
@@ -479,16 +483,26 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            background: var(--surface-secondary);
-            border: 1.5px solid var(--border-subtle);
+            background: #16161E;
+            border: 1px solid #252530;
             border-radius: 12px;
             padding: 0 14px;
             height: 42px;
             transition: all 0.3s;
         }
         .search-inner:focus-within {
-            border-color: rgba(var(--accent-rgb), 0.5);
-            box-shadow: 0 0 30px rgba(var(--accent-rgb), 0.15);
+            border-color: #5B6EF5;
+            background: #18181F;
+            box-shadow: 0 0 0 3px rgba(91, 110, 245, 0.12);
+        }
+        [data-theme="light"] .search-inner {
+            background: #FFFFFF;
+            border-color: #E0E0EA;
+        }
+        [data-theme="light"] .search-inner:focus-within {
+            border-color: #5B6EF5;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(91, 110, 245, 0.1);
         }
         .search-inner i.fa-magnifying-glass { color: var(--text-tertiary); font-size: 14px; flex-shrink: 0; }
 
@@ -543,13 +557,17 @@
             font-size: 14px;
             font-weight: 500;
             color: var(--text-secondary);
-            background: var(--surface-secondary);
-            border: 1.5px solid var(--border-subtle);
+            background: #16161E;
+            border: 1px solid #252530;
             white-space: nowrap;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+        }
+        [data-theme="light"] .filter-tab {
+            background: #FFFFFF;
+            border-color: #E0E0EA;
         }
         .filter-tab:active { transform: scale(0.96); }
         .filter-tab.active {
@@ -557,7 +575,7 @@
             color: #ffffff;
             border-color: #5B6EF5;
             font-weight: 600;
-            box-shadow: 0 4px 20px rgba(91, 110, 245, 0.4);
+            box-shadow: 0 0 12px rgba(91, 110, 245, 0.3), 0 4px 20px rgba(91, 110, 245, 0.4);
         }
 
         .tab-count {
@@ -613,10 +631,26 @@
             animation: cardIn 0.25s ease both;
             overflow: hidden;
         }
+        .note-card {
+            background: #111118;
+            border: 1px solid #252530;
+        }
         .note-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-            border-color: rgba(var(--accent-rgb), 0.3);
+            background: #18181F;
+            border-color: #2E2E3A;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        [data-theme="light"] .note-card {
+            background: #FFFFFF;
+            border-color: #E0E0EA;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        [data-theme="light"] .note-card:hover {
+            background: #FFFFFF;
+            border-color: #E0E0EA;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            transform: translateY(-1px);
         }
         .note-card:active { transform: translateY(-1px); }
 
@@ -694,11 +728,11 @@
             text-transform: capitalize;
         }
         /* Dark mode badge colors */
-        .note-card-category.cat-personal { color: #818CF8; background: #13143A; }
-        .note-card-category.cat-work     { color: #4ADE80; background: #0D2A1A; }
-        .note-card-category.cat-ideas    { color: #C084FC; background: #1E0D2E; }
+        .note-card-category.cat-personal { color: #6C8EF5; background: #1A1D3A; }
+        .note-card-category.cat-work     { color: #3DD68C; background: #0D2A1A; }
+        .note-card-category.cat-ideas    { color: #F5A623; background: #2A1D0A; }
         .note-card-category.cat-scanned  { color: #EF4444; background: rgba(239, 68, 68, 0.12); }
-        .note-card-category.cat-general  { color: #888888; background: #1A1A1A; }
+        .note-card-category.cat-general  { color: #7B7B8F; background: #1A1A25; }
         /* Light mode badge colors */
         [data-theme="light"] .note-card-category.cat-personal { color: #5B6EF5; background: #EEF0FF; }
         [data-theme="light"] .note-card-category.cat-work     { color: #16A34A; background: #EDFAF3; }
@@ -2024,14 +2058,20 @@
         [data-theme="light"] .template-picker { background: #F5F5F5; border-color: #E5E5E5; }
         [data-theme="light"] .template-card { background: #FFFFFF; border-color: #E5E5E5; }
 
-        /* ── CHANGE 10: Darker header in dark mode ───────────────── */
+        /* ── CHANGE 10: Header / nav palette ────────────────────── */
         .app-header {
-            background: #0D0D0D;
-            border-bottom: 1px solid #1A1A1A;
+            background: linear-gradient(180deg, #13131A 0%, #0A0A0F 100%);
+            border-bottom: 1px solid #252530;
+            box-shadow: 0 1px 0 rgba(91, 110, 245, 0.08);
+        }
+        .bottom-nav {
+            background: linear-gradient(0deg, #13131A 0%, #0A0A0F 100%);
+            border-top: 1px solid #252530;
         }
         [data-theme="light"] .app-header {
-            background: #FFFFFF;
-            border-bottom: 1px solid #E5E5E5;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F8F8FC 100%);
+            border-bottom: 1px solid #E0E0EA;
+            box-shadow: 0 1px 0 rgba(91, 110, 245, 0.06);
         }
 
         /* ── CHANGE 2: Mobile bottom nav ─────────────────────────── */
@@ -2039,8 +2079,9 @@
             display: none;
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            background: #0F0F0F;
-            border-top: 1px solid #1E1E1E;
+            background: #13131A;
+            border-top: 1px solid #252530;
+            box-shadow: 0 -1px 0 rgba(91, 110, 245, 0.08);
             padding: 8px 0 env(safe-area-inset-bottom);
             z-index: 1000;
             justify-content: space-around;
@@ -2057,7 +2098,8 @@
 
         [data-theme="light"] .mobile-bottom-nav {
             background: #FFFFFF;
-            border-top-color: #E5E5E5;
+            border-top-color: #E0E0EA;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
         }
 
         /* ── CHANGE 8: Modal slide animations ────────────────────── */
@@ -2825,10 +2867,10 @@
 
     function getCategoryInfo(note) {
         const cat = (note.category || 'General').toLowerCase();
-        if (cat === 'personal') return { color: '#818CF8', name: 'Personal', cls: 'cat-personal' };
-        if (cat === 'work')     return { color: '#4ADE80', name: 'Work',     cls: 'cat-work' };
-        if (cat === 'ideas')    return { color: '#F59E0B', name: 'Ideas',    cls: 'cat-ideas' };
-        return { color: '#6B7280', name: note.category || 'General', cls: 'cat-general' };
+        if (cat === 'personal') return { color: '#6C8EF5', name: 'Personal', cls: 'cat-personal' };
+        if (cat === 'work')     return { color: '#3DD68C', name: 'Work',     cls: 'cat-work' };
+        if (cat === 'ideas')    return { color: '#F5A623', name: 'Ideas',    cls: 'cat-ideas' };
+        return { color: '#7B7B8F', name: note.category || 'General', cls: 'cat-general' };
     }
 
     function updateNoteCount(total) {
