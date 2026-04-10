@@ -1030,6 +1030,52 @@
         [data-theme="light"] .note-summary-section { border-top-color: #E5E5E5; }
         [data-theme="light"] .note-summary-display { background: #F5F5F5; }
 
+        .about-page {
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+          background: var(--bg); z-index: 100; overflow-y: auto;
+          padding-bottom: 80px;
+        }
+        .about-content { max-width: 500px; margin: 0 auto; padding: 24px 20px; }
+        .about-hero { text-align: center; padding: 40px 0 32px; }
+        .about-logo-icon { width: 72px; height: 72px; background: #5B6EF5;
+          border-radius: 20px; display: inline-flex; align-items: center;
+          justify-content: center; font-size: 30px; color: white; margin-bottom: 16px; }
+        .about-app-name { font-size: 32px; font-weight: 700; color: var(--text);
+          letter-spacing: -1px; margin-bottom: 8px; }
+        .about-dot { color: #5B6EF5; }
+        .about-tagline { font-size: 15px; color: var(--text-secondary); }
+        .about-section { margin-bottom: 32px; }
+        .about-section-title { font-size: 12px; font-weight: 600;
+          color: var(--text-tertiary); text-transform: uppercase;
+          letter-spacing: 0.8px; margin-bottom: 14px; }
+        .about-text { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+        .about-features { display: flex; flex-direction: column; gap: 10px; }
+        .about-feature-item { display: flex; align-items: center; gap: 12px;
+          font-size: 14px; color: var(--text-secondary); }
+        .about-feature-item i { color: #5B6EF5; width: 16px; text-align: center; }
+        .about-tech { display: flex; flex-wrap: wrap; gap: 8px; }
+        .about-tech-badge { padding: 5px 12px; border-radius: 20px;
+          font-size: 12px; font-weight: 500; background: #111;
+          border: 1px solid #1E1E1E; color: var(--text-secondary); }
+        [data-theme="light"] .about-tech-badge { background: #F5F5F5; border-color: #E5E5E5; }
+        .about-links { display: flex; gap: 10px; flex-wrap: wrap; }
+        .about-link { display: flex; align-items: center; gap: 8px;
+          padding: 10px 18px; border-radius: 10px; font-size: 14px;
+          font-weight: 500; text-decoration: none; transition: all 0.2s; flex: 1;
+          justify-content: center; border: 1px solid #1E1E1E; color: var(--text); }
+        .about-link:hover { transform: translateY(-2px); }
+        .about-link-linkedin { border-color: #0077B5; color: #0077B5; }
+        .about-link-linkedin:hover { background: #0077B520; }
+        .about-link-github { border-color: #333; color: var(--text); }
+        .about-link-github:hover { background: #33333320; }
+        .about-link-instagram { border-color: #E1306C; color: #E1306C; }
+        .about-link-instagram:hover { background: #E1306C20; }
+        .about-version { text-align: center; padding-top: 24px;
+          border-top: 1px solid #1E1E1E; }
+        .about-version p { font-size: 12px; color: var(--text-tertiary); }
+        .about-year { margin-top: 4px; }
+        [data-theme="light"] .about-version { border-top-color: #E5E5E5; }
+
         .sheet-footer {
             display: flex;
             align-items: center;
@@ -2258,6 +2304,12 @@
             </svg>
             <span>Recent</span>
         </button>
+        <button class="nav-item btn" id="nav-about-desktop" onclick="navTo('about')" aria-label="About">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <span>About</span>
+        </button>
     </nav>
 </div>
 
@@ -2786,6 +2838,16 @@
 
     function navTo(action) {
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        const aboutPage = document.getElementById('about-page');
+        const notesArea = document.querySelector('.notes-area');
+        if (action === 'about') {
+            document.getElementById('nav-about-desktop').classList.add('active');
+            if (aboutPage) aboutPage.style.display = 'block';
+            if (notesArea) notesArea.style.display = 'none';
+            return;
+        }
+        if (aboutPage) aboutPage.style.display = 'none';
+        if (notesArea) notesArea.style.display = '';
         state.recentOnly = false;
         if (action === 'home') {
             document.getElementById('nav-home').classList.add('active');
@@ -2872,21 +2934,31 @@
             b.classList.toggle('active', b.dataset.page === page);
         });
         const searchBar = document.getElementById('search-bar');
-        if (page === 'home') {
+        const aboutPage = document.getElementById('about-page');
+        const notesArea = document.querySelector('.notes-area');
+        if (page === 'about') {
             if (searchBar) searchBar.style.display = 'none';
-            state.recentOnly = false;
-            state.currentPage = 'home';
-            renderNotes();
-        } else if (page === 'search') {
-            if (searchBar) searchBar.style.display = 'block';
-            state.recentOnly = false;
-            state.currentPage = 'search';
-            document.querySelector('.search-input')?.focus();
-            renderNotes();
-        } else if (page === 'recent') {
-            if (searchBar) searchBar.style.display = 'none';
-            state.currentPage = 'recent';
-            renderRecentNotes();
+            if (aboutPage) aboutPage.style.display = 'block';
+            if (notesArea) notesArea.style.display = 'none';
+        } else {
+            if (aboutPage) aboutPage.style.display = 'none';
+            if (notesArea) notesArea.style.display = '';
+            if (page === 'home') {
+                if (searchBar) searchBar.style.display = 'none';
+                state.recentOnly = false;
+                state.currentPage = 'home';
+                renderNotes();
+            } else if (page === 'search') {
+                if (searchBar) searchBar.style.display = 'block';
+                state.recentOnly = false;
+                state.currentPage = 'search';
+                document.querySelector('.search-input')?.focus();
+                renderNotes();
+            } else if (page === 'recent') {
+                if (searchBar) searchBar.style.display = 'none';
+                state.currentPage = 'recent';
+                renderRecentNotes();
+            }
         }
     }
 
@@ -4941,6 +5013,92 @@ ${notesHTML}
 })();
 </script>
 
+<div id="about-page" class="about-page" style="display:none">
+  <div class="about-content">
+    <div class="about-hero">
+      <div class="about-logo">
+        <div class="about-logo-icon">
+          <i class="fa-solid fa-pen-nib"></i>
+        </div>
+        <h1 class="about-app-name">Jot It<span class="about-dot">.</span></h1>
+        <p class="about-tagline">AI-powered notes with handwriting recognition</p>
+      </div>
+    </div>
+    <div class="about-section">
+      <h3 class="about-section-title">About This App</h3>
+      <p class="about-text">
+        Jot It is an intelligent note-taking app that combines a clean writing
+        experience with AI-powered handwriting recognition. Draw or upload
+        handwritten notes and let Azure Computer Vision convert them to text instantly.
+      </p>
+    </div>
+    <div class="about-section">
+      <h3 class="about-section-title">Features</h3>
+      <div class="about-features">
+        <div class="about-feature-item">
+          <i class="fa-solid fa-pen-nib"></i>
+          <span>Rich text editor with formatting</span>
+        </div>
+        <div class="about-feature-item">
+          <i class="fa-solid fa-camera"></i>
+          <span>Handwriting OCR via Azure Vision</span>
+        </div>
+        <div class="about-feature-item">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>AI-generated note summaries</span>
+        </div>
+        <div class="about-feature-item">
+          <i class="fa-solid fa-file-lines"></i>
+          <span>6 note templates</span>
+        </div>
+        <div class="about-feature-item">
+          <i class="fa-solid fa-thumbtack"></i>
+          <span>Pin and organize notes</span>
+        </div>
+        <div class="about-feature-item">
+          <i class="fa-solid fa-file-export"></i>
+          <span>Export as PDF or CSV</span>
+        </div>
+      </div>
+    </div>
+    <div class="about-section">
+      <h3 class="about-section-title">Tech Stack</h3>
+      <div class="about-tech">
+        <span class="about-tech-badge">ASP.NET Core 8</span>
+        <span class="about-tech-badge">PostgreSQL</span>
+        <span class="about-tech-badge">Python FastAPI</span>
+        <span class="about-tech-badge">Azure Vision</span>
+        <span class="about-tech-badge">React Native</span>
+        <span class="about-tech-badge">Vanilla JS</span>
+      </div>
+    </div>
+    <div class="about-section">
+      <h3 class="about-section-title">Connect</h3>
+      <div class="about-links">
+        <a href="https://www.linkedin.com/in/aditya-prabhudessai"
+           target="_blank" class="about-link about-link-linkedin">
+          <i class="fa-brands fa-linkedin"></i>
+          LinkedIn
+        </a>
+        <a href="https://github.com/adiprabhu04"
+           target="_blank" class="about-link about-link-github">
+          <i class="fa-brands fa-github"></i>
+          GitHub
+        </a>
+        <a href="https://instagram.com"
+           target="_blank" class="about-link about-link-instagram">
+          <i class="fa-brands fa-instagram"></i>
+          Instagram
+        </a>
+      </div>
+    </div>
+    <div class="about-version">
+      <p>Jot It v1.0 · Built during internship at Persistent Systems</p>
+      <p class="about-year">2026</p>
+    </div>
+  </div>
+</div>
+
 <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
   <button class="mobile-nav-btn active" data-page="home" onclick="showPage('home')">
     <i class="fa-solid fa-house"></i>
@@ -4957,6 +5115,10 @@ ${notesHTML}
   <button class="mobile-nav-btn" onclick="openSettingsModal()">
     <i class="fa-solid fa-gear"></i>
     <span>Settings</span>
+  </button>
+  <button class="mobile-nav-btn" id="nav-about" data-page="about" onclick="showPage('about')">
+    <i class="fa-solid fa-circle-info"></i>
+    <span>About</span>
   </button>
 </nav>
 </body>
