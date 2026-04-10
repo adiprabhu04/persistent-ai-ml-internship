@@ -230,7 +230,8 @@ app.MapGet("/notes/{id}", async (
 app.MapPost("/notes", async (
     CreateNoteRequest request,
     HttpContext context,
-    NotesDbContext db) =>
+    NotesDbContext db,
+    IHttpClientFactory httpClientFactory) =>
 {
     if (string.IsNullOrWhiteSpace(request.Title))
         return Results.BadRequest(new { error = "Title is required" });
@@ -252,6 +253,22 @@ app.MapPost("/notes", async (
         UserId = userId
     };
 
+    try {
+        var aiServiceBase = Environment.GetEnvironmentVariable("AI_SERVICE_URL")
+            ?? "http://localhost:8000";
+        using var httpClient = httpClientFactory.CreateClient();
+        var summarizeUrl = aiServiceBase.TrimEnd('/') + "/summarize";
+        var summarizeResponse = await httpClient.PostAsJsonAsync(summarizeUrl,
+            new { text = request.Content });
+        if (summarizeResponse.IsSuccessStatusCode) {
+            var summarizeResult = await summarizeResponse.Content
+                .ReadFromJsonAsync<SummarizeResult>();
+            note.Summary = summarizeResult?.Summary ?? "";
+        }
+    } catch {
+        note.Summary = "";
+    }
+
     db.Notes.Add(note);
     await db.SaveChangesAsync();
 
@@ -263,11 +280,12 @@ app.MapPut("/notes/{id}", async (
     Guid id,
     UpdateNoteRequest request,
     HttpContext context,
-    NotesDbContext db) =>
+    NotesDbContext db,
+    IHttpClientFactory httpClientFactory) =>
 {
     var userId = AuthHelpers.GetUserId(context);
     var note = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.UserId == userId);
-    
+
     if (note == null) return Results.NotFound();
 
     if (string.IsNullOrWhiteSpace(request.Title))
@@ -280,6 +298,22 @@ app.MapPut("/notes/{id}", async (
     note.Content = request.Content?.Trim() ?? string.Empty;
     note.Category = request.Category ?? "General";
     note.UpdatedAt = DateTime.UtcNow;
+
+    try {
+        var aiServiceBase = Environment.GetEnvironmentVariable("AI_SERVICE_URL")
+            ?? "http://localhost:8000";
+        using var httpClient = httpClientFactory.CreateClient();
+        var summarizeUrl = aiServiceBase.TrimEnd('/') + "/summarize";
+        var summarizeResponse = await httpClient.PostAsJsonAsync(summarizeUrl,
+            new { text = request.Content });
+        if (summarizeResponse.IsSuccessStatusCode) {
+            var summarizeResult = await summarizeResponse.Content
+                .ReadFromJsonAsync<SummarizeResult>();
+            note.Summary = summarizeResult?.Summary ?? "";
+        }
+    } catch {
+        note.Summary = "";
+    }
 
     await db.SaveChangesAsync();
     return Results.Ok(note);
@@ -547,3 +581,5 @@ _ = Task.Run(async () => {
 });
 
 app.Run();
+
+record SummarizeResult(string Summary);

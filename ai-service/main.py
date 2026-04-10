@@ -99,6 +99,44 @@ def get_tesseract_config(image_type: str = "auto") -> str:
     return f"--oem 3 --psm {psm}"
 
 
+@app.post("/summarize")
+async def summarize_text(request: dict):
+    try:
+        text = request.get("text", "")
+        if not text or len(text.strip()) < 20:
+            return {"summary": ""}
+
+        # Extract first 500 chars for summarization
+        text = text[:500]
+
+        # Strip HTML tags
+        import re
+        clean_text = re.sub(r'<[^>]+>', ' ', text).strip()
+        clean_text = re.sub(r'\s+', ' ', clean_text)
+
+        if len(clean_text) < 20:
+            return {"summary": ""}
+
+        # Simple extractive summarization:
+        # Take first sentence or first 100 chars, whichever is shorter
+        sentences = re.split(r'[.!?]\s+', clean_text)
+        first_sentence = sentences[0].strip() if sentences else clean_text
+
+        if len(first_sentence) > 120:
+            summary = first_sentence[:120].rsplit(' ', 1)[0] + '...'
+        elif len(first_sentence) < 15 and len(sentences) > 1:
+            # First sentence too short, combine first two
+            combined = first_sentence + '. ' + sentences[1].strip()
+            summary = combined[:120]
+        else:
+            summary = first_sentence
+
+        return {"summary": summary}
+    except Exception as e:
+        print(f"Summarize error: {str(e)}")
+        return {"summary": ""}
+
+
 @app.get("/")
 def health_check():
     return {"status": "healthy", "model": "Azure Computer Vision OCR"}

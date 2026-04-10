@@ -5,4 +5,5 @@ public class UpdateNoteRequest
     public string Category { get; set; } = "General";
     public string? ImageData { get; set; }
     public bool? IsPinned { get; set; }
+    public string? Summary { get; set; }
 }

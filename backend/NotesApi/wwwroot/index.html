@@ -1024,6 +1024,12 @@
         .note-scan-image { margin-top: 16px; }
         .scan-image-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
 
+        .note-summary-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid #1E1E1E; }
+        .summary-label { font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; display: block; }
+        .note-summary-display { font-size: 13px; color: var(--text-secondary); line-height: 1.6; font-style: italic; padding: 8px 12px; background: #111; border-radius: 8px; border-left: 3px solid #5B6EF5; }
+        [data-theme="light"] .note-summary-section { border-top-color: #E5E5E5; }
+        [data-theme="light"] .note-summary-display { background: #F5F5F5; }
+
         .sheet-footer {
             display: flex;
             align-items: center;
@@ -2321,6 +2327,10 @@
                 <p class="scan-image-label">Original Scan</p>
                 <img id="note-scan-image-img" src="" alt="Original scan" style="max-width:100%;border-radius:8px;margin-top:8px;">
             </div>
+            <div class="note-summary-section" id="note-summary-section" style="display:none">
+              <label class="summary-label">AI Summary</label>
+              <div class="note-summary-display" id="note-summary-display"></div>
+            </div>
         </div>
         <div class="sheet-footer">
             <div class="sheet-footer-left">
@@ -3385,8 +3395,8 @@ ${notesHTML}
             el.style.animationDelay = `${i * 0.04}s`;
 
             const catInfo = getCategoryInfo(note);
-            const plainContent = (note.content || '').replace(/<[^>]*>/g, '');
-            const preview = plainContent.trim();
+            const preview = note.summary ||
+                (note.content || '').replace(/<[^>]*>/g, '').slice(0, 80);
             const previewText = preview.length > 120 ? preview.substring(0, 120) + '…' : preview;
             const dateStr = relativeTime(note.updatedAt);
 
@@ -3624,6 +3634,14 @@ ${notesHTML}
             scanImgContainer.classList.remove('hidden');
         } else {
             scanImgContainer.classList.add('hidden');
+        }
+
+        const summarySection = document.getElementById('note-summary-section');
+        if (note && note.summary) {
+            document.getElementById('note-summary-display').textContent = note.summary;
+            summarySection.style.display = 'block';
+        } else {
+            summarySection.style.display = 'none';
         }
 
         const _modal = document.getElementById('note-modal');
