@@ -106,32 +106,63 @@ async def summarize_text(request: dict):
         if not text or len(text.strip()) < 20:
             return {"summary": ""}
 
-        # Extract first 500 chars for summarization
-        text = text[:500]
+        import re
+        from collections import Counter
 
         # Strip HTML tags
-        import re
-        clean_text = re.sub(r'<[^>]+>', ' ', text).strip()
-        clean_text = re.sub(r'\s+', ' ', clean_text)
+        clean_text = re.sub(r'<[^>]+>', ' ', text)
+        clean_text = re.sub(r'\s+', ' ', clean_text).strip()
 
         if len(clean_text) < 20:
             return {"summary": ""}
 
-        # Simple extractive summarization:
-        # Take first sentence or first 100 chars, whichever is shorter
-        sentences = re.split(r'[.!?]\s+', clean_text)
-        first_sentence = sentences[0].strip() if sentences else clean_text
+        # If text is short enough, return as is
+        if len(clean_text) <= 120:
+            return {"summary": clean_text}
 
-        if len(first_sentence) > 120:
-            summary = first_sentence[:120].rsplit(' ', 1)[0] + '...'
-        elif len(first_sentence) < 15 and len(sentences) > 1:
-            # First sentence too short, combine first two
-            combined = first_sentence + '. ' + sentences[1].strip()
-            summary = combined[:120]
-        else:
-            summary = first_sentence
+        # Split into sentences
+        sentences = re.split(r'(?<=[.!?])\s+', clean_text)
+        sentences = [s.strip() for s in sentences if len(s.strip()) > 10]
 
-        return {"summary": summary}
+        if not sentences:
+            return {"summary": clean_text[:120]}
+
+        if len(sentences) == 1:
+            s = sentences[0]
+            return {"summary": s if len(s) <= 120 else s[:120].rsplit(' ', 1)[0] + '...'}
+
+        # Score sentences by word frequency (TF scoring)
+        # Remove common stop words
+        stop_words = {'the','a','an','and','or','but','in','on','at','to',
+                     'for','of','with','by','from','is','are','was','were',
+                     'be','been','have','has','had','do','does','did','will',
+                     'would','could','should','may','might','this','that',
+                     'these','those','it','its','we','i','you','he','she',
+                     'they','their','our','my','your','his','her'}
+
+        # Get all words
+        all_words = re.findall(r'\b[a-z]+\b', clean_text.lower())
+        word_freq = Counter(w for w in all_words if w not in stop_words)
+
+        # Score each sentence
+        def score_sentence(sentence):
+            words = re.findall(r'\b[a-z]+\b', sentence.lower())
+            if not words:
+                return 0
+            return sum(word_freq.get(w, 0) for w in words if w not in stop_words) / len(words)
+
+        # Get best scoring sentence
+        scored = [(score_sentence(s), i, s) for i, s in enumerate(sentences)]
+        scored.sort(reverse=True)
+
+        best_sentence = scored[0][2]
+
+        # Trim to 120 chars if needed
+        if len(best_sentence) > 120:
+            best_sentence = best_sentence[:120].rsplit(' ', 1)[0] + '...'
+
+        return {"summary": best_sentence}
+
     except Exception as e:
         print(f"Summarize error: {str(e)}")
         return {"summary": ""}
