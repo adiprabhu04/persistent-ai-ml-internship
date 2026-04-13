@@ -1070,6 +1070,14 @@
           padding-bottom: 80px;
         }
         .about-content { max-width: 500px; margin: 0 auto; padding: 24px 20px; }
+        .about-back-btn {
+          display: flex; align-items: center; gap: 8px;
+          background: none; border: none; color: var(--text-secondary);
+          font-size: 14px; cursor: pointer; padding: 8px 0;
+          margin-bottom: 24px; transition: color 0.2s;
+        }
+        .about-back-btn:hover { color: #5B6EF5; }
+        .about-back-btn i { font-size: 14px; }
         .about-hero { text-align: center; padding: 40px 0 32px; }
         .about-logo-icon { width: 72px; height: 72px; background: #5B6EF5;
           border-radius: 20px; display: inline-flex; align-items: center;
@@ -5057,6 +5065,10 @@ ${notesHTML}
 
 <div id="about-page" class="about-page" style="display:none">
   <div class="about-content">
+    <button class="about-back-btn" onclick="showPage('home')">
+      <i class="fa-solid fa-arrow-left"></i>
+      Back to Notes
+    </button>
     <div class="about-hero">
       <div class="about-logo">
         <div class="about-logo-icon">
