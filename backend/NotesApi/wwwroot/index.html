@@ -2956,18 +2956,23 @@
 
     function navTo(action) {
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        const searchBar = document.getElementById('search-bar');
         const aboutPage = document.getElementById('about-page');
         const notesArea = document.querySelector('.notes-area');
         if (action === 'about') {
+            state.previousPage = state.currentPage || 'home';
             document.getElementById('nav-about-desktop').classList.add('active');
+            if (searchBar) { searchBar.style.display = 'none'; searchBar.classList.remove('show-on-search'); }
             if (aboutPage) aboutPage.style.display = 'block';
             if (notesArea) notesArea.style.display = 'none';
             return;
         }
+        // Always reset about page and restore notes area
         if (aboutPage) aboutPage.style.display = 'none';
         if (notesArea) notesArea.style.display = '';
         state.recentOnly = false;
         if (action === 'home') {
+            if (searchBar) { searchBar.style.display = 'none'; searchBar.classList.remove('show-on-search'); searchBar.classList.remove('hidden'); }
             document.getElementById('nav-home').classList.add('active');
             filterCat('all', document.querySelector('.filter-tab[data-cat=all]'));
         } else if (action === 'categories') {
@@ -3051,29 +3056,51 @@
         document.querySelectorAll('.mobile-nav-btn').forEach(b => {
             b.classList.toggle('active', b.dataset.page === page);
         });
-        const searchBar = document.getElementById('search-bar');
+        const searchBar = document.getElementById('search-bar') ||
+                          document.getElementById('search-input')?.closest('.search-bar-panel') ||
+                          document.querySelector('.search-bar-container') ||
+                          document.querySelector('.search-wrapper');
+        console.log('Search bar element:', searchBar);
         const aboutPage = document.getElementById('about-page');
-        const notesArea = document.querySelector('.notes-area');
+        const notesArea = document.querySelector('.notes-area') ||
+                          document.querySelector('.main-content') ||
+                          document.querySelector('.notes-container');
         if (page === 'about') {
+            state.previousPage = state.currentPage || 'home';
             if (searchBar) { searchBar.style.display = 'none'; searchBar.classList.remove('show-on-search'); }
             if (aboutPage) aboutPage.style.display = 'block';
             if (notesArea) notesArea.style.display = 'none';
         } else {
+            // Always reset about page and restore notes area first
             if (aboutPage) aboutPage.style.display = 'none';
             if (notesArea) notesArea.style.display = '';
             if (page === 'home') {
-                if (searchBar) { searchBar.style.display = 'none'; searchBar.classList.remove('show-on-search'); }
+                if (searchBar) {
+                    searchBar.style.display = 'none';
+                    searchBar.classList.remove('show-on-search');
+                    searchBar.classList.remove('hidden');
+                }
                 state.recentOnly = false;
                 state.currentPage = 'home';
                 renderNotes();
             } else if (page === 'search') {
-                if (searchBar) { searchBar.style.display = 'block'; searchBar.classList.add('show-on-search'); }
+                if (searchBar) {
+                    searchBar.style.display = 'block';
+                    searchBar.style.visibility = 'visible';
+                    searchBar.style.opacity = '1';
+                    searchBar.classList.add('show-on-search');
+                    searchBar.classList.remove('hidden');
+                }
                 state.recentOnly = false;
                 state.currentPage = 'search';
                 renderNotes();
                 setTimeout(() => document.getElementById('search-input')?.focus(), 50);
             } else if (page === 'recent') {
-                if (searchBar) { searchBar.style.display = 'none'; searchBar.classList.remove('show-on-search'); }
+                if (searchBar) {
+                    searchBar.style.display = 'none';
+                    searchBar.classList.remove('show-on-search');
+                    searchBar.classList.remove('hidden');
+                }
                 state.currentPage = 'recent';
                 renderRecentNotes();
             }
@@ -3413,11 +3440,17 @@ ${notesHTML}
 
     function toggleSearch() {
         const bar = document.getElementById('search-bar');
-        const hidden = bar.classList.contains('hidden');
-        bar.classList.toggle('hidden');
-        if (hidden) {
+        const isHidden = bar.style.display === 'none' || bar.classList.contains('hidden');
+        if (isHidden) {
+            bar.style.display = 'block';
+            bar.style.visibility = 'visible';
+            bar.style.opacity = '1';
+            bar.classList.remove('hidden');
+            bar.classList.add('show-on-search');
             setTimeout(() => document.getElementById('search-input').focus(), 50);
         } else {
+            bar.style.display = 'none';
+            bar.classList.remove('show-on-search');
             clearSearch();
         }
     }
