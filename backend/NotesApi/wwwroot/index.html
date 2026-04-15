@@ -2181,10 +2181,24 @@
 
         /* ── A: NOTE CARD ENTRANCE ───────────────────────────── */
         @keyframes cardEntrance {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0 !important;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1 !important;
+                transform: translateY(0);
+            }
         }
         .note-card { animation: cardEntrance 0.3s ease backwards; }
+        .card-animate {
+            opacity: 0;
+            animation: cardEntrance 0.35s ease forwards;
+        }
+        .note-card.card-animate {
+            opacity: 0;
+            animation: cardEntrance 0.35s ease forwards !important;
+        }
         .note-card:nth-child(1) { animation-delay:   0ms; }
         .note-card:nth-child(2) { animation-delay:  50ms; }
         .note-card:nth-child(3) { animation-delay: 100ms; }
@@ -3636,9 +3650,10 @@ ${notesHTML}
             el.setAttribute('draggable', 'true');
             el.dataset.id = note.id;
             el.dataset.noteId = note.id;
-            el.style.animationDelay = (i * 60) + 'ms';
-            el.style.animation = 'cardEntrance 0.35s ease forwards';
-            el.style.opacity = '0';
+            setTimeout(() => {
+                el.classList.add('card-animate');
+                el.style.animationDelay = (i * 60) + 'ms';
+            }, 10);
 
             const catInfo = getCategoryInfo(note);
             const preview = note.summary ||
