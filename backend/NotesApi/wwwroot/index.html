@@ -2095,6 +2095,29 @@
             padding: 8px 0 env(safe-area-inset-bottom);
             z-index: 1000;
             justify-content: space-around;
+            align-items: center;
+            overflow: visible;
+        }
+        .mobile-bottom-nav .fab-center {
+            position: relative;
+            top: -20px;
+            background: #5B6EF5;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 4px 16px rgba(91, 110, 245, 0.5);
+            border: 3px solid var(--bg);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            animation: fabPulse 2s infinite;
+        }
+        .mobile-bottom-nav .fab-center:active {
+            transform: scale(0.92) translateY(-16px);
         }
         .mobile-nav-btn {
             display: flex; flex-direction: column; align-items: center;
@@ -2446,12 +2469,7 @@
             </svg>
             <span>Search</span>
         </button>
-        <button class="nav-item btn" id="nav-recent" onclick="navTo('recent')" aria-label="Recent">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-            </svg>
-            <span>Recent</span>
-        </button>
+
         <button class="nav-item btn" id="nav-about-desktop" onclick="navTo('about')" aria-label="About">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
@@ -2899,7 +2917,6 @@
                 <div class="shortcut-row"><span>Personal</span><span class="shortcut-keys"><kbd>2</kbd></span></div>
                 <div class="shortcut-row"><span>Work</span><span class="shortcut-keys"><kbd>3</kbd></span></div>
                 <div class="shortcut-row"><span>Ideas</span><span class="shortcut-keys"><kbd>4</kbd></span></div>
-                <div class="shortcut-row"><span>Recent</span><span class="shortcut-keys"><kbd>Alt</kbd>+<kbd>R</kbd></span></div>
                 <div class="shortcut-row"><span>Home</span><span class="shortcut-keys"><kbd>Alt</kbd>+<kbd>H</kbd></span></div>
             </div>
             <div class="shortcuts-section">
@@ -3011,16 +3028,6 @@
         } else if (action === 'search') {
             document.getElementById('nav-search').classList.add('active');
             toggleSearch();
-        } else if (action === 'recent') {
-            document.getElementById('nav-recent').classList.add('active');
-            state.recentOnly = true;
-            renderNotes();
-            const count = state.notes.filter(n => {
-                const ago = new Date();
-                ago.setDate(ago.getDate() - 7);
-                return new Date(n.updatedAt) >= ago;
-            }).length;
-            toast(count > 0 ? `${count} note${count !== 1 ? 's' : ''} from the last 7 days` : 'No notes in the last 7 days', count > 0 ? 'success' : 'info');
         }
     }
 
@@ -3132,14 +3139,6 @@
                 state.currentPage = 'search';
                 renderNotes();
                 setTimeout(() => document.getElementById('search-input')?.focus(), 50);
-            } else if (page === 'recent') {
-                if (searchBar) {
-                    searchBar.style.display = 'none';
-                    searchBar.classList.remove('show-on-search');
-                    searchBar.classList.remove('hidden');
-                }
-                state.currentPage = 'recent';
-                renderRecentNotes();
             }
         }
     }
@@ -3693,12 +3692,6 @@ ${notesHTML}
             initCardGestures(el, note);
         });
         initDragAndDrop();
-    }
-
-    function renderRecentNotes() {
-        state.recentOnly = true;
-        state.category = 'all';
-        renderNotes();
     }
 
     function initDragAndDrop() {
@@ -4742,7 +4735,6 @@ ${notesHTML}
         { id: 'settings',   title: 'Settings',           icon: '⚙️', shortcut: 'Ctrl+,',       action: () => openSettingsModal() },
         { id: 'export',     title: 'Export Notes (CSV)', icon: '📥', shortcut: '',             action: () => exportAsCSV() },
         { id: 'theme',      title: 'Toggle Theme',       icon: '🌓', shortcut: 'Ctrl+Shift+D', action: () => toggleTheme() },
-        { id: 'recent',     title: 'Recent Notes',       icon: '🕐', shortcut: 'Alt+R',        action: () => navTo('recent') },
         { id: 'help',       title: 'Keyboard Shortcuts', icon: '⌨️', shortcut: '?',            action: () => showKeyboardHelp() },
     ];
     let _cmdList = commands;
@@ -4976,9 +4968,6 @@ ${notesHTML}
             filterCat(cat, document.querySelector(`.filter-tab[data-cat="${cat}"]`));
             return;
         }
-
-        // Alt+R – Recent
-        if (e.altKey && e.key === 'r') { e.preventDefault(); navTo('recent'); return; }
 
         // Alt+H – Home
         if (e.altKey && e.key === 'h') { e.preventDefault(); navTo('home'); return; }
@@ -5304,17 +5293,16 @@ ${notesHTML}
     <i class="fa-solid fa-magnifying-glass"></i>
     <span>Search</span>
   </button>
-  <button class="mobile-nav-btn" data-page="recent" onclick="showPage('recent')">
-    <i class="fa-solid fa-clock-rotate-left"></i>
-    <span>Recent</span>
-  </button>
-  <button class="mobile-nav-btn" onclick="openSettingsModal()">
-    <i class="fa-solid fa-gear"></i>
-    <span>Settings</span>
+  <button class="fab-center" onclick="openModal()" aria-label="New note">
+    <i class="fa-solid fa-plus"></i>
   </button>
   <button class="mobile-nav-btn" id="nav-about" data-page="about" onclick="showPage('about')">
     <i class="fa-solid fa-circle-info"></i>
     <span>About</span>
+  </button>
+  <button class="mobile-nav-btn" onclick="openSettingsModal()">
+    <i class="fa-solid fa-gear"></i>
+    <span>Settings</span>
   </button>
 </nav>
 </body>
