@@ -2337,17 +2337,6 @@
             pointer-events: none;
         }
 
-        /* ── CURSOR BLINK ─────────────────────────────────────── */
-        @keyframes cursorBlink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-        .rich-editor:focus::after {
-            content: '|';
-            color: #5B6EF5;
-            animation: cursorBlink 1s infinite;
-            font-weight: 100;
-        }
     </style>
 </head>
 <body>
