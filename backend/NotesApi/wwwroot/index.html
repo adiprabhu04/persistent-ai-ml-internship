@@ -3707,6 +3707,7 @@ ${notesHTML}
         if (pinned.length > 0) {
             const label = document.createElement('div');
             label.className = 'pinned-label';
+            label.style.gridColumn = '1 / -1';
             label.textContent = 'Pinned';
             grid.appendChild(label);
         }
@@ -3717,6 +3718,7 @@ ${notesHTML}
                 if (prevNote && prevNote.isPinned) {
                     const divider = document.createElement('hr');
                     divider.className = 'pin-divider';
+                    divider.style.gridColumn = '1 / -1';
                     grid.appendChild(divider);
                 }
             }
