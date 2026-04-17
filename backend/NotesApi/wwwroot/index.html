@@ -2298,6 +2298,56 @@
         @media (max-width: 768px) {
             #search-bar.show-on-search { display: block !important; }
         }
+
+        /* ── CONFETTI ─────────────────────────────────────────── */
+        @keyframes confettiFall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        .confetti-piece {
+            position: fixed;
+            top: 0;
+            z-index: 9999;
+            pointer-events: none;
+            animation: confettiFall linear forwards;
+        }
+
+        /* ── TAB SLIDE INDICATOR ──────────────────────────────── */
+        .filter-tabs { position: relative; }
+        .tab-indicator {
+            position: absolute;
+            bottom: 0;
+            height: 2px;
+            background: #5B6EF5;
+            border-radius: 2px;
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ── CARD DELETE SWIPE ────────────────────────────────── */
+        @keyframes cardDelete {
+            0% { transform: translateX(0) scale(1); opacity: 1; max-height: 200px; }
+            40% { transform: translateX(60px) scale(0.98); opacity: 0.5; }
+            100% { transform: translateX(100%) scale(0.95); opacity: 0; max-height: 0;
+                   margin: 0; padding: 0; border: none; }
+        }
+        .note-card.deleting {
+            animation: cardDelete 0.4s ease forwards;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        /* ── CURSOR BLINK ─────────────────────────────────────── */
+        @keyframes cursorBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .rich-editor:focus::after {
+            content: '|';
+            color: #5B6EF5;
+            animation: cursorBlink 1s infinite;
+            font-weight: 100;
+        }
     </style>
 </head>
 <body>
@@ -2436,6 +2486,7 @@
                     onclick="filterCat('work', this)">Work</button>
             <button class="filter-tab nav-btn" role="tab" aria-selected="false" data-cat="ideas"
                     onclick="filterCat('ideas', this)">Ideas</button>
+            <div class="tab-indicator" id="tab-indicator"></div>
         </div>
     </div>
 
@@ -3077,6 +3128,7 @@
             initPullToRefresh();
             initFabLongPress();
             initMobileHints();
+            requestAnimationFrame(() => updateTabIndicator(document.querySelector('.filter-tab.active')));
         } else {
             showPage('auth-page');
         }
@@ -3494,8 +3546,8 @@ ${notesHTML}
     function toggleSidebar() { /* no sidebar in new design */ }
 
     async function fetchNotes() {
+        showSkeletonLoaders();
         const grid = document.getElementById('notes-grid');
-        renderSkeletonLoaders(grid);
         const res = await api('/notes?page=1&pageSize=100');
         if (res) {
             state.notes = applyCustomOrder(res.data || []);
@@ -3512,6 +3564,41 @@ ${notesHTML}
                     </button>
                 </div>`;
         }
+    }
+
+    function showSkeletonLoaders(count = 6) {
+        const grid = document.querySelector('.notes-grid');
+        if (!grid) return;
+        renderSkeletonLoaders(grid, count);
+    }
+
+    function triggerConfetti() {
+        const colors = ['#5B6EF5', '#4ADE80', '#F59E0B', '#C084FC', '#F87171'];
+        const container = document.body;
+        for (let i = 0; i < 40; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            piece.style.cssText = `
+                left: ${Math.random() * 100}vw;
+                background: ${colors[Math.floor(Math.random() * colors.length)]};
+                animation-delay: ${Math.random() * 0.5}s;
+                animation-duration: ${0.8 + Math.random() * 0.8}s;
+                width: ${4 + Math.random() * 6}px;
+                height: ${4 + Math.random() * 6}px;
+                border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+            `;
+            container.appendChild(piece);
+            setTimeout(() => piece.remove(), 2000);
+        }
+    }
+
+    function updateTabIndicator(activeTab) {
+        const indicator = document.getElementById('tab-indicator');
+        if (!indicator || !activeTab) return;
+        const rect = activeTab.getBoundingClientRect();
+        const containerRect = activeTab.parentElement.getBoundingClientRect();
+        indicator.style.left = (rect.left - containerRect.left) + 'px';
+        indicator.style.width = rect.width + 'px';
     }
 
     function renderSkeletonLoaders(grid) {
@@ -3801,6 +3888,7 @@ ${notesHTML}
         clearSearch();
         renderNotes();
         toggleSidebar();
+        updateTabIndicator(btn);
     }
 
     function filterNotes(q) {
@@ -4048,6 +4136,7 @@ ${notesHTML}
             closeModal();
             fetchNotes();
             toast('Saved!', 'success');
+            triggerConfetti();
         } else {
             toast('Oops! Couldn\'t save that. Try again?', 'error');
         }
@@ -4055,11 +4144,11 @@ ${notesHTML}
 
     function deleteNote(e, id) {
         e.stopPropagation();
-        const card = e.target.closest('.note-card');
         showConfirm(async () => {
-            if (card && card.parentElement) {
-                card.classList.add('card-deleting');
-                await new Promise(r => setTimeout(r, 380));
+            const card = document.querySelector(`[data-note-id="${id}"]`);
+            if (card) {
+                card.classList.add('deleting');
+                await new Promise(resolve => setTimeout(resolve, 400));
             }
             await api(`/notes/${id}`, 'DELETE');
             fetchNotes();
