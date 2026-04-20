@@ -354,6 +354,14 @@
         [data-theme="light"] .theme-icon-sun { display: block; }
         [data-theme="light"] .theme-icon-moon { display: none; }
 
+        .btn-system-theme {
+          width: 100%; padding: 8px; border-radius: 8px;
+          border: 1px solid var(--border); background: transparent;
+          color: var(--text-secondary); font-size: 13px; cursor: pointer;
+          margin-top: 8px; transition: all 0.2s;
+        }
+        .btn-system-theme:hover { border-color: #5B6EF5; color: #5B6EF5; }
+
         .btn-header-icon {
             width: 38px;
             height: 38px;
@@ -2398,7 +2406,7 @@
             <span class="note-count" id="note-count-display"></span>
         </div>
         <div class="header-actions">
-            <button class="theme-toggle btn" onclick="toggleTheme()" aria-label="Toggle theme">
+            <button id="theme-toggle" class="theme-toggle btn" onclick="toggleTheme()" aria-label="Toggle theme">
                 <svg class="theme-icon theme-icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
                     <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
@@ -2789,6 +2797,9 @@
                         <option value="light">Light</option>
                     </select>
                 </div>
+                <button onclick="resetToSystemTheme()" class="btn-system-theme">
+                  Use System Default
+                </button>
             </div>
             <div class="settings-section">
                 <h3>Data</h3>
@@ -3005,19 +3016,60 @@
 <script>
     const API_URL = "";
 
-    // Apply saved theme immediately
-    (function() {
-        const saved = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', saved);
-    })();
+    function initTheme() {
+        const saved = localStorage.getItem('jotit-theme');
+        if (saved) {
+            document.documentElement.setAttribute('data-theme', saved);
+        } else {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+        }
+        updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const btn = document.getElementById('theme-toggle');
+        if (btn) {
+            btn.innerHTML = isDark
+                ? '<i class="fa-solid fa-sun"></i>'
+                : '<i class="fa-solid fa-moon"></i>';
+            btn.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+        }
+    }
+
+    initTheme();
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        const saved = localStorage.getItem('jotit-theme');
+        if (!saved) {
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            updateThemeIcon();
+        }
+    });
 
     function toggleTheme() {
         const html = document.documentElement;
         const current = html.getAttribute('data-theme') || 'dark';
         const next = current === 'dark' ? 'light' : 'dark';
         html.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
+        localStorage.setItem('jotit-theme', next);
+        updateThemeIcon();
         toast(next === 'light' ? 'Light mode' : 'Dark mode', 'info');
+    }
+
+    function applyTheme(value) {
+        document.documentElement.setAttribute('data-theme', value);
+        localStorage.setItem('jotit-theme', value);
+        updateThemeIcon();
+    }
+
+    function resetToSystemTheme() {
+        localStorage.removeItem('jotit-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+        updateThemeIcon();
+        toast('Following system theme', 'info');
     }
 
     function getCategoryColor(note) {
