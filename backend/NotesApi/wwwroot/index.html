@@ -1165,6 +1165,14 @@
         }
         .btn-scan-trigger:hover { background: var(--accent); color: var(--accent-dark); border-color: var(--accent); }
 
+        .color-picker-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 0 16px 12px; }
+        .color-picker-label { font-size: 12px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+        .color-swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+        .color-swatch { width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: all 0.2s; }
+        .color-swatch:hover { transform: scale(1.2); }
+        .color-swatch.active { border-color: white; box-shadow: 0 0 0 2px rgba(255,255,255,0.3); transform: scale(1.15); }
+        .note-color-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; flex-shrink: 0; }
+
         .btn-save {
             padding: 9px 20px;
             background: var(--accent);
@@ -2612,6 +2620,19 @@
             </div>
             <button id="save-note-btn" onclick="saveNote()" class="btn-save btn">Save</button>
         </div>
+        <div class="color-picker-row">
+            <span class="color-picker-label">Color</span>
+            <div class="color-swatches" id="color-swatches">
+                <button class="color-swatch active" data-color="" style="background:#6B7280" title="Default"></button>
+                <button class="color-swatch" data-color="#6C8EF5" style="background:#6C8EF5" title="Blue"></button>
+                <button class="color-swatch" data-color="#3DD68C" style="background:#3DD68C" title="Green"></button>
+                <button class="color-swatch" data-color="#F5A623" style="background:#F5A623" title="Amber"></button>
+                <button class="color-swatch" data-color="#C084FC" style="background:#C084FC" title="Purple"></button>
+                <button class="color-swatch" data-color="#F87171" style="background:#F87171" title="Red"></button>
+                <button class="color-swatch" data-color="#38BDF8" style="background:#38BDF8" title="Sky"></button>
+                <button class="color-swatch" data-color="#FB923C" style="background:#FB923C" title="Orange"></button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -3149,6 +3170,15 @@
     let pendingConfirmAction = null;
     let currentOcrWords = [];
     let currentScanStep = 'input';
+    let selectedNoteColor = '';
+
+    document.getElementById('color-swatches')?.addEventListener('click', (e) => {
+        const swatch = e.target.closest('.color-swatch');
+        if (!swatch) return;
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        swatch.classList.add('active');
+        selectedNoteColor = swatch.dataset.color || '';
+    });
 
     document.addEventListener('click', (e) => {
         const menu = document.getElementById('user-menu');
@@ -3788,12 +3818,17 @@ ${notesHTML}
             const previewText = preview.length > 120 ? preview.substring(0, 120) + '…' : preview;
             const dateStr = relativeTime(note.updatedAt);
 
-            el.style.borderLeft = `3px solid ${catInfo.color}`;
+            if (note.color) {
+                el.style.borderLeft = `3px solid ${note.color}`;
+                el.style.background = note.color + '14';
+            } else {
+                el.style.borderLeft = `3px solid ${catInfo.color}`;
+            }
 
             el.innerHTML = `
                 <div class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></div>
                 <div class="note-card-content">
-                    <h3 class="note-card-title">${esc(note.title)}</h3>
+                    <h3 class="note-card-title">${note.color ? `<span class="note-color-dot" style="background:${note.color}"></span>` : ''}${esc(note.title)}</h3>
                     <p class="note-card-preview">${esc(previewText)}</p>
                 </div>
                 <div class="note-card-footer">
@@ -4007,6 +4042,11 @@ ${notesHTML}
         const catSelect = document.getElementById('note-category');
         catSelect.value = (note && note.category) ? note.category : 'General';
 
+        selectedNoteColor = note ? (note.color || '') : '';
+        document.querySelectorAll('.color-swatch').forEach(s => {
+            s.classList.toggle('active', (s.dataset.color || '') === selectedNoteColor);
+        });
+
         const saveBtn = document.getElementById('save-note-btn');
         saveBtn.innerHTML = 'Save';
         saveBtn.disabled = false;
@@ -4171,7 +4211,7 @@ ${notesHTML}
         const url    = state.editingId ? `/notes/${state.editingId}` : '/notes';
 
         setButtonLoading(saveBtn, true, 'Saving...');
-        const res = await api(url, method, { title, content, category: cat });
+        const res = await api(url, method, { title, content, category: cat, color: selectedNoteColor });
         console.log('API response:', res);
         setButtonLoading(saveBtn, false);
 

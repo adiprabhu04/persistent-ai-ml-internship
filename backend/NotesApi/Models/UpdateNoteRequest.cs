@@ -6,4 +6,5 @@ public class UpdateNoteRequest
     public string? ImageData { get; set; }
     public bool? IsPinned { get; set; }
     public string? Summary { get; set; }
+    public string? Color { get; set; }
 }

@@ -7,6 +7,7 @@ public class Note
     public bool IsPinned { get; set; } = false;
     public string? ImageData { get; set; }
     public string? Summary { get; set; }
+    public string? Color { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
