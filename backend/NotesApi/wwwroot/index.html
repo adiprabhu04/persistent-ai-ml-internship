@@ -2353,6 +2353,118 @@
             pointer-events: none;
         }
 
+        /* ── RESPONSIVE: NOTES GRID ──────────────────────────── */
+        @media (min-width: 1025px) {
+            .notes-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .notes-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .notes-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ── RESPONSIVE: NOTE MODAL ──────────────────────────── */
+        @media (min-width: 1025px) {
+            .note-sheet { max-width: 680px; width: 90%; }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .note-sheet { max-width: 600px; width: 92%; }
+        }
+        @media (max-width: 768px) {
+            .note-sheet {
+                width: 100%;
+                max-width: 100%;
+                border-radius: 16px 16px 0 0;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+        }
+
+        /* ── RESPONSIVE: HEADER ──────────────────────────────── */
+        @media (max-width: 480px) {
+            .app-header { padding: 12px 14px; }
+            .notes-title { font-size: 20px; }
+            .header-actions { gap: 8px; }
+        }
+
+        /* ── RESPONSIVE: CATEGORY TABS SCROLL ───────────────── */
+        @media (max-width: 768px) {
+            .filter-tabs, .category-tabs {
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                padding-bottom: 4px;
+            }
+            .filter-tabs::-webkit-scrollbar { display: none; }
+            .tab-btn, .category-tab {
+                scroll-snap-align: start;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+        }
+
+        /* ── RESPONSIVE: SCAN CANVAS ─────────────────────────── */
+        @media (max-width: 768px) {
+            #drawing-canvas, .drawing-canvas {
+                width: 100% !important;
+                height: 260px !important;
+                touch-action: none;
+            }
+            .scan-modal, .scan-container {
+                padding: 12px !important;
+            }
+        }
+
+        /* ── RESPONSIVE: RICH TEXT TOOLBAR ───────────────────── */
+        @media (max-width: 480px) {
+            .rich-toolbar {
+                gap: 2px;
+                padding: 6px 8px;
+            }
+            .rich-btn {
+                padding: 5px 6px;
+                font-size: 12px;
+            }
+            .rich-divider { margin: 0 2px; }
+        }
+
+        /* ── RESPONSIVE: COLOR PICKER ────────────────────────── */
+        @media (max-width: 480px) {
+            .color-picker-row { flex-wrap: wrap; }
+            .color-swatches { gap: 6px; }
+            .color-swatch { width: 22px; height: 22px; }
+        }
+
+        /* ── RESPONSIVE: SETTINGS MODAL ─────────────────────── */
+        @media (max-width: 768px) {
+            .settings-modal, #settings-modal {
+                width: 100% !important;
+                max-width: 100% !important;
+                height: 100% !important;
+                border-radius: 0 !important;
+                overflow-y: auto;
+            }
+        }
+
+        /* ── RESPONSIVE: ABOUT PAGE ──────────────────────────── */
+        @media (max-width: 480px) {
+            .about-content { padding: 16px; }
+            .about-links { flex-direction: column; }
+            .about-link { flex: none; width: 100%; }
+            .about-tech { gap: 6px; }
+            .about-tech-badge { font-size: 11px; padding: 4px 10px; }
+        }
+
+        /* ── RESPONSIVE: EXPORT BUTTONS ──────────────────────── */
+        @media (max-width: 480px) {
+            .export-buttons { flex-direction: column; }
+            .btn-export { width: 100%; }
+        }
+
     </style>
 </head>
 <body>
