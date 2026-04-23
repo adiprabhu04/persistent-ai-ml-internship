@@ -3534,6 +3534,9 @@
     }
 
     async function openSettingsModal() {
+        document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+        const settingsBtn = document.querySelector('[data-page="settings"]') || document.getElementById('nav-settings');
+        if (settingsBtn) settingsBtn.classList.add('active');
         const modal = document.getElementById('settings-modal');
         document.getElementById('settings-name').value = state.name || '';
         document.getElementById('settings-email').value = state.email || '';
@@ -3565,6 +3568,9 @@
     function closeSettingsModal(e) {
         if (e && e.target !== document.getElementById('settings-modal')) return;
         document.getElementById('settings-modal').classList.remove('open');
+        document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+        const homeBtn = document.querySelector('[data-page="home"]') || document.getElementById('nav-home');
+        if (homeBtn) homeBtn.classList.add('active');
     }
 
     function openHelpModal() {
