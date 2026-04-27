@@ -642,14 +642,17 @@
         }
         .note-card {
             background: #111118;
-            border: 1px solid #252530;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-left: 4px solid;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1),
+                        border-color 0.3s ease;
         }
         .note-card:hover {
-            background: #18181F;
-            border-color: #2E2E3A;
-            transform: translateY(-4px) scale(1.01);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.3);
-            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateY(-4px);
+            border-color: rgba(255,255,255,0.15);
         }
         [data-theme="light"] .note-card {
             background: #FFFFFF;
@@ -731,18 +734,18 @@
             display: inline-flex;
             align-items: center;
             padding: 3px 10px;
-            background: var(--surface-secondary);
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-            text-transform: capitalize;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
         }
         /* Dark mode badge colors */
-        .note-card-category.cat-personal { color: #6C8EF5; background: #1A1D3A; }
-        .note-card-category.cat-work     { color: #3DD68C; background: #0D2A1A; }
-        .note-card-category.cat-ideas    { color: #F5A623; background: #2A1D0A; }
+        .note-card-category.cat-personal { background: rgba(108,142,245,0.1); color: #6C8EF5; }
+        .note-card-category.cat-work     { background: rgba(61,214,140,0.1); color: #3DD68C; }
+        .note-card-category.cat-ideas    { background: rgba(245,166,35,0.1); color: #F5A623; }
         .note-card-category.cat-scanned  { color: #EF4444; background: rgba(239, 68, 68, 0.12); }
-        .note-card-category.cat-general  { color: #7B7B8F; background: #1A1A25; }
+        .note-card-category.cat-general  { background: rgba(107,114,128,0.1); color: #6B7280; }
         /* Light mode badge colors */
         [data-theme="light"] .note-card-category.cat-personal { color: #5B6EF5; background: #EEF0FF; }
         [data-theme="light"] .note-card-category.cat-work     { color: #16A34A; background: #EDFAF3; }
@@ -1073,6 +1076,15 @@
         .note-summary-display { font-size: 13px; color: var(--text-secondary); line-height: 1.6; font-style: italic; padding: 8px 12px; background: #111; border-radius: 8px; border-left: 3px solid #5B6EF5; }
         [data-theme="light"] .note-summary-section { border-top-color: #E5E5E5; }
         [data-theme="light"] .note-summary-display { background: #F5F5F5; }
+        .note-summary-inline {
+            padding: 8px 12px;
+            border-left: 2px solid rgba(91,110,245,0.4);
+            margin: 8px 0;
+            font-size: 11px;
+            font-style: italic;
+            color: #bcc2ff;
+            line-height: 1.5;
+        }
 
         .about-page {
           position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -1101,10 +1113,39 @@
           color: var(--text-tertiary); text-transform: uppercase;
           letter-spacing: 0.8px; margin-bottom: 14px; }
         .about-text { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
-        .about-features { display: flex; flex-direction: column; gap: 10px; }
-        .about-feature-item { display: flex; align-items: center; gap: 12px;
-          font-size: 14px; color: var(--text-secondary); }
-        .about-feature-item i { color: #5B6EF5; width: 16px; text-align: center; }
+        .about-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .about-feature-item {
+            background: #111118;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .about-feature-item i {
+            font-size: 18px;
+            color: #5B6EF5;
+            background: rgba(91,110,245,0.12);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .about-feature-item span {
+            font-size: 13px;
+            font-weight: 500;
+            color: #F0F0F5;
+        }
+        @media (max-width: 480px) {
+            .about-features { grid-template-columns: 1fr; }
+        }
         .about-tech { display: flex; flex-wrap: wrap; gap: 8px; }
         .about-tech-badge { padding: 5px 12px; border-radius: 20px;
           font-size: 12px; font-weight: 500; background: #111;
@@ -2086,9 +2127,10 @@
 
         /* ── CHANGE 10: Header / nav palette ────────────────────── */
         .app-header {
-            background: linear-gradient(180deg, #13131A 0%, #0A0A0F 100%);
-            border-bottom: 1px solid #252530;
-            box-shadow: 0 1px 0 rgba(91, 110, 245, 0.08);
+            background: rgba(10,10,15,0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
         }
         .bottom-nav {
             background: linear-gradient(0deg, #13131A 0%, #0A0A0F 100%);
@@ -2268,6 +2310,18 @@
             width: 4px; height: 4px;
             background: #5B6EF5;
             border-radius: 50%;
+        }
+        .tab-btn.active {
+            background: rgba(91,110,245,0.25);
+            color: #bcc2ff;
+            border: 1px solid rgba(91,110,245,0.4);
+            border-radius: 9999px;
+        }
+        .tab-btn:not(.active) {
+            background: #1a1b23;
+            color: #8888A0;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 9999px;
         }
 
         /* ── D: SEARCH BAR FOCUS SCALE ───────────────────────── */
