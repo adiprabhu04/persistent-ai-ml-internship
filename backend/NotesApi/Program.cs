@@ -249,6 +249,8 @@ app.MapPost("/notes", async (
         Category = request.Category ?? "General",
         ImageData = request.ImageData,
         Color = request.Color,
+        Tags = request.Tags,
+        ReminderAt = request.ReminderAt,
         CreatedAt = DateTime.UtcNow,
         UpdatedAt = DateTime.UtcNow,
         UserId = userId
@@ -299,6 +301,8 @@ app.MapPut("/notes/{id}", async (
     note.Content = request.Content?.Trim() ?? string.Empty;
     note.Category = request.Category ?? "General";
     note.Color = request.Color;
+    note.Tags = request.Tags;
+    note.ReminderAt = request.ReminderAt;
     note.UpdatedAt = DateTime.UtcNow;
 
     try {

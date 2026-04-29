@@ -1214,6 +1214,19 @@
         .color-swatch.active { border-color: white; box-shadow: 0 0 0 2px rgba(255,255,255,0.3); transform: scale(1.15); }
         .note-color-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; flex-shrink: 0; }
 
+        .hashtag-pill { display: inline-block; font-size: 11px; font-weight: 500; color: #5B6EF5; background: rgba(91,110,245,0.12); border: 1px solid rgba(91,110,245,0.2); border-radius: 20px; padding: 2px 8px; margin-right: 4px; margin-top: 4px; }
+        .hashtag-pills { margin-top: 4px; }
+
+        .reminder-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 0 16px 12px; }
+        .reminder-label { font-size: 12px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+        .reminder-input { background: #111118; border: 1px solid #252530; border-radius: 8px; color: var(--text); font-size: 13px; padding: 6px 10px; flex: 1; }
+        .reminder-input::-webkit-calendar-picker-indicator { filter: invert(0.5); }
+        .reminder-clear { background: none; border: none; color: var(--text-tertiary); cursor: pointer; padding: 4px; }
+        [data-theme="light"] .reminder-input { background: #F5F5F5; border-color: #E0E0EA; }
+
+        .reminder-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; background: rgba(91,110,245,0.12); color: #5B6EF5; border: 1px solid rgba(91,110,245,0.2); }
+        .reminder-badge.overdue { background: rgba(248,113,113,0.12); color: #F87171; border-color: rgba(248,113,113,0.2); }
+
         .btn-save {
             padding: 9px 20px;
             background: var(--accent);
@@ -2799,6 +2812,11 @@
                 <button class="color-swatch" data-color="#FB923C" style="background:#FB923C" title="Orange"></button>
             </div>
         </div>
+        <div class="reminder-row">
+            <span class="reminder-label"><i class="fa-solid fa-bell"></i> Reminder</span>
+            <input type="datetime-local" id="note-reminder" class="reminder-input" onchange="document.getElementById('reminder-clear').style.display=this.value?'block':'none'">
+            <button onclick="clearReminder()" class="reminder-clear btn" id="reminder-clear" style="display:none"><i class="fa-solid fa-xmark"></i></button>
+        </div>
     </div>
 </div>
 
@@ -3362,6 +3380,7 @@
             showPage('dashboard-page');
             updateUI();
             fetchNotes();
+            setInterval(checkReminders, 60000);
             initPullToRefresh();
             initFabLongPress();
             initMobileHints();
@@ -3796,6 +3815,7 @@ ${notesHTML}
             state.notes = applyCustomOrder(res.data || []);
             updateNoteCount(state.notes.length);
             renderNotes();
+            checkReminders();
         } else {
             grid.innerHTML = `
                 <div class="empty-state">
@@ -3997,11 +4017,19 @@ ${notesHTML}
                 el.style.borderLeft = `3px solid ${catInfo.color}`;
             }
 
+            const tagList = (note.tags || '').split(',').filter(t => t.startsWith('#'));
+            const tagHtml = tagList.slice(0, 3).map(t => `<span class="hashtag-pill">${esc(t)}</span>`).join('');
+            const _now = new Date();
+            const _reminder = note.reminderAt ? new Date(note.reminderAt) : null;
+            const _isOverdue = _reminder && _reminder < _now;
+            const reminderHtml = _reminder ? `<span class="reminder-badge ${_isOverdue ? 'overdue' : ''}"><i class="fa-solid fa-bell"></i>${_reminder.toLocaleDateString('en-US', {month:'short', day:'numeric'})}</span>` : '';
+
             el.innerHTML = `
                 <div class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></div>
                 <div class="note-card-content">
                     <h3 class="note-card-title">${note.color ? `<span class="note-color-dot" style="background:${note.color}"></span>` : ''}${esc(note.title)}</h3>
                     <p class="note-card-preview">${esc(previewText)}</p>
+                    ${tagHtml ? `<div class="hashtag-pills">${tagHtml}</div>` : ''}
                 </div>
                 <div class="note-card-footer">
                     <div class="note-card-time">
@@ -4010,7 +4038,7 @@ ${notesHTML}
                         </svg>
                         <span>${dateStr}</span>
                     </div>
-                    <span class="note-card-category ${catInfo.cls}">${catInfo.name}</span>
+                    <div style="display:flex;align-items:center;gap:6px;">${reminderHtml}<span class="note-card-category ${catInfo.cls}">${catInfo.name}</span></div>
                 </div>
                 <button class="pin-btn btn${note.isPinned ? ' pinned' : ''}" onclick="togglePin(event, '${note.id}')" aria-label="${note.isPinned ? 'Unpin note' : 'Pin note'}" style="position:absolute;top:10px;right:38px;opacity:0;transition:opacity 0.2s;">
                     <i class="fa-solid fa-thumbtack" style="font-size:13px;"></i>
@@ -4148,7 +4176,14 @@ ${notesHTML}
         let visibleCount = 0;
 
         cards.forEach(c => {
-            const visible = c.innerText.toLowerCase().includes(lower);
+            let visible;
+            if (lower.startsWith('#')) {
+                const noteId = c.dataset.noteId;
+                const note = state.notes.find(n => n.id === noteId);
+                visible = note ? (note.tags || '').toLowerCase().includes(lower) : false;
+            } else {
+                visible = c.innerText.toLowerCase().includes(lower);
+            }
             c.style.display = visible ? '' : 'none';
             if (visible) visibleCount++;
         });
@@ -4237,6 +4272,16 @@ ${notesHTML}
             summarySection.style.display = 'block';
         } else {
             summarySection.style.display = 'none';
+        }
+
+        const reminderInput = document.getElementById('note-reminder');
+        if (note && note.reminderAt) {
+            const d = new Date(note.reminderAt);
+            reminderInput.value = d.toISOString().slice(0, 16);
+            document.getElementById('reminder-clear').style.display = 'block';
+        } else {
+            reminderInput.value = '';
+            document.getElementById('reminder-clear').style.display = 'none';
         }
 
         const _modal = document.getElementById('note-modal');
@@ -4379,11 +4424,17 @@ ${notesHTML}
 
         if (!title) { toast('Don\'t forget a title!', 'warning'); return; }
 
+        const plainContent = content.replace(/<[^>]*>/g, ' ');
+        const hashtagMatches = plainContent.match(/#[a-zA-Z0-9_]+/g) || [];
+        const tags = [...new Set(hashtagMatches)].join(',');
+        const reminderVal = document.getElementById('note-reminder').value;
+        const reminderAt = reminderVal ? new Date(reminderVal).toISOString() : null;
+
         const method = state.editingId ? 'PUT' : 'POST';
         const url    = state.editingId ? `/notes/${state.editingId}` : '/notes';
 
         setButtonLoading(saveBtn, true, 'Saving...');
-        const res = await api(url, method, { title, content, category: cat, color: selectedNoteColor });
+        const res = await api(url, method, { title, content, category: cat, color: selectedNoteColor, tags, reminderAt });
         console.log('API response:', res);
         setButtonLoading(saveBtn, false);
 
@@ -4395,6 +4446,31 @@ ${notesHTML}
         } else {
             toast('Oops! Couldn\'t save that. Try again?', 'error');
         }
+    }
+
+    function clearReminder() {
+        document.getElementById('note-reminder').value = '';
+        document.getElementById('reminder-clear').style.display = 'none';
+    }
+
+    async function checkReminders() {
+        if (!('Notification' in window)) return;
+        if (Notification.permission === 'default') {
+            await Notification.requestPermission();
+        }
+        if (Notification.permission !== 'granted') return;
+        const now = new Date();
+        const due = state.notes.filter(n => {
+            if (!n.reminderAt) return false;
+            const r = new Date(n.reminderAt);
+            return r <= now && r > new Date(now - 60 * 60 * 1000);
+        });
+        due.forEach(n => {
+            new Notification('Jot It Reminder', {
+                body: n.title || 'You have a note reminder',
+                icon: '/icon-192.png'
+            });
+        });
     }
 
     function deleteNote(e, id) {

@@ -7,4 +7,6 @@ public class UpdateNoteRequest
     public bool? IsPinned { get; set; }
     public string? Summary { get; set; }
     public string? Color { get; set; }
+    public string? Tags { get; set; }
+    public DateTime? ReminderAt { get; set; }
 }
