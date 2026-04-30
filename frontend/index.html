@@ -3231,6 +3231,12 @@
 <span id="user-display"></span>
 
 <script>
+    // Redirect to landing if not logged in and first visit
+    if (!localStorage.getItem('token') && !localStorage.getItem('visited')) {
+        window.location.href = 'landing.html';
+    }
+    localStorage.setItem('visited', '1');
+
     const API_URL = 'https://persistent-ai-ml-internship.onrender.com';
     let _wakeTimer = null;
 
