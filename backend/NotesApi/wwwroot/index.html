@@ -4225,6 +4225,7 @@ ${notesHTML}
     }
 
     function openModal(note = null) {
+        console.log('Modal open called');
         state.editingId = note ? note.id : null;
         document.getElementById('modal-title-label').textContent = note ? 'Edit Note' : 'New Note';
         document.getElementById('note-title').value = note ? note.title : '';
@@ -5329,7 +5330,15 @@ ${notesHTML}
         _kp = (e.keyCode === _kc[_kp]) ? _kp + 1 : 0;
         if (_kp === _kc.length) { _kp = 0; _launchConfetti(); }
 
-        const isTyping = ['INPUT', 'TEXTAREA'].includes(e.target.tagName);
+        const activeEl = document.activeElement;
+        const isTyping = activeEl && (
+            activeEl.tagName === 'INPUT' ||
+            activeEl.tagName === 'TEXTAREA' ||
+            activeEl.contentEditable === 'true' ||
+            activeEl.closest('[contenteditable]') ||
+            activeEl.closest('.rich-editor') ||
+            activeEl.closest('.note-sheet')
+        );
         const mod = e.ctrlKey || e.metaKey;
 
         // Escape – close everything
