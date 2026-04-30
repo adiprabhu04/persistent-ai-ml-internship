@@ -4246,65 +4246,84 @@ ${notesHTML}
     function openModal(note = null) {
         console.log('Modal open called');
         state.editingId = note ? note.id : null;
-        document.getElementById('modal-title-label').textContent = note ? 'Edit Note' : 'New Note';
-        document.getElementById('note-title').value = note ? note.title : '';
+
+        const titleLabel = document.getElementById('modal-title-label');
+        if (titleLabel) titleLabel.textContent = note ? 'Edit Note' : 'New Note';
+
+        const titleEl = document.getElementById('note-title');
+        if (titleEl) titleEl.value = note ? note.title : '';
+
         const richEditor = document.getElementById('note-content-editor');
         const hiddenArea = document.getElementById('note-content');
         const contentVal = note ? (note.content || '') : '';
-        richEditor.innerHTML = contentVal;
-        hiddenArea.value = contentVal;
+        if (richEditor) richEditor.innerHTML = contentVal;
+        if (hiddenArea) hiddenArea.value = contentVal;
 
         const pinBtn = document.getElementById('modal-pin-btn');
-        if (note) {
-            pinBtn.style.display = '';
-            pinBtn.classList.toggle('pinned', !!note.isPinned);
-        } else {
-            pinBtn.style.display = 'none';
-            pinBtn.classList.remove('pinned');
+        if (pinBtn) {
+            if (note) {
+                pinBtn.style.display = '';
+                pinBtn.classList.toggle('pinned', !!note.isPinned);
+            } else {
+                pinBtn.style.display = 'none';
+                pinBtn.classList.remove('pinned');
+            }
         }
 
         const templatesBtn = document.getElementById('templates-btn');
         if (templatesBtn) templatesBtn.style.display = note ? 'none' : '';
 
         const catSelect = document.getElementById('note-category');
-        catSelect.value = (note && note.category) ? note.category : 'General';
+        if (catSelect) catSelect.value = (note && note.category) ? note.category : 'General';
 
         selectedNoteColor = note ? (note.color || '') : '';
-        document.querySelectorAll('.color-swatch').forEach(s => {
-            s.classList.toggle('active', (s.dataset.color || '') === selectedNoteColor);
-        });
+        const swatches = document.querySelectorAll('.color-swatch');
+        if (swatches.length) {
+            swatches.forEach(s => {
+                s.classList.toggle('active', (s.dataset.color || '') === selectedNoteColor);
+            });
+        }
 
         const saveBtn = document.getElementById('save-note-btn');
-        saveBtn.innerHTML = 'Save';
-        saveBtn.disabled = false;
+        if (saveBtn) { saveBtn.innerHTML = 'Save'; saveBtn.disabled = false; }
 
         const scanImgContainer = document.getElementById('note-scan-image-container');
-        if (note && note.imageData) {
-            document.getElementById('note-scan-image-img').src = note.imageData;
-            scanImgContainer.classList.remove('hidden');
-        } else {
-            scanImgContainer.classList.add('hidden');
+        if (scanImgContainer) {
+            if (note && note.imageData) {
+                const scanImg = document.getElementById('note-scan-image-img');
+                if (scanImg) scanImg.src = note.imageData;
+                scanImgContainer.classList.remove('hidden');
+            } else {
+                scanImgContainer.classList.add('hidden');
+            }
         }
 
         const summarySection = document.getElementById('note-summary-section');
-        if (note && note.summary) {
-            document.getElementById('note-summary-display').textContent = note.summary;
-            summarySection.style.display = 'block';
-        } else {
-            summarySection.style.display = 'none';
+        if (summarySection) {
+            if (note && note.summary) {
+                const summaryDisplay = document.getElementById('note-summary-display');
+                if (summaryDisplay) summaryDisplay.textContent = note.summary;
+                summarySection.style.display = 'block';
+            } else {
+                summarySection.style.display = 'none';
+            }
         }
 
         const reminderInput = document.getElementById('note-reminder');
-        if (note && note.reminderAt) {
-            const d = new Date(note.reminderAt);
-            reminderInput.value = d.toISOString().slice(0, 16);
-            document.getElementById('reminder-clear').style.display = 'block';
-        } else {
-            reminderInput.value = '';
-            document.getElementById('reminder-clear').style.display = 'none';
+        const reminderClear = document.getElementById('reminder-clear');
+        if (reminderInput) {
+            if (note && note.reminderAt) {
+                const d = new Date(note.reminderAt);
+                reminderInput.value = d.toISOString().slice(0, 16);
+                if (reminderClear) reminderClear.style.display = 'block';
+            } else {
+                reminderInput.value = '';
+                if (reminderClear) reminderClear.style.display = 'none';
+            }
         }
 
         const _modal = document.getElementById('note-modal');
+        if (!_modal) return;
         _modal.classList.add('open');
         const _sheet = _modal.querySelector('.note-sheet');
         if (_sheet) {
@@ -4313,7 +4332,7 @@ ${notesHTML}
             _sheet.classList.add('opening');
             _sheet.addEventListener('animationend', () => _sheet.classList.remove('opening'), { once: true });
         }
-        setTimeout(() => document.getElementById('note-title').focus(), 80);
+        setTimeout(() => { const t = document.getElementById('note-title'); if (t) t.focus(); }, 80);
     }
 
     const TEMPLATES = [
