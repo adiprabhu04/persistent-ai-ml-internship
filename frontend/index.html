@@ -282,6 +282,14 @@
             margin-top: 10px;
         }
 
+        .auth-theme-toggle { position: fixed; top: 16px; right: 16px;
+            background: var(--surface); border: 1px solid var(--border);
+            color: var(--text-secondary); width: 36px; height: 36px;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; cursor: pointer; z-index: 100;
+            transition: all 0.2s; }
+        .auth-theme-toggle:hover { border-color: #5B6EF5; color: #5B6EF5; }
+
         /* ── DASHBOARD LAYOUT ────────────────────────────────── */
         #dashboard-page {
             background: transparent;
@@ -544,6 +552,30 @@
             color: var(--text-tertiary);
             padding: 4px 4px 0;
         }
+
+        /* ── DASHBOARD BRAND ─────────────────────────────────── */
+        .dashboard-brand { display: flex; align-items: center; gap: 10px;
+            padding: 16px 20px 8px; }
+        .dashboard-logo-icon { width: 32px; height: 32px; background: #5B6EF5;
+            border-radius: 8px; display: flex; align-items: center;
+            justify-content: center; color: white; font-size: 14px; }
+        .dashboard-wordmark { font-size: 20px; font-weight: 700;
+            color: var(--text); letter-spacing: -0.5px; }
+        .dashboard-dot { color: #5B6EF5; }
+
+        /* ── CARD EXPORT ──────────────────────────────────────── */
+        .card-export-menu { display: none; position: absolute;
+            bottom: 12px; right: 12px; gap: 4px; }
+        .note-card:hover .card-export-menu { display: flex; }
+        .card-export-btn { background: var(--surface-2); border: 1px solid var(--border);
+            color: var(--text-secondary); width: 28px; height: 28px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 11px; transition: all 0.2s; }
+        .card-export-btn:hover { border-color: #5B6EF5; color: #5B6EF5; }
+        .btn-modal-export { background: none; border: 1px solid var(--border);
+            color: var(--text-secondary); padding: 8px 10px; border-radius: 8px;
+            cursor: pointer; transition: all 0.2s; }
+        .btn-modal-export:hover { border-color: #5B6EF5; color: #5B6EF5; }
 
         /* ── FILTER TABS ─────────────────────────────────────── */
         .filter-tabs-wrap {
@@ -1043,6 +1075,8 @@
         .rich-editor strong { font-weight: 600; }
         .rich-editor em { font-style: italic; }
         .rich-editor u { text-decoration: underline; }
+        .rich-editor * { color: inherit !important; }
+        .rich-editor { caret-color: #F0F0F5; }
         [data-theme="light"] .rich-toolbar { background: #FFFFFF; border-color: #E5E5E5; }
         [data-theme="light"] .rich-editor { background: #FFFFFF; border-color: #E5E5E5; }
         [data-theme="light"] .rich-btn:hover { background: #F5F5F5; }
@@ -2554,6 +2588,10 @@
 <body>
 
 <!-- ── AUTH PAGE ──────────────────────────────────────────────── -->
+<button onclick="toggleTheme()" class="auth-theme-toggle" id="auth-theme-toggle">
+    <i class="fa-solid fa-moon"></i>
+</button>
+
 <div id="auth-page" class="page active">
     <div class="auth-card">
         <div class="auth-logo">
@@ -2671,6 +2709,14 @@
             </button>
         </div>
         <span id="search-count" class="search-count-label hidden"></span>
+    </div>
+
+    <!-- Dashboard brand -->
+    <div class="dashboard-brand">
+        <div class="dashboard-logo-icon">
+            <i class="fa-solid fa-pen-nib"></i>
+        </div>
+        <span class="dashboard-wordmark">Jot It<span class="dashboard-dot">.</span></span>
     </div>
 
     <!-- Filter tabs -->
@@ -2815,6 +2861,10 @@
                 </button>
             </div>
             <button id="save-note-btn" onclick="saveNote()" class="btn-save btn">Save</button>
+            <button onclick="exportNoteAsPDF(currentNoteId)" class="btn-modal-export btn" id="modal-export-pdf"
+                title="Export as PDF" style="display:none;"><i class="fa-solid fa-file-pdf"></i></button>
+            <button onclick="exportNoteAsCSV(currentNoteId)" class="btn-modal-export btn" id="modal-export-csv"
+                title="Export as CSV" style="display:none;"><i class="fa-solid fa-file-csv"></i></button>
         </div>
         <div class="color-picker-row">
             <span class="color-picker-label">Color</span>
@@ -3260,6 +3310,12 @@
                 : '<i class="fa-solid fa-moon"></i>';
             btn.title = isDark ? 'Switch to light mode' : 'Switch to dark mode';
         }
+        const authBtn = document.getElementById('auth-theme-toggle');
+        if (authBtn) {
+            authBtn.innerHTML = isDark
+                ? '<i class="fa-solid fa-sun"></i>'
+                : '<i class="fa-solid fa-moon"></i>';
+        }
     }
 
     initTheme();
@@ -3374,6 +3430,7 @@
     let currentOcrWords = [];
     let currentScanStep = 'input';
     let selectedNoteColor = '';
+    let currentNoteId = null;
 
     document.getElementById('color-swatches')?.addEventListener('click', (e) => {
         const swatch = e.target.closest('.color-swatch');
@@ -3406,6 +3463,15 @@
             requestAnimationFrame(() => updateTabIndicator(document.querySelector('.filter-tab.active')));
         } else {
             showPage('auth-page');
+        }
+
+        const richEditor = document.getElementById('note-content-editor');
+        if (richEditor) {
+            richEditor.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const text = e.clipboardData.getData('text/plain');
+                document.execCommand('insertText', false, text);
+            });
         }
     });
 
@@ -4073,7 +4139,15 @@ ${notesHTML}
                         <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
                         <path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
                     </svg>
-                </button>`;
+                </button>
+                <div class="card-export-menu" id="export-${note.id}">
+                    <button class="card-export-btn" onclick="exportNoteAsPDF('${note.id}')" title="Export as PDF">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </button>
+                    <button class="card-export-btn" onclick="exportNoteAsCSV('${note.id}')" title="Export as CSV">
+                        <i class="fa-solid fa-file-csv"></i>
+                    </button>
+                </div>`;
 
             el.onclick = (e) => {
                 if (!e.target.closest('button')) openModal(note);
@@ -4252,6 +4326,11 @@ ${notesHTML}
     function openModal(note = null) {
         console.log('Modal open called');
         state.editingId = note ? note.id : null;
+        currentNoteId = note ? note.id : null;
+        const _pdfBtn = document.getElementById('modal-export-pdf');
+        const _csvBtn = document.getElementById('modal-export-csv');
+        if (_pdfBtn) _pdfBtn.style.display = note ? '' : 'none';
+        if (_csvBtn) _csvBtn.style.display = note ? '' : 'none';
 
         const titleLabel = document.getElementById('modal-title-label');
         if (titleLabel) titleLabel.textContent = note ? 'Edit Note' : 'New Note';
@@ -4994,6 +5073,60 @@ ${notesHTML}
         const d = document.createElement('div');
         d.textContent = str;
         return d.innerHTML;
+    }
+
+    function exportNoteAsPDF(noteId) {
+        const note = state.notes.find(n => n.id === noteId);
+        if (!note) return;
+        const categoryColors = {
+            'Personal': '#6C8EF5', 'Work': '#3DD68C',
+            'Ideas': '#F5A623', 'General': '#6B7280'
+        };
+        const color = note.color || categoryColors[note.category] || '#6B7280';
+        const html = `<!DOCTYPE html><html><head>
+            <meta charset="UTF-8">
+            <title>${note.title || 'Note'}</title>
+            <style>
+                body { font-family: Inter, sans-serif; max-width: 600px;
+                    margin: 40px auto; color: #0A0A0A; }
+                h1 { font-size: 24px; font-weight: 700; border-left: 4px solid ${color};
+                    padding-left: 12px; margin-bottom: 8px; }
+                .meta { font-size: 12px; color: #888; margin-bottom: 16px; }
+                .summary { font-style: italic; color: #555; border-left: 3px solid #5B6EF5;
+                    padding: 8px 12px; background: #f5f5ff; border-radius: 4px;
+                    margin-bottom: 16px; font-size: 13px; }
+                .content { font-size: 15px; line-height: 1.7; }
+                img { max-width: 100%; border-radius: 8px; margin-top: 16px; }
+            </style></head><body>
+            <h1>${note.title || 'Untitled'}</h1>
+            <div class="meta">${note.category || 'General'} · ${new Date(note.updatedAt).toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'})}</div>
+            ${note.summary ? `<div class="summary">${note.summary}</div>` : ''}
+            <div class="content">${note.content || ''}</div>
+            ${note.imageData ? `<img src="${note.imageData}">` : ''}
+        </body></html>`;
+        const win = window.open('', '_blank');
+        win.document.write(html);
+        win.document.close();
+        setTimeout(() => win.print(), 500);
+    }
+
+    function exportNoteAsCSV(noteId) {
+        const note = state.notes.find(n => n.id === noteId);
+        if (!note) return;
+        const plain = (note.content || '').replace(/<[^>]*>/g, '');
+        const csv = ['Title,Content,Category,Tags,Created,Updated',
+            `"${(note.title||'').replace(/"/g,'""')}","${plain.replace(/"/g,'""')}",` +
+            `"${note.category||'General'}","${note.tags||''}",` +
+            `"${new Date(note.createdAt).toLocaleDateString()}",` +
+            `"${new Date(note.updatedAt).toLocaleDateString()}"`
+        ].join('\n');
+        const blob = new Blob([csv], {type:'text/csv'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${note.title || 'note'}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
     }
 
     function relativeTime(dateStr) {
