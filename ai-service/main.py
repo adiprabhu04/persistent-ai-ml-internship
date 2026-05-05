@@ -117,7 +117,7 @@ async def summarize_text(request: dict):
             return {"summary": ""}
 
         # If text is short enough, return as is
-        if len(clean_text) <= 120:
+        if len(clean_text) <= 50:
             return {"summary": clean_text}
 
         # Split into sentences
@@ -128,9 +128,7 @@ async def summarize_text(request: dict):
             return {"summary": clean_text[:120]}
 
         if len(sentences) == 1:
-            s = sentences[0]
-            return {"summary": s if len(s) <= 120 else s[:120].rsplit(' ', 1)[0] + '...'}
-
+            return {"summary": sentences[0][:200].rsplit(' ', 1)[0]}
         # Score sentences by word frequency (TF scoring)
         # Remove common stop words
         stop_words = {'the','a','an','and','or','but','in','on','at','to',
@@ -151,17 +149,32 @@ async def summarize_text(request: dict):
                 return 0
             return sum(word_freq.get(w, 0) for w in words if w not in stop_words) / len(words)
 
-        # Get best scoring sentence
+        # Score sentences
         scored = [(score_sentence(s), i, s) for i, s in enumerate(sentences)]
         scored.sort(reverse=True)
 
-        best_sentence = scored[0][2]
+        # Build summary up to 50 words
+        summary_words = []
+        summary_sentences = []
 
-        # Trim to 120 chars if needed
-        if len(best_sentence) > 120:
-            best_sentence = best_sentence[:120].rsplit(' ', 1)[0] + '...'
+        for _, _, sentence in scored:
+            words = sentence.split()
+            if len(summary_words) + len(words) <= 50:
+                summary_words.extend(words)
+                summary_sentences.append(sentence)
+            if len(summary_words) >= 20:
+                break
 
-        return {"summary": best_sentence}
+        # Join and clean — no ellipsis
+        summary_sentences_sorted = sorted(
+            summary_sentences,
+            key=lambda s: sentences.index(s)
+        )
+        summary = ' '.join(summary_sentences_sorted).strip()
+        if not summary:
+            summary = sentences[0][:200].rsplit(' ', 1)[0]
+
+        return {"summary": summary}
 
     except Exception as e:
         print(f"Summarize error: {str(e)}")
